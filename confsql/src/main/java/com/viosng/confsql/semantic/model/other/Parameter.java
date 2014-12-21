@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model;
+package com.viosng.confsql.semantic.model.other;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -31,6 +31,14 @@ public class Parameter {
     @NotNull
     public String getValue() {
         return value;
+    }
+
+    public void setName(@NotNull String name) {
+        this.name = name;
+    }
+
+    public void setValue(@NotNull String value) {
+        this.value = value;
     }
 
     @Override
