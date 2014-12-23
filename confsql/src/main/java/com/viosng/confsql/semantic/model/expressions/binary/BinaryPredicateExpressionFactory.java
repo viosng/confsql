@@ -51,7 +51,7 @@ public class BinaryPredicateExpressionFactory {
             @NotNull
             @Override
             public Notification verify(@NotNull Context context) {
-                return verifyPredicate(left, right);
+                return verifyPredicate(context, left, right);
             }
         };
     }
@@ -61,13 +61,15 @@ public class BinaryPredicateExpressionFactory {
             @NotNull
             @Override
             public Notification verify(@NotNull Context context) {
-                return verifyPredicate(left, right);
+                return verifyPredicate(context, left, right);
             }
         };
     }
 
-    private static Notification verifyPredicate(@NotNull Expression left, @NotNull Expression right) {
+    private static Notification verifyPredicate(@NotNull Context context, @NotNull Expression left, @NotNull Expression right) {
         Notification notification = new Notification();
+        notification.addNotification(left.verify(context));
+        notification.addNotification(right.verify(context));
         if (PredicateExpression.isInvalidBooleanConstant(left) || PredicateExpression.isInvalidBooleanConstant(right)) {
             notification.error("Predicate arguments aren't boolean");
         }

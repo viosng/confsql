@@ -30,6 +30,7 @@ public class UnaryPredicateExpressionFactory {
             @Override
             public Notification verify(@NotNull Context context) {
                 Notification notification = new Notification();
+                notification.addNotification(arg.verify(context));
                 if (PredicateExpression.isInvalidBooleanConstant(arg)) {
                     notification.error("Predicate argument isn't boolean");
                 }

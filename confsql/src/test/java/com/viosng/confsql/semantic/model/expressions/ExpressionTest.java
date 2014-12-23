@@ -83,9 +83,10 @@ public class ExpressionTest {
     @Test
     public void testPredicates() throws Exception {
         PredicateExpression predicate = BinaryPredicateExpressionFactory.and(new ConstantExpression("constant"), 
-                new FunctionCallExpression("function"));
+                BinaryPredicateExpressionFactory.or(new ConstantExpression("one"), new ConstantExpression("two")));
         assertFalse(predicate.verify(mock(Context.class)).isOk());
-        predicate = BinaryPredicateExpressionFactory.and(new ConstantExpression("True"), predicate);
+        System.out.println(predicate.verify(mock(Context.class)));
+        predicate = BinaryPredicateExpressionFactory.and(new ConstantExpression("True"), new FunctionCallExpression("function"));
         assertTrue(predicate.verify(mock(Context.class)).isOk());
     }
 }
