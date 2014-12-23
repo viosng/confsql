@@ -42,6 +42,10 @@ public class BinaryPredicateExpressionFactory {
         return new BinaryPredicateExpression(">=", left, right, Expression.Type.GREATER_OR_EQUAL);
     }
 
+    public static PredicateExpression equal(@NotNull ArithmeticExpression left, @NotNull ArithmeticExpression right) {
+        return new BinaryPredicateExpression("==", left, right, Expression.Type.EQUAL);
+    }
+
     public static PredicateExpression and(@NotNull PredicateExpression left, @NotNull PredicateExpression right) {
         return new BinaryPredicateExpression("and", left, right, Expression.Type.AND) {
             @NotNull

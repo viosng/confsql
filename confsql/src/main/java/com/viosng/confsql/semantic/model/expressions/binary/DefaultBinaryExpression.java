@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.12.2014
  * Time: 10:59
  */
-public class DefaultBinaryExpression implements BinaryExpression{
+class DefaultBinaryExpression implements BinaryExpression{
     @NotNull
     protected final Expression left, right;
     @NotNull

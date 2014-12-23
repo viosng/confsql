@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.12.2014
  * Time: 10:59
  */
-public class DefaultUnaryExpression implements UnaryExpression{
+class DefaultUnaryExpression implements UnaryExpression{
     @NotNull
     protected final Expression arg;
     @NotNull
