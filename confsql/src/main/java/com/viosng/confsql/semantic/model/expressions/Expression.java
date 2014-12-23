@@ -19,6 +19,7 @@ public interface Expression extends ModelElement{
     enum Type {
         PLUS("+"),
         MINUS("-"),
+        UNARY_MINUS("-"),
         MULTIPLICATION("*"),
         DIVISION("/"),
         POWER("^"),

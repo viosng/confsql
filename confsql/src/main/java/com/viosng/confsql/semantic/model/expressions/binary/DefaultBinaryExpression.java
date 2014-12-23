@@ -1,6 +1,8 @@
 package com.viosng.confsql.semantic.model.expressions.binary;
 
 import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.12.2014
  * Time: 10:59
  */
-public abstract class AbstractBinaryExpression implements BinaryExpression{
+public class DefaultBinaryExpression implements BinaryExpression{
     @NotNull
     protected final Expression left, right;
     @NotNull
@@ -17,10 +19,10 @@ public abstract class AbstractBinaryExpression implements BinaryExpression{
     @NotNull
     private Type type;
 
-    protected AbstractBinaryExpression(@NotNull String operation, 
-                                       @NotNull Expression left, 
-                                       @NotNull Expression right, 
-                                       @NotNull Type type) {
+    protected DefaultBinaryExpression(@NotNull String operation,
+                                      @NotNull Expression left,
+                                      @NotNull Expression right,
+                                      @NotNull Type type) {
         this.left = left;
         this.right = right;
         this.operation = operation;
@@ -51,11 +53,17 @@ public abstract class AbstractBinaryExpression implements BinaryExpression{
         return type;
     }
 
+    @NotNull
+    @Override
+    public Notification verify(@NotNull Context context) {
+        return new Notification();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AbstractBinaryExpression)) return false;
-        AbstractBinaryExpression that = (AbstractBinaryExpression) o;
+        if (!(o instanceof DefaultBinaryExpression)) return false;
+        DefaultBinaryExpression that = (DefaultBinaryExpression) o;
         return left.equals(that.left) && operation.equals(that.operation) && right.equals(that.right) && type == that.type;
     }
 

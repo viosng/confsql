@@ -8,4 +8,12 @@ package com.viosng.confsql.semantic.model.expressions;
  */
 
 public interface PredicateExpression extends Expression {
+
+    public static boolean isInvalidBooleanConstant(Expression argument) {
+        if (argument.type() == Expression.Type.CONSTANT){
+            String lowerCaseValue = argument.getName().toLowerCase();
+            return !(lowerCaseValue.equals("true") || lowerCaseValue.equals("false"));
+        }
+        return false;
+    }
 }

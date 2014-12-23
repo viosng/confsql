@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.expressions.binary.predicate;
+package com.viosng.confsql.semantic.model.expressions.binary;
 
 import com.viosng.confsql.semantic.model.expressions.ArithmeticExpression;
 import com.viosng.confsql.semantic.model.expressions.Expression;
@@ -14,6 +14,17 @@ import org.jetbrains.annotations.NotNull;
  * Time: 23:39
  */
 public class BinaryPredicateExpressionFactory {
+
+    private static class BinaryPredicateExpression extends DefaultBinaryExpression implements PredicateExpression {
+
+        BinaryPredicateExpression(@NotNull String operation,
+                                  @NotNull Expression left,
+                                  @NotNull Expression right,
+                                  @NotNull Type type) {
+            super(operation, left, right, type);
+        }
+
+    }
     
     public static PredicateExpression less(@NotNull ArithmeticExpression left, @NotNull ArithmeticExpression right) {
         return new BinaryPredicateExpression("<", left, right, Expression.Type.LESS);
@@ -51,17 +62,11 @@ public class BinaryPredicateExpressionFactory {
         };
     }
 
-    protected static boolean isInvalid(Expression argument) {
-        if (argument.type() == Expression.Type.CONSTANT){
-            String lowerCaseValue = argument.getName().toLowerCase();
-            return !(lowerCaseValue.equals("true") || lowerCaseValue.equals("false"));
-        }
-        return false;
-    }
-    
     private static Notification verifyPredicate(@NotNull Expression left, @NotNull Expression right) {
         Notification notification = new Notification();
-        if (isInvalid(left) || isInvalid(right)) notification.error("Predicate arguments aren't boolean");
+        if (PredicateExpression.isInvalidBooleanConstant(left) || PredicateExpression.isInvalidBooleanConstant(right)) {
+            notification.error("Predicate arguments aren't boolean");
+        }
         return notification;
     }
 

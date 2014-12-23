@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.expressions.binary.arithmetic;
+package com.viosng.confsql.semantic.model.expressions.binary;
 
 import com.viosng.confsql.semantic.model.expressions.ArithmeticExpression;
 import com.viosng.confsql.semantic.model.expressions.Expression;
@@ -11,6 +11,17 @@ import org.jetbrains.annotations.NotNull;
  * Time: 23:57
  */
 public class BinaryArithmeticExpressionFactory {
+
+    private static class BinaryArithmeticExpression extends DefaultBinaryExpression implements ArithmeticExpression {
+
+        BinaryArithmeticExpression(@NotNull String operation,
+                                   @NotNull ArithmeticExpression left,
+                                   @NotNull ArithmeticExpression right,
+                                   @NotNull Type type) {
+            super(operation, left, right, type);
+        }
+
+    }
 
     public static ArithmeticExpression plus(@NotNull ArithmeticExpression left, @NotNull ArithmeticExpression right) {
         return new BinaryArithmeticExpression("+", left, right, Expression.Type.PLUS);
