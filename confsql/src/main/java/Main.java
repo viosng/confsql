@@ -1,12 +1,10 @@
-import com.viosng.confsql.xml.Parameter;
+import com.thoughtworks.xstream.XStream;
+import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
+import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.xml.XMLExpressionHelper;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.BufferedOutputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,30 +13,18 @@ import java.io.StringReader;
  * Time: 15:41
  */
 public class Main {
-
-    public static void main(String[] args) {
-        Parameter parameter = new Parameter("a", "b");
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Parameter.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-            // output pretty printed
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            jaxbMarshaller.marshal(parameter, System.out);
-            OutputStream out = new BufferedOutputStream(System.out);
-            jaxbMarshaller.marshal(parameter, System.out);
-            
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            StringReader reader = new StringReader("xml string here");
-            Parameter person = (Parameter) unmarshaller.unmarshal(
-                    new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                    "<parameter name=\"a\" value=\"b\"/>"));
-            System.out.println(person);
-
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
+    
+    public static void main(String[] args) throws JAXBException {
+        XStream xstream = new XStream();
+        xstream.processAnnotations(XMLExpressionHelper.XMLExpression.class);
+        Expression expression = BinaryArithmeticExpressionFactory.plus(ValueExpressionFactory.constant("a"), 
+                ValueExpressionFactory.functionCall("b", ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d")));
+        XMLExpressionHelper.XMLExpression xmlExpression = XMLExpressionHelper.convertToXMLExpression(expression);
+        String xml = xstream.toXML(xmlExpression);
+        System.out.println(xml);
+        System.out.println(xmlExpression.equals(xstream.fromXML(xml)));
+        System.out.println(xstream.fromXML(xml));
+        System.out.println(xmlExpression);
     }
+    
 }

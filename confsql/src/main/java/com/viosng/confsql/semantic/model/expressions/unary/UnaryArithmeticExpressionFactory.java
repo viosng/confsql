@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class UnaryArithmeticExpressionFactory {
 
+    private UnaryArithmeticExpressionFactory(){}
+
     private static class UnaryArithmeticExpression extends DefaultUnaryExpression implements ArithmeticExpression {
 
         UnaryArithmeticExpression(@NotNull String operation,

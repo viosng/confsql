@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BinaryPredicateExpressionFactory {
 
+    private BinaryPredicateExpressionFactory(){}
+
     private static class BinaryPredicateExpression extends DefaultBinaryExpression implements PredicateExpression {
 
         BinaryPredicateExpression(@NotNull String operation,

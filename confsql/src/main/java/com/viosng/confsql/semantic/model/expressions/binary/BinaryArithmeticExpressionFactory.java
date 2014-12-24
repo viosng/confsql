@@ -11,8 +11,10 @@ import org.jetbrains.annotations.NotNull;
  * Time: 23:57
  */
 public class BinaryArithmeticExpressionFactory {
+    
+    private BinaryArithmeticExpressionFactory(){}
 
-    private static class BinaryArithmeticExpression extends DefaultBinaryExpression implements ArithmeticExpression {
+    public static class BinaryArithmeticExpression extends DefaultBinaryExpression implements ArithmeticExpression {
 
         BinaryArithmeticExpression(@NotNull String operation,
                                    @NotNull ArithmeticExpression left,

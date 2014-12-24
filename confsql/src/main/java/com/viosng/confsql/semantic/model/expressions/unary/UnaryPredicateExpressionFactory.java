@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class UnaryPredicateExpressionFactory {
 
+    private UnaryPredicateExpressionFactory(){}
+
     private static class UnaryPredicateExpression extends DefaultUnaryExpression implements PredicateExpression {
 
         UnaryPredicateExpression(@NotNull String operation,

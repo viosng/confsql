@@ -2,10 +2,7 @@ package com.viosng.confsql.semantic.model.expressions;
 
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.other.AttributeExpression;
-import com.viosng.confsql.semantic.model.expressions.other.ConstantExpression;
-import com.viosng.confsql.semantic.model.expressions.other.FunctionCallExpression;
-import com.viosng.confsql.semantic.model.expressions.other.GroupAttributeExpression;
+import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.unary.UnaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.unary.UnaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Context;
@@ -61,10 +58,10 @@ public class ExpressionTest {
 
                 {UnaryPredicateExpressionFactory.not(predicateMock()), "not", Expression.Type.NOT},
                 
-                {new ConstantExpression("constant"), "constant", Expression.Type.CONSTANT},
-                {new FunctionCallExpression("function"), "function", Expression.Type.FUNCTION_CALL},
-                {new AttributeExpression("object", "attribute"), "object.attribute", Expression.Type.ATTRIBUTE},
-                {new GroupAttributeExpression("object", "group"), "object.group", Expression.Type.GROUP},
+                {ValueExpressionFactory.constant("constant"), "constant", Expression.Type.CONSTANT},
+                {ValueExpressionFactory.functionCall("function"), "function", Expression.Type.FUNCTION_CALL},
+                {ValueExpressionFactory.attribute("object", "attribute"), "object.attribute", Expression.Type.ATTRIBUTE},
+                {ValueExpressionFactory.group("object", "group"), "object.group", Expression.Type.GROUP},
         };
     }
 
@@ -82,11 +79,12 @@ public class ExpressionTest {
 
     @Test
     public void testPredicates() throws Exception {
-        PredicateExpression predicate = BinaryPredicateExpressionFactory.and(new ConstantExpression("constant"), 
-                BinaryPredicateExpressionFactory.or(new ConstantExpression("one"), new ConstantExpression("two")));
+        PredicateExpression predicate = BinaryPredicateExpressionFactory.and(ValueExpressionFactory.constant("constant"),
+                BinaryPredicateExpressionFactory.or(ValueExpressionFactory.constant("one"),ValueExpressionFactory.constant("two")));
         assertFalse(predicate.verify(mock(Context.class)).isOk());
         System.out.println(predicate.verify(mock(Context.class)));
-        predicate = BinaryPredicateExpressionFactory.and(new ConstantExpression("True"), new FunctionCallExpression("function"));
+        predicate = BinaryPredicateExpressionFactory.and(ValueExpressionFactory.constant("True"), 
+                ValueExpressionFactory.functionCall("function", ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d")));
         assertTrue(predicate.verify(mock(Context.class)).isOk());
     }
 }
