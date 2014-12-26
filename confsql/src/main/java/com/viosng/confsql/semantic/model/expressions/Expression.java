@@ -16,34 +16,24 @@ public interface Expression extends ModelElement{
     @NotNull
     public Type type();
     
-    enum Type {
-        PLUS("+"),
-        MINUS("-"),
-        UNARY_MINUS("-"),
-        MULTIPLICATION("*"),
-        DIVISION("/"),
-        POWER("^"),
-        AND("and"),
-        OR("or"),
-        GREATER(">"),
-        GREATER_OR_EQUAL(">="),
-        LESS("<"),
-        LESS_OR_EQUAL("<="),
-        EQUAL("=="),
-        NOT("not"),
-        FUNCTION_CALL("function"),
-        CONSTANT("constant"),
-        ATTRIBUTE("attribute"),
-        GROUP("group");
-        
-        private String name;
-
-        public String getName() {
-            return name;
-        }
-
-        Type(String name) {
-            this.name = name;
-        }
+    static enum Type {
+        PLUS,
+        MINUS,
+        UNARY_MINUS,
+        MULTIPLICATION,
+        DIVISION,
+        POWER,
+        AND,
+        OR,
+        GREATER,
+        GREATER_OR_EQUAL,
+        LESS,
+        LESS_OR_EQUAL,
+        EQUAL,
+        NOT,
+        FUNCTION_CALL,
+        CONSTANT,
+        ATTRIBUTE,
+        GROUP
     }
 }
