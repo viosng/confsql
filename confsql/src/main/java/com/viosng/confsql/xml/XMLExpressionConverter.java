@@ -100,7 +100,7 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
                 xmlExpression.arguments =
                         functionCallExpression.getArguments().stream().map(this::convertToXMLExpression).toArray(XMLExpression[]::new);
             case CONSTANT:
-                xmlExpression.value = expression.getName();
+                xmlExpression.value = ((ValueExpression.ConstantExpression)expression).getValue();
                 break;
             case NOT:
             case UNARY_MINUS:

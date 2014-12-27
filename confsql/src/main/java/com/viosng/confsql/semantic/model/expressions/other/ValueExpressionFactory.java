@@ -29,12 +29,6 @@ public class ValueExpressionFactory {
 
         @NotNull
         @Override
-        public String getName() {
-            return value;
-        }
-
-        @NotNull
-        @Override
         public String getValue() {
             return value;
         }
@@ -82,12 +76,6 @@ public class ValueExpressionFactory {
 
         @NotNull
         @Override
-        public String getName() {
-            return objectReference + "." + super.getName();
-        }
-
-        @NotNull
-        @Override
         public Notification verify(@NotNull Context context) {
             Notification notification = new Notification();
             if (!context.hasReference(objectReference)) {
@@ -101,7 +89,7 @@ public class ValueExpressionFactory {
 
         @Override
         public String toString() {
-            return getName();
+            return objectReference + "." + value;
         }
     }
     

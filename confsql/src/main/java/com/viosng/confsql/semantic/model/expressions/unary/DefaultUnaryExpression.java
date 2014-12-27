@@ -27,12 +27,6 @@ class DefaultUnaryExpression implements UnaryExpression{
         this.type = type;
     }
 
-    @Override
-    @NotNull
-    public String getName() {
-        return operation;
-    }
-
     @NotNull
     @Override
     public Type type() {

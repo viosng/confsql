@@ -68,7 +68,6 @@ public class ExpressionTest {
     @Theory
     public void testInterface(final Object... testData) {
         Expression expression = (Expression)testData[0];
-        assertEquals(expression.getName(), testData[1]);
         assertEquals(expression.type(), testData[2]);
     }
 

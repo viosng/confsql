@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
  * Time: 2:12
  */
 public interface Expression extends ModelElement{
-    @NotNull
-    public String getName();
     
     @NotNull
     public Type type();

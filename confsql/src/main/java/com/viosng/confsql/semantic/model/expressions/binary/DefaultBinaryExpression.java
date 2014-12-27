@@ -41,12 +41,6 @@ class DefaultBinaryExpression implements BinaryExpression{
         return right;
     }
 
-    @Override
-    @NotNull
-    public String getName() {
-        return operation;
-    }
-
     @NotNull
     @Override
     public Type type() {
