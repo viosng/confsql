@@ -6,6 +6,7 @@ import com.viosng.confsql.xml.XMLConverter;
 import com.viosng.confsql.xml.XMLExpressionConverter;
 
 import javax.xml.bind.JAXBException;
+import java.util.Arrays;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,7 +22,8 @@ public class Main {
         converter.configure(xstream);
         
         Expression expression = BinaryArithmeticExpressionFactory.plus(ValueExpressionFactory.constant("a"), 
-                ValueExpressionFactory.functionCall("b", ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d")));
+                ValueExpressionFactory.functionCall("b", 
+                        Arrays.asList(ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d"))));
         
         XMLExpressionConverter.XMLExpression xmlExpression = XMLExpressionConverter.getInstance().convertToXMLExpression(expression);
         String xml = xstream.toXML(xmlExpression);

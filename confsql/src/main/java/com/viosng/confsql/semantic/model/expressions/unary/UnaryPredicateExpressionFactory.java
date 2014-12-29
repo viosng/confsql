@@ -18,16 +18,15 @@ public class UnaryPredicateExpressionFactory {
 
     private static class UnaryPredicateExpression extends DefaultUnaryExpression implements PredicateExpression {
 
-        UnaryPredicateExpression(@NotNull String operation,
-                                 @NotNull Expression arg,
-                                 @NotNull Type type) {
-            super(operation, arg, type);
+        UnaryPredicateExpression(@NotNull String id,
+                                 @NotNull Type type, @NotNull Expression arg) {
+            super(id, type, arg);
         }
 
     }
 
-    public static PredicateExpression not(@NotNull PredicateExpression arg) {
-        return new UnaryPredicateExpression("not", arg, Expression.Type.NOT) {
+    public static PredicateExpression not(@NotNull PredicateExpression arg, @NotNull String id) {
+        return new UnaryPredicateExpression(id, Expression.Type.NOT, arg) {
             @NotNull
             @Override
             public Notification verify(@NotNull Context context) {
@@ -41,4 +40,8 @@ public class UnaryPredicateExpressionFactory {
         };
     }
 
+    public static PredicateExpression not(@NotNull PredicateExpression arg) {
+        return not(arg, Expression.UNDEFINED_ID);
+    }
+    
 }

@@ -13,6 +13,9 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -59,7 +62,7 @@ public class ExpressionTest {
                 {UnaryPredicateExpressionFactory.not(predicateMock()), "not", Expression.Type.NOT},
                 
                 {ValueExpressionFactory.constant("constant"), "constant", Expression.Type.CONSTANT},
-                {ValueExpressionFactory.functionCall("function"), "function", Expression.Type.FUNCTION_CALL},
+                {ValueExpressionFactory.functionCall("function", Collections.emptyList()), "function", Expression.Type.FUNCTION_CALL},
                 {ValueExpressionFactory.attribute("object", "attribute"), "object.attribute", Expression.Type.ATTRIBUTE},
                 {ValueExpressionFactory.group("object", "group"), "object.group", Expression.Type.GROUP},
         };
@@ -83,7 +86,7 @@ public class ExpressionTest {
         assertFalse(predicate.verify(mock(Context.class)).isOk());
         System.out.println(predicate.verify(mock(Context.class)));
         predicate = BinaryPredicateExpressionFactory.and(ValueExpressionFactory.constant("True"), 
-                ValueExpressionFactory.functionCall("function", ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d")));
+                ValueExpressionFactory.functionCall("function", Arrays.asList(ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d"))));
         assertTrue(predicate.verify(mock(Context.class)).isOk());
     }
 }

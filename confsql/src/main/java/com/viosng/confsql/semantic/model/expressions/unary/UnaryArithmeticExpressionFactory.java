@@ -16,15 +16,18 @@ public class UnaryArithmeticExpressionFactory {
 
     private static class UnaryArithmeticExpression extends DefaultUnaryExpression implements ArithmeticExpression {
 
-        UnaryArithmeticExpression(@NotNull String operation,
-                                  @NotNull ArithmeticExpression arg,
-                                  @NotNull Type type) {
-            super(operation, arg, type);
+        UnaryArithmeticExpression(@NotNull String id,
+                                  @NotNull Type type, 
+                                  @NotNull ArithmeticExpression arg) {
+            super(id, type, arg);
         }
-
     }
 
     public static ArithmeticExpression minus(@NotNull ArithmeticExpression arg) {
-        return new UnaryArithmeticExpression("-", arg, Expression.Type.UNARY_MINUS);
+        return new UnaryArithmeticExpression(Expression.UNDEFINED_ID, Expression.Type.UNARY_MINUS, arg);
+    }
+
+    public static ArithmeticExpression minus(@NotNull ArithmeticExpression arg, @NotNull String id) {
+        return new UnaryArithmeticExpression(id, Expression.Type.UNARY_MINUS, arg);
     }
 }

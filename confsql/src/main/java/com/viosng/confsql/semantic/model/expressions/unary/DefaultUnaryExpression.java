@@ -13,18 +13,22 @@ import org.jetbrains.annotations.NotNull;
  */
 class DefaultUnaryExpression implements UnaryExpression{
     @NotNull
-    protected final Expression arg;
+    private final String id;
     @NotNull
-    protected final String operation;
+    protected final Expression arg;
     @NotNull
     private Type type;
 
-    protected DefaultUnaryExpression(@NotNull String operation,
-                                     @NotNull Expression arg,
-                                     @NotNull Type type) {
+    protected DefaultUnaryExpression(@NotNull String id, @NotNull Type type, @NotNull Expression arg) {
+        this.id = id;
         this.arg = arg;
-        this.operation = operation;
         this.type = type;
+    }
+
+    @NotNull
+    @Override
+    public String id() {
+        return id;
     }
 
     @NotNull
@@ -50,20 +54,20 @@ class DefaultUnaryExpression implements UnaryExpression{
         if (this == o) return true;
         if (!(o instanceof DefaultUnaryExpression)) return false;
         DefaultUnaryExpression that = (DefaultUnaryExpression) o;
-        return arg.equals(that.arg) && operation.equals(that.operation) && type == that.type;
+        return arg.equals(that.arg) && id.equals(that.id) && type == that.type;
     }
 
     @Override
     public int hashCode() {
         int result = arg.hashCode();
-        result = 31 * result + operation.hashCode();
+        result = 31 * result + id.hashCode();
         result = 31 * result + type.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "(" + operation + " " + arg + ")";
+        return "(" + type.getName() + " " + arg + ")";
     }
 
 }

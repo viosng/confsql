@@ -1,7 +1,5 @@
 package com.viosng.confsql.semantic.model;
 
-import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -11,7 +9,11 @@ import org.jetbrains.annotations.NotNull;
  * Time: 11:40
  */
 public interface ModelElement {
-
+    
     @NotNull
-    public Notification verify(@NotNull Context context);
+    public final static String UNDEFINED_ID = "";
+    
+    @NotNull
+    public String id();
+    
 }

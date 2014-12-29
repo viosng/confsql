@@ -16,32 +16,70 @@ public class BinaryArithmeticExpressionFactory {
 
     public static class BinaryArithmeticExpression extends DefaultBinaryExpression implements ArithmeticExpression {
 
-        BinaryArithmeticExpression(@NotNull String operation,
-                                   @NotNull ArithmeticExpression left,
-                                   @NotNull ArithmeticExpression right,
-                                   @NotNull Type type) {
-            super(operation, left, right, type);
+        BinaryArithmeticExpression(@NotNull String id, 
+                                   @NotNull Type type, 
+                                   @NotNull ArithmeticExpression left, 
+                                   @NotNull ArithmeticExpression right) {
+            super(id, type, left, right);
         }
 
+        public BinaryArithmeticExpression(@NotNull Type type, @NotNull Expression left, @NotNull Expression right) {
+            super(type, left, right);
+        }
     }
 
-    public static ArithmeticExpression plus(@NotNull ArithmeticExpression left, @NotNull ArithmeticExpression right) {
-        return new BinaryArithmeticExpression("+", left, right, Expression.Type.PLUS);
+    public static ArithmeticExpression plus(@NotNull ArithmeticExpression left,
+                                            @NotNull ArithmeticExpression right) {
+        return new BinaryArithmeticExpression(Expression.Type.PLUS, left, right);
     }
 
-    public static ArithmeticExpression minus(@NotNull ArithmeticExpression left, @NotNull ArithmeticExpression right) {
-        return new BinaryArithmeticExpression("-", left, right, Expression.Type.MINUS);
+    public static ArithmeticExpression minus(@NotNull ArithmeticExpression left,
+                                             @NotNull ArithmeticExpression right) {
+        return new BinaryArithmeticExpression(Expression.Type.MINUS, left, right);
     }
 
-    public static ArithmeticExpression multiplication(@NotNull ArithmeticExpression left, @NotNull ArithmeticExpression right) {
-        return new BinaryArithmeticExpression("*", left, right, Expression.Type.MULTIPLICATION);
+    public static ArithmeticExpression multiplication(@NotNull ArithmeticExpression left,
+                                                      @NotNull ArithmeticExpression right) {
+        return new BinaryArithmeticExpression(Expression.Type.MULTIPLICATION, left, right);
     }
 
-    public static ArithmeticExpression division(@NotNull ArithmeticExpression left, @NotNull ArithmeticExpression right) {
-        return new BinaryArithmeticExpression("/", left, right, Expression.Type.DIVISION);
+    public static ArithmeticExpression division(@NotNull ArithmeticExpression left,
+                                                @NotNull ArithmeticExpression right) {
+        return new BinaryArithmeticExpression(Expression.Type.DIVISION, left, right);
     }
 
-    public static ArithmeticExpression power(@NotNull ArithmeticExpression left, @NotNull ArithmeticExpression right) {
-        return new BinaryArithmeticExpression("^", left, right, Expression.Type.POWER);
+    public static ArithmeticExpression power(@NotNull ArithmeticExpression left,
+                                             @NotNull ArithmeticExpression right) {
+        return new BinaryArithmeticExpression(Expression.Type.POWER, left, right);
+    }
+
+    public static ArithmeticExpression plus(@NotNull ArithmeticExpression left,
+                                            @NotNull ArithmeticExpression right, 
+                                            @NotNull String id) {
+        return new BinaryArithmeticExpression(id, Expression.Type.PLUS, left, right);
+    }
+
+    public static ArithmeticExpression minus(@NotNull ArithmeticExpression left,
+                                             @NotNull ArithmeticExpression right,
+                                             @NotNull String id) {
+        return new BinaryArithmeticExpression(id, Expression.Type.MINUS, left, right);
+    }
+
+    public static ArithmeticExpression multiplication(@NotNull ArithmeticExpression left,
+                                                      @NotNull ArithmeticExpression right,
+                                                      @NotNull String id) {
+        return new BinaryArithmeticExpression(id, Expression.Type.MULTIPLICATION, left, right);
+    }
+
+    public static ArithmeticExpression division(@NotNull ArithmeticExpression left,
+                                                @NotNull ArithmeticExpression right,
+                                                @NotNull String id) {
+        return new BinaryArithmeticExpression(id, Expression.Type.DIVISION, left, right);
+    }
+
+    public static ArithmeticExpression power(@NotNull ArithmeticExpression left,
+                                             @NotNull ArithmeticExpression right,
+                                             @NotNull String id) {
+        return new BinaryArithmeticExpression(id, Expression.Type.POWER, left, right);
     }
 }

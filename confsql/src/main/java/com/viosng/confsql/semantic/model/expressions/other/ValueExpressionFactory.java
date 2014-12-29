@@ -6,7 +6,7 @@ import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,11 +20,23 @@ public class ValueExpressionFactory {
     private ValueExpressionFactory(){}
 
     private static abstract class AbstractValueExpression implements ValueExpression {
+        
         @NotNull
-        protected final String value;
+        protected final String id, value;
+
+        protected AbstractValueExpression(@NotNull String id, @NotNull String value) {
+            this.id = id;
+            this.value = value;
+        }
 
         protected AbstractValueExpression(@NotNull String value) {
-            this.value = value;
+            this(Expression.UNDEFINED_ID, value);
+        }
+
+        @NotNull
+        @Override
+        public String id() {
+            return id;
         }
 
         @NotNull
@@ -63,6 +75,11 @@ public class ValueExpressionFactory {
         @NotNull
         private final String objectReference;
 
+        public AbstractAttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
+            super(id, value);
+            this.objectReference = objectReference;
+        }
+
         protected AbstractAttributeExpression(@NotNull String objectReference, @NotNull String value) {
             super(value);
             this.objectReference = objectReference;
@@ -94,6 +111,10 @@ public class ValueExpressionFactory {
     }
     
     private static class ConstantExpression extends AbstractValueExpression implements ValueExpression.ConstantExpression {
+        private ConstantExpression(@NotNull String id, @NotNull String value) {
+            super(id, value);
+        }
+
         private ConstantExpression(@NotNull String value) {
             super(value);
         }
@@ -102,16 +123,33 @@ public class ValueExpressionFactory {
     private static class FunctionCallExpression extends AbstractValueExpression implements ValueExpression.FunctionCallExpression {
         @NotNull
         private final List<Expression> arguments;
+        
+        private Notification notification;
 
-        public FunctionCallExpression(@NotNull String value, @NotNull List<Expression> arguments) {
+        private FunctionCallExpression(@NotNull String id, @NotNull String value, @NotNull List<Expression> arguments) {
+            super(id, value);
+            this.arguments = new ArrayList<>(arguments);
+        }
+
+        private FunctionCallExpression(@NotNull String value, @NotNull List<Expression> arguments) {
             super(value);
-            this.arguments = arguments;
+            this.arguments = new ArrayList<>(arguments);
         }
 
         @NotNull
         @Override
         public List<Expression> getArguments() {
             return arguments;
+        }
+
+        @NotNull
+        @Override
+        public Notification verify(@NotNull Context context) {
+            if (notification == null) {
+                notification = arguments.stream().map(e -> e.verify(context)).collect(Notification::new, 
+                        Notification::accept, Notification::accept);
+            }
+            return notification;
         }
 
         @Override
@@ -121,12 +159,20 @@ public class ValueExpressionFactory {
     }
 
     private static class AttributeExpression extends AbstractAttributeExpression implements ValueExpression.AttributeExpression{
+        public AttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
+            super(id, objectReference, value);
+        }
+
         private AttributeExpression(@NotNull String objectReference, @NotNull String value) {
             super(objectReference, value);
         }
     }
 
     private static class GroupExpression extends AbstractAttributeExpression implements ValueExpression.GroupExpression{
+        public GroupExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
+            super(id, objectReference, value);
+        }
+
         private GroupExpression(@NotNull String objectReference, @NotNull String value) {
             super(objectReference, value);
         }
@@ -136,8 +182,9 @@ public class ValueExpressionFactory {
         return new ConstantExpression(value);
     }
 
-    public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value, Expression... expressions) {
-        return new FunctionCallExpression(value, Arrays.asList(expressions));
+    public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value, 
+                                                                      @NotNull List<Expression> expressions) {
+        return new FunctionCallExpression(value, expressions);
     }
     
     public static ValueExpression.AttributeExpression attribute(@NotNull String objectReference, @NotNull String value) {
@@ -146,5 +193,27 @@ public class ValueExpressionFactory {
 
     public static ValueExpression.GroupExpression group(@NotNull String objectReference, @NotNull String value) {
         return new GroupExpression(objectReference, value);
+    }
+
+    public static ValueExpression.ConstantExpression constant(@NotNull String value, @NotNull String id) {
+        return new ConstantExpression(id, value);
+    }
+
+    public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value, 
+                                                                      @NotNull List<Expression> expressions, 
+                                                                      @NotNull String id) {
+        return new FunctionCallExpression(id, value, expressions);
+    }
+
+    public static ValueExpression.AttributeExpression attribute(@NotNull String objectReference, 
+                                                                @NotNull String value, 
+                                                                @NotNull String id) {
+        return new AttributeExpression(id, objectReference, value);
+    }
+
+    public static ValueExpression.GroupExpression group(@NotNull String objectReference, 
+                                                        @NotNull String value, 
+                                                        @NotNull String id) {
+        return new GroupExpression(id, objectReference, value);
     }
 }
