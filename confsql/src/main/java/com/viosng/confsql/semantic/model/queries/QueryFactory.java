@@ -3,6 +3,7 @@ package com.viosng.confsql.semantic.model.queries;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
@@ -142,22 +143,16 @@ public class QueryFactory {
         private UnNestQuery(@NotNull String id,
                             @NotNull List<Parameter> parameters,
                             @NotNull Query base,
-                            @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, Collections.emptyList(), Arrays.asList(base), argumentExpressions);
-        }
-
-        @NotNull
-        @Override
-        public Notification verify() { //todo
-            return super.verify();
+                            @NotNull ValueExpression.AttributeExpression attribute) {
+            super(id, parameters, Collections.emptyList(), Arrays.asList(base), Arrays.asList(attribute));
         }
     }
 
     public static Query.UnNest unNest(@NotNull String id,
                                       @NotNull Query base,
-                                      @NotNull List<Expression> argumentExpressions,
+                                      @NotNull ValueExpression.AttributeExpression attribute,
                                       @NotNull List<Parameter> parameters) {
-        return new UnNestQuery(id, parameters, base, argumentExpressions);
+        return new UnNestQuery(id, parameters, base, attribute);
     }
 
     private static class GroupJoinQuery extends DefaultQuery implements Query.GroupJoin {
