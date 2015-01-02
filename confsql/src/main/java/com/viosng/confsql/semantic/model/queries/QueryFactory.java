@@ -93,8 +93,13 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        public Notification verify() { //todo
-            return super.verify();
+        public Notification verify() {
+            Notification notification = super.verify();
+            if (!getSchemaAttributes().stream().anyMatch(s -> s.containsType(Expression.Type.GROUP))) {
+                notification.error("Aggregation operation with id = \"" + id() + 
+                        "\" has no group operation result reference in schema attributes");
+            }
+            return  notification;
         }
     }
 

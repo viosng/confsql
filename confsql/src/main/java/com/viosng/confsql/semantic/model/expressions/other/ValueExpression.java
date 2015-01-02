@@ -22,7 +22,11 @@ public interface ValueExpression extends Expression {
         @NotNull
         @Override
         public default Type type() { return Type.CONSTANT; }
-        
+
+        @Override
+        default boolean containsType(Type type) {
+            return type == Type.CONSTANT;
+        }
     }
     
     public interface FunctionCallExpression extends ValueExpression, ArithmeticExpression, PredicateExpression {
@@ -32,7 +36,12 @@ public interface ValueExpression extends Expression {
         public default Type type() { return Type.FUNCTION_CALL; }
         
         @NotNull
-        public List<Expression> getArguments(); 
+        public List<Expression> getArguments();
+
+        @Override
+        default boolean containsType(Type type) {
+            return type == Type.FUNCTION_CALL;
+        }
         
     }
     
@@ -44,6 +53,11 @@ public interface ValueExpression extends Expression {
         @NotNull
         @Override
         public default Type type() { return Type.ATTRIBUTE; }
+
+        @Override
+        default boolean containsType(Type type) {
+            return type == Type.ATTRIBUTE;
+        }
         
     }
     
@@ -52,6 +66,11 @@ public interface ValueExpression extends Expression {
         @NotNull
         @Override
         public default Type type() { return Type.GROUP; }
+
+        @Override
+        default boolean containsType(Type type) {
+            return type == Type.GROUP;
+        }
 
     }
 }

@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
  * Time: 2:12
  */
 public interface Expression extends InternalQueryElement {
-    
+
     @NotNull
     public Type type();
 
     static enum Type {
-            PLUS("+"),
+        PLUS("+"),
         MINUS("-"),
         UNARY_MINUS("-"),
         MULTIPLICATION("*"),
@@ -44,4 +44,6 @@ public interface Expression extends InternalQueryElement {
             this.name = name;
         }
     }
+    
+    public boolean containsType(Type type);
 }
