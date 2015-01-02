@@ -85,7 +85,7 @@ public abstract class DefaultQuery implements Query{
     }
 
     @NotNull
-    protected Context createContext() {
+    protected DefaultContext createContext() {
         return new DefaultContext(subQueries);
     }
     

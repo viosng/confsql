@@ -75,7 +75,7 @@ public class ValueExpressionFactory {
         @NotNull
         private final String objectReference;
 
-        public AbstractAttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
+        protected AbstractAttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
             super(id, value);
             this.objectReference = objectReference;
         }
@@ -102,6 +102,22 @@ public class ValueExpressionFactory {
                 notification.error("Object reference \"" + objectReference + "\" hasn't attribute \"" + value + "\"");
             }
             return notification;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof AbstractAttributeExpression)) return false;
+            if (!super.equals(o)) return false;
+            AbstractAttributeExpression that = (AbstractAttributeExpression) o;
+            return objectReference.equals(that.objectReference);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = super.hashCode();
+            result = 31 * result + objectReference.hashCode();
+            return result;
         }
 
         @Override
@@ -159,7 +175,7 @@ public class ValueExpressionFactory {
     }
 
     private static class AttributeExpression extends AbstractAttributeExpression implements ValueExpression.AttributeExpression{
-        public AttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
+        private AttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
             super(id, objectReference, value);
         }
 
@@ -169,12 +185,28 @@ public class ValueExpressionFactory {
     }
 
     private static class GroupExpression extends AbstractAttributeExpression implements ValueExpression.GroupExpression{
-        public GroupExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
+        @NotNull
+        private List<Expression> groupedAttributes;
+
+        public GroupExpression(@NotNull String id, 
+                               @NotNull String objectReference, 
+                               @NotNull String value, 
+                               @NotNull List<Expression> groupedAttributes) {
             super(id, objectReference, value);
+            this.groupedAttributes = groupedAttributes;
         }
 
-        private GroupExpression(@NotNull String objectReference, @NotNull String value) {
+        public GroupExpression(@NotNull String objectReference, 
+                               @NotNull String value, 
+                               @NotNull List<Expression> groupedAttributes) {
             super(objectReference, value);
+            this.groupedAttributes = groupedAttributes;
+        }
+
+        @NotNull
+        @Override
+        public List<Expression> getGroupedAttributes() {
+            return groupedAttributes;
         }
     }
     
@@ -191,8 +223,10 @@ public class ValueExpressionFactory {
         return new AttributeExpression(objectReference, value);
     }
 
-    public static ValueExpression.GroupExpression group(@NotNull String objectReference, @NotNull String value) {
-        return new GroupExpression(objectReference, value);
+    public static ValueExpression.GroupExpression group(@NotNull String objectReference, 
+                                                        @NotNull String value, 
+                                                        @NotNull List<Expression> groupedAttributes) {
+        return new GroupExpression(objectReference, value, groupedAttributes);
     }
 
     public static ValueExpression.ConstantExpression constant(@NotNull String value, @NotNull String id) {
@@ -212,8 +246,9 @@ public class ValueExpressionFactory {
     }
 
     public static ValueExpression.GroupExpression group(@NotNull String objectReference, 
-                                                        @NotNull String value, 
+                                                        @NotNull String value,
+                                                        @NotNull List<Expression> groupedAttributes,
                                                         @NotNull String id) {
-        return new GroupExpression(id, objectReference, value);
+        return new GroupExpression(id, objectReference, value, groupedAttributes);
     }
 }

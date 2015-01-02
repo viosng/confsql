@@ -17,16 +17,16 @@ public interface ValueExpression extends Expression {
     
     @NotNull
     public String getValue();
+
+    @Override
+    default Expression getExpression(Type type) {
+        return type == type() ? this : null;
+    }
     
     public interface ConstantExpression extends ValueExpression, ArithmeticExpression, PredicateExpression {
         @NotNull
         @Override
         public default Type type() { return Type.CONSTANT; }
-
-        @Override
-        default boolean containsType(Type type) {
-            return type == Type.CONSTANT;
-        }
     }
     
     public interface FunctionCallExpression extends ValueExpression, ArithmeticExpression, PredicateExpression {
@@ -37,11 +37,6 @@ public interface ValueExpression extends Expression {
         
         @NotNull
         public List<Expression> getArguments();
-
-        @Override
-        default boolean containsType(Type type) {
-            return type == Type.FUNCTION_CALL;
-        }
         
     }
     
@@ -54,11 +49,6 @@ public interface ValueExpression extends Expression {
         @Override
         public default Type type() { return Type.ATTRIBUTE; }
 
-        @Override
-        default boolean containsType(Type type) {
-            return type == Type.ATTRIBUTE;
-        }
-        
     }
     
     public interface GroupExpression extends AttributeExpression {
@@ -67,10 +57,8 @@ public interface ValueExpression extends Expression {
         @Override
         public default Type type() { return Type.GROUP; }
 
-        @Override
-        default boolean containsType(Type type) {
-            return type == Type.GROUP;
-        }
+        @NotNull
+        public List<Expression> getGroupedAttributes();
 
     }
 }

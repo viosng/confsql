@@ -55,9 +55,12 @@ class DefaultBinaryExpression implements BinaryExpression{
     }
 
     @Override
-    public boolean containsType(Type type) {
-        return left.type() == type || right.type() == type || left.containsType(type) || right.containsType(type);
+    public Expression getExpression(Type type) {
+        if (this.type == type) return this;
+        Expression leftType = left.getExpression(type);
+        return leftType != null ? leftType : right.getExpression(type);
     }
+
 
     @NotNull
     @Override

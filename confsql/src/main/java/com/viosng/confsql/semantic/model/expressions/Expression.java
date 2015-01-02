@@ -1,6 +1,8 @@
 package com.viosng.confsql.semantic.model.expressions;
 
-import com.viosng.confsql.semantic.model.InternalQueryElement;
+import com.viosng.confsql.semantic.model.ModelElement;
+import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.12.2014
  * Time: 2:12
  */
-public interface Expression extends InternalQueryElement {
+public interface Expression extends ModelElement {
 
     @NotNull
     public Type type();
@@ -44,6 +46,13 @@ public interface Expression extends InternalQueryElement {
             this.name = name;
         }
     }
-    
-    public boolean containsType(Type type);
+
+    /**
+     * @param type   the expression type to find.
+     * @return the instance with specific {@code type} expression sub tree or {@code null} if it won't be found.
+     */
+    public Expression getExpression(Type type);
+
+    @NotNull
+    public Notification verify(@NotNull Context context);
 }

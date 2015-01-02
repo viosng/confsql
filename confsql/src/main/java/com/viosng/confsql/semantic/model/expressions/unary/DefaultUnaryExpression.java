@@ -38,8 +38,8 @@ class DefaultUnaryExpression implements UnaryExpression{
     }
 
     @Override
-    public boolean containsType(Type type) {
-        return arg.type() == type || arg.containsType(type);
+    public Expression getExpression(Type type) {
+        return this.type == type ? this : arg.getExpression(type);
     }
 
     @NotNull

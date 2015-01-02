@@ -1,7 +1,7 @@
 package com.viosng.confsql.xml;
 
 import com.thoughtworks.xstream.XStream;
-import com.viosng.confsql.semantic.model.InternalQueryElement;
+import com.viosng.confsql.semantic.model.ModelElement;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 25.12.2014
  * Time: 10:36
  */
-public interface XMLConverter <T extends XMLConverter.XMLModelElement, E extends InternalQueryElement>{
+public interface XMLConverter <T extends XMLConverter.XMLModelElement, E extends ModelElement>{
     
     public static interface XMLModelElement{}
     

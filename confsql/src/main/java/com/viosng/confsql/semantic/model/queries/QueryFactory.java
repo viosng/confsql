@@ -8,6 +8,7 @@ import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,7 @@ public class QueryFactory {
                             @NotNull List<Expression> argumentExpressions) {
             super(id, parameters, schemaAttributes, Arrays.asList(subQuery), argumentExpressions);
         }
+        
     }
 
     public static Query.Filter filter(@NotNull String id,
@@ -54,6 +56,7 @@ public class QueryFactory {
             super(id, parameters, combineSchemaAttributes(leftBase.getSchemaAttributes(), rightBase.getSchemaAttributes()),
                     Arrays.asList(leftBase, rightBase), Collections.emptyList());
         }
+        //todo  verify scopes
     }
 
     public static Query.Fusion fusion(@NotNull String id,
@@ -73,6 +76,8 @@ public class QueryFactory {
             super(id, parameters, combineSchemaAttributes(leftBase.getSchemaAttributes(), rightBase.getSchemaAttributes()),
                     Arrays.asList(leftBase, rightBase), argumentExpressions);
         }
+        //todo  verify scopes
+        
     }
 
     public static Query.Join join(@NotNull String id,
@@ -96,7 +101,7 @@ public class QueryFactory {
         @Override
         public Notification verify() {
             Notification notification = super.verify();
-            if (!getSchemaAttributes().stream().anyMatch(s -> s.containsType(Expression.Type.GROUP))) {
+            if (!getSchemaAttributes().stream().anyMatch(s -> s.getExpression(Expression.Type.GROUP) != null)) {
                 notification.error("Aggregation operation with id = \"" + id() + 
                         "\" has no group operation result reference in schema attributes");
             }
@@ -138,14 +143,31 @@ public class QueryFactory {
                                   @NotNull List<Expression> schemaAttributes) {
         return new NestQuery(id, parameters, schemaAttributes, base);
     }
+    
+    private static List<Expression> unNestSchemaGroup(@NotNull List<Expression> schemaAttributes, String groupId) {
+        List<Expression> newSchemaAttributes = new ArrayList<>(schemaAttributes.size());
+        for (Expression schemaAttribute : schemaAttributes) {
+            if (schemaAttribute.id().equals(groupId) && schemaAttribute.type().equals(Expression.Type.GROUP) &&
+                    schemaAttribute instanceof ValueExpression.GroupExpression) {
+                ValueExpression.GroupExpression groupExpression = (ValueExpression.GroupExpression)schemaAttribute;
+                for (Expression attribute : groupExpression.getGroupedAttributes()) {
+                    newSchemaAttributes.add(attribute);
+                }
+            } else {
+                newSchemaAttributes.add(schemaAttribute);
+            }
+        }
+        return newSchemaAttributes;
+    }
 
     private static class UnNestQuery extends DefaultQuery implements Query.UnNest {
         private UnNestQuery(@NotNull String id,
                             @NotNull List<Parameter> parameters,
                             @NotNull Query base,
                             @NotNull ValueExpression.AttributeExpression attribute) {
-            super(id, parameters, Collections.emptyList(), Arrays.asList(base), Arrays.asList(attribute));
+            super(id, parameters, unNestSchemaGroup(base.getSchemaAttributes(), attribute.id()), Arrays.asList(base), Arrays.asList(attribute));
         }
+        //todo  verify scopes
     }
 
     public static Query.UnNest unNest(@NotNull String id,
