@@ -115,24 +115,27 @@ public class QueryFactory {
         private NestQuery(@NotNull String id,
                           @NotNull List<Parameter> parameters,
                           @NotNull List<Expression> schemaAttributes,
-                          @NotNull Query base,
-                          @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, schemaAttributes, Arrays.asList(base), argumentExpressions);
+                          @NotNull Query base) {
+            super(id, parameters, schemaAttributes, Arrays.asList(base), Collections.emptyList());
         }
 
         @NotNull
         @Override
-        public Notification verify() { //todo
-            return super.verify();
+        public Notification verify() {
+            Notification notification = super.verify();
+            if (!getSchemaAttributes().stream().anyMatch(s -> s.type() == Expression.Type.GROUP)) {
+                notification.error("Nest operation with id = \"" + id() +
+                        "\" has no group operation result reference in schema attributes");
+            }
+            return  notification;
         }
     }
 
     public static Query.Nest nest(@NotNull String id,
                                   @NotNull Query base,
-                                  @NotNull List<Expression> argumentExpressions,
                                   @NotNull List<Parameter> parameters,
                                   @NotNull List<Expression> schemaAttributes) {
-        return new NestQuery(id, parameters, schemaAttributes, base, argumentExpressions);
+        return new NestQuery(id, parameters, schemaAttributes, base);
     }
 
     private static class UnNestQuery extends DefaultQuery implements Query.UnNest {
