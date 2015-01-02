@@ -16,6 +16,9 @@ import java.util.List;
  * Time: 2:04
  */
 public interface Query extends ModelElement {
+
+    @NotNull
+    public Type type();
     
     @NotNull
     public List<Parameter> getParameters();
@@ -34,4 +37,82 @@ public interface Query extends ModelElement {
     
     @NotNull
     public Notification verify();
+    
+    static enum Type {
+        PRIMARY,
+        FILTER,
+        FUSION,
+        JOIN,
+        AGGREGATION,
+        NEST,
+        UNNEST,
+        GROUP_JOIN
+    }
+
+    interface UnaryQuery extends Query {
+        @NotNull
+        default Query getArg() {
+            return getSubQueries().get(0);
+        }
+    }
+    
+    interface BinaryQuery extends Query {
+        @NotNull
+        default Query getLeftArg() {
+            return getSubQueries().get(0);
+        }
+
+        @NotNull
+        default Query getRightArg() {
+            return getSubQueries().get(1);
+        }
+    }
+
+    interface Primary extends Query {
+        @NotNull
+        @Override
+        default Type type() {return Type.PRIMARY;}
+    }
+    
+    interface Filter extends UnaryQuery {
+        @NotNull
+        @Override
+        default Type type() {return Type.FILTER;}
+    }
+
+    interface Fusion extends BinaryQuery {
+        @NotNull
+        @Override
+        default Type type() {return Type.FUSION;}
+    }
+
+    interface Join extends BinaryQuery {
+        @NotNull
+        @Override
+        default Type type() {return Type.JOIN;}
+    }
+    
+    interface Aggregation extends UnaryQuery {
+        @NotNull
+        @Override
+        default Type type() {return Type.AGGREGATION;}
+    }
+
+    interface Nest extends UnaryQuery {
+        @NotNull
+        @Override
+        default Type type() {return Type.NEST;}
+    }
+
+    interface UnNest extends UnaryQuery {
+        @NotNull
+        @Override
+        default Type type() {return Type.UNNEST;}
+    }
+
+    interface GroupJoin extends BinaryQuery {
+        @NotNull
+        @Override
+        default Type type() {return Type.GROUP_JOIN;}
+    }
 }

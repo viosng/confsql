@@ -1,7 +1,9 @@
 package com.viosng.confsql.semantic.model.queries;
 
+import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.DefaultContext;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
@@ -83,20 +85,23 @@ public abstract class DefaultQuery implements Query{
     }
 
     @NotNull
-    protected abstract Context createContext();
+    protected Context createContext() {
+        return new DefaultContext(subQueries);
+    }
     
     @NotNull
     @Override
     public Notification verify() {
         if (notification == null) {
-            notification = subQueries.stream().map(Query::verify).collect(Notification::new,
-                    Notification::accept, Notification::accept);
-            notification.addNotification(schemaAttributes.stream().map(e -> e.verify(getContext())).collect(Notification::new,
-                    Notification::accept, Notification::accept));
-            notification.addNotification(argumentExpressions.stream().map(e -> e.verify(getContext())).collect(Notification::new,
-                    Notification::accept, Notification::accept));
+            notification = Lists.newArrayList(
+                    subQueries.stream().map(Query::verify)
+                            .collect(Notification::new, Notification::accept, Notification::accept), 
+                    schemaAttributes.stream().map(e -> e.verify(getContext()))
+                            .collect(Notification::new, Notification::accept, Notification::accept), 
+                    argumentExpressions.stream().map(e -> e.verify(getContext()))
+                            .collect(Notification::new, Notification::accept, Notification::accept))
+                    .stream().collect(Notification::new, Notification::accept, Notification::accept);
         }
         return notification;
     }
-
 }
