@@ -25,15 +25,15 @@ public class Main {
                 ValueExpressionFactory.functionCall("b", 
                         Arrays.asList(ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d"))));
         
-        XMLExpressionConverter.XMLExpression xmlExpression = XMLExpressionConverter.getInstance().convertToXMLExpression(expression);
+        XMLExpressionConverter.XMLExpression xmlExpression = XMLExpressionConverter.getInstance().convertToXML(expression);
         String xml = xstream.toXML(xmlExpression);
         System.out.println(xml);
         System.out.println(xmlExpression.equals(xstream.fromXML(xml)));
         System.out.println(xstream.fromXML(xml));
         System.out.println(xmlExpression);
-        System.out.println(expression.equals(converter.convertFromXMLExpression(xmlExpression)));
+        System.out.println(expression.equals(converter.convertFromXML(xmlExpression)));
         System.out.println(expression);
-        System.out.println(converter.convertFromXMLExpression(xmlExpression));
+        System.out.println(converter.convertFromXML(xmlExpression));
         
     }
     

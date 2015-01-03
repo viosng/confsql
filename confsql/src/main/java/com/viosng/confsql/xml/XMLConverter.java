@@ -15,10 +15,10 @@ public interface XMLConverter <T extends XMLConverter.XMLModelElement, E extends
     public static interface XMLModelElement{}
     
     @NotNull
-    public T convertToXMLExpression(@NotNull E expression);
+    public T convertToXML(@NotNull E modelElement);
 
     @NotNull
-    public E convertFromXMLExpression(@NotNull T xmlExpression);
+    public E convertFromXML(@NotNull T xmlElement);
 
     /**
      * Configures {@code XStream} object to work with {@code XMLConverter} implementation

@@ -64,7 +64,7 @@ public class ExpressionTest {
                 {ValueExpressionFactory.constant("constant"), "constant", Expression.Type.CONSTANT},
                 {ValueExpressionFactory.functionCall("function", Collections.emptyList()), "function", Expression.Type.FUNCTION_CALL},
                 {ValueExpressionFactory.attribute("object", "attribute"), "object.attribute", Expression.Type.ATTRIBUTE},
-                {ValueExpressionFactory.group("object", "group"), "object.group", Expression.Type.GROUP},
+                {ValueExpressionFactory.group("object", "group", Collections.emptyList()), "object.group", Expression.Type.GROUP},
         };
     }
 

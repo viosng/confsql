@@ -28,6 +28,8 @@ public class QueryFactory {
         return Lists.newArrayList(Sets.union(Sets.newHashSet(left), Sets.newHashSet(right)));
     }
 
+    // todo add PRIMARY
+    
     private static class FilterQuery extends DefaultQuery implements Query.Filter {
         private FilterQuery(@NotNull String id,
                             @NotNull List<Parameter> parameters,
@@ -47,6 +49,7 @@ public class QueryFactory {
         return new FilterQuery(id, parameters, schemaAttributes, base, argumentExpressions);
     }
 
+    // todo add sub query list, not only two
     private static class FusionQuery extends DefaultQuery implements Query.Fusion {
 
         public FusionQuery(@NotNull String id,
