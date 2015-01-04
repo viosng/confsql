@@ -82,6 +82,9 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
     @NotNull
     @Override
     public Query convertFromXML(@NotNull XMLQuery xmlElement) {
+        switch (xmlElement.type) {
+            
+        }
         return null;
     }
 
