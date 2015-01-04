@@ -80,7 +80,7 @@ public interface Query extends ModelElement {
         default Type type() {return Type.FILTER;}
     }
 
-    interface Fusion extends BinaryQuery {
+    interface Fusion extends Query{
         @NotNull
         @Override
         default Type type() {return Type.FUSION;}

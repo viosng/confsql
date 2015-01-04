@@ -1,17 +1,13 @@
 package com.viosng.confsql.semantic.model.queries;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,8 +20,9 @@ public class QueryFactory {
     private QueryFactory() {
     }
 
-    protected static List<Expression> combineSchemaAttributes(List<Expression> left, List<Expression> right) {
-        return Lists.newArrayList(Sets.union(Sets.newHashSet(left), Sets.newHashSet(right)));
+    protected static List<Expression> combineSchemaAttributes(Stream<List<Expression>> attributeStream) {
+        return new ArrayList<>(attributeStream.map(HashSet<Expression>::new).
+                <HashSet<Expression>>collect(HashSet<Expression>::new, HashSet<Expression>::addAll, HashSet<Expression>::addAll));
     }
 
     private static class PrimaryQuery extends DefaultQuery implements Query.Primary {
@@ -34,7 +31,6 @@ public class QueryFactory {
                              @NotNull List<Expression> argumentExpressions) {
             super(id, parameters, Collections.emptyList(), Collections.emptyList(), argumentExpressions);
         }
-
     }
 
     public static Query.Primary primary(@NotNull String id,
@@ -67,19 +63,17 @@ public class QueryFactory {
 
         public FusionQuery(@NotNull String id,
                            @NotNull List<Parameter> parameters,
-                           @NotNull Query leftBase,
-                           @NotNull Query rightBase) {
-            super(id, parameters, combineSchemaAttributes(leftBase.getSchemaAttributes(), rightBase.getSchemaAttributes()),
-                    Arrays.asList(leftBase, rightBase), Collections.emptyList());
+                           @NotNull List<Query> subQueries) {
+            super(id, parameters, combineSchemaAttributes(subQueries.stream().map(Query::getSchemaAttributes)),
+                    subQueries, Collections.emptyList());
         }
         //todo  verify scopes
     }
 
     public static Query.Fusion fusion(@NotNull String id,
                                       @NotNull List<Parameter> parameters,
-                                      @NotNull Query leftBase,
-                                      @NotNull Query rightBase) {
-        return new FusionQuery(id, parameters, leftBase, rightBase);
+                                      @NotNull List<Query> subQueries) {
+        return new FusionQuery(id, parameters, subQueries);
     }
 
     private static class JoinQuery extends DefaultQuery implements Query.Join {
@@ -89,7 +83,7 @@ public class QueryFactory {
                          @NotNull Query leftBase,
                          @NotNull Query rightBase,
                          @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, combineSchemaAttributes(leftBase.getSchemaAttributes(), rightBase.getSchemaAttributes()),
+            super(id, parameters, combineSchemaAttributes(Arrays.asList(leftBase, rightBase).stream().map(Query::getSchemaAttributes)),
                     Arrays.asList(leftBase, rightBase), argumentExpressions);
         }
         //todo  verify scopes
