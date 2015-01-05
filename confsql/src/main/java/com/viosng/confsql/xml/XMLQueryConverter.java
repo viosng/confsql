@@ -11,10 +11,15 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.queries.Query;
+import com.viosng.confsql.semantic.model.queries.QueryBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static com.viosng.confsql.semantic.model.queries.Query.Type;
@@ -79,13 +84,30 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
         return xmlQuery;
     }
 
+    private static List<Parameter> convertParameters(XMLParameter[] xmlParameters) {
+        return Arrays.asList(Arrays.asList(xmlParameters).stream()
+                .map(x -> new Parameter(x.name, x.value)).toArray(Parameter[]::new));
+    }
+
+    private static List<Expression> convertExpressions(Stream<XMLExpressionConverter.XMLExpression> xmlExpressions) {
+        return Arrays.asList(xmlExpressions.map(XMLExpressionConverter.getInstance()::convertFromXML).toArray(Expression[]::new));
+    }
+    
+    private static <T extends XMLModelElement> Stream<T> extractElementsWithType(XMLModelElement[] elements, Class<T> tClass) {
+        return Arrays.stream(elements).filter(tClass::isInstance).map(tClass::cast);
+    }
+    
     @NotNull
     @Override
-    public Query convertFromXML(@NotNull XMLQuery xmlElement) {
-        switch (xmlElement.type) {
-            
-        }
-        return null;
+    public Query convertFromXML(@NotNull XMLQuery xml) {
+        return new QueryBuilder()
+                .setId(xml.id)
+                .setType(xml.type)
+                .setArgumentExpressions(convertExpressions(extractElementsWithType(xml.arguments, XMLExpressionConverter.XMLExpression.class)))
+                .setParameters(convertParameters(xml.parameters))
+                .setSchemaAttributes(convertExpressions(Arrays.stream(xml.schema)))
+                .setSubQueries(extractElementsWithType(xml.arguments, XMLQuery.class).map(this::convertFromXML).toArray(Query[]::new))
+                .create();
     }
 
     @Override
