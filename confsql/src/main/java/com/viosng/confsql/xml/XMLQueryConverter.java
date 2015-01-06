@@ -10,7 +10,6 @@ package com.viosng.confsql.xml;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.queries.Query;
@@ -48,19 +47,43 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
     @XStreamAlias("query")
     public static class XMLQuery implements XMLConverter.XMLModelElement {
         @XStreamAsAttribute
-        public String id;
+        public String id = "";
 
         @XStreamAsAttribute
         public Type type;
 
-        @XStreamImplicit
-        public XMLParameter[] parameters;
+        public XMLParameter[] parameters = new XMLParameter[0];
 
-        @XStreamImplicit
-        public XMLExpressionConverter.XMLExpression[] schema;
+        public XMLExpressionConverter.XMLExpression[] schema = new XMLExpressionConverter.XMLExpression[0];
+        
+        public XMLModelElement[] arguments = new XMLModelElement[0];
 
-        @XStreamImplicit
-        public XMLModelElement[] arguments;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof XMLQuery)) return false;
+
+            XMLQuery xmlQuery = (XMLQuery) o;
+
+            if (!Arrays.equals(arguments, xmlQuery.arguments)) return false;
+            if (id != null ? !id.equals(xmlQuery.id) : xmlQuery.id != null) return false;
+            if (!Arrays.equals(parameters, xmlQuery.parameters)) return false;
+            if (!Arrays.equals(schema, xmlQuery.schema)) return false;
+            if (type != xmlQuery.type) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id != null ? id.hashCode() : 0;
+            result = 31 * result + (type != null ? type.hashCode() : 0);
+            result = 31 * result + (parameters != null ? Arrays.hashCode(parameters) : 0);
+            result = 31 * result + (schema != null ? Arrays.hashCode(schema) : 0);
+            result = 31 * result + (arguments != null ? Arrays.hashCode(arguments) : 0);
+            return result;
+        }
+
     }
 
     private static EnumSet<Type> TYPES_WITH_SCHEMA = EnumSet.of(Type.FILTER, Type.AGGREGATION, Type.NEST, Type.GROUP_JOIN);

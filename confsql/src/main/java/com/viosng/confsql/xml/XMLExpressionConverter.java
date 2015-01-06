@@ -102,7 +102,7 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
                 xmlExpression.arguments =
                         functionCallExpression.getArguments().stream().map(this::convertToXML).toArray(XMLExpression[]::new);
             case CONSTANT:
-                xmlExpression.value = ((ValueExpression.ConstantExpression) modelElement).getValue();
+                xmlExpression.value = ((ValueExpression) modelElement).getValue();
                 break;
             case NOT:
             case UNARY_MINUS:
@@ -132,7 +132,7 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
         if (expression != null) return expression;
         switch (xmlElement.type) {
             case FUNCTION_CALL: return ValueExpressionFactory.functionCall(
-                    xmlElement.value, Arrays.asList(Arrays.asList(xmlElement.arguments).stream()
+                    xmlElement.value, Arrays.asList(Arrays.stream(xmlElement.arguments)
                             .map(e -> convertWithCheck(e, Expression.class)).toArray(Expression[]::new)), xmlElement.id);
 
             case CONSTANT: return ValueExpressionFactory.constant(xmlElement.value, xmlElement.id);
@@ -151,7 +151,7 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
     
     private Expression processArithmeticExpressionArguments(@NotNull XMLExpression xmlExpression) {
         if (!allowedArithmeticTypes.contains(xmlExpression.type)) return null;
-        ArithmeticExpression[] exps = Arrays.asList(xmlExpression.arguments).stream()
+        ArithmeticExpression[] exps = Arrays.stream(xmlExpression.arguments)
                 .map(e -> convertWithCheck(e, ArithmeticExpression.class)).toArray(ArithmeticExpression[]::new);
         switch (xmlExpression.type) {
             case PLUS: return BinaryArithmeticExpressionFactory.plus(exps[0], exps[1], xmlExpression.id);

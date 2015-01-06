@@ -1,9 +1,14 @@
 import com.thoughtworks.xstream.XStream;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
+import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.queries.Query;
+import com.viosng.confsql.semantic.model.queries.QueryBuilder;
 import com.viosng.confsql.xml.XMLConverter;
 import com.viosng.confsql.xml.XMLExpressionConverter;
+import com.viosng.confsql.xml.XMLQueryConverter;
 
 import javax.xml.bind.JAXBException;
 import java.util.Arrays;
@@ -34,7 +39,22 @@ public class Main {
         System.out.println(expression.equals(converter.convertFromXML(xmlExpression)));
         System.out.println(expression);
         System.out.println(converter.convertFromXML(xmlExpression));
-        
+
+        Query q = new QueryBuilder()
+                .setSubQueries(new QueryBuilder().setArgumentExpressions(ValueExpressionFactory.constant("a", "b"))
+                        .setId("prim").create(Query.Type.PRIMARY))
+                .setArgumentExpressions(BinaryPredicateExpressionFactory.greater(ValueExpressionFactory.attribute("prim", "c"), 
+                        ValueExpressionFactory.constant("30")))
+                .setParameters(new Parameter("precision", "10"), new Parameter("size", "100"))
+                .setId("filt")
+                .setType(Query.Type.FILTER)
+                .create();
+        System.out.println(q);
+        XMLQueryConverter.getInstance().configure(xstream);
+        XMLQueryConverter qConv = XMLQueryConverter.getInstance();
+        XMLQueryConverter.XMLQuery xmlQ = qConv.convertToXML(q);
+        System.out.println(xstream.toXML(xmlQ));
+        System.out.println(q.equals(qConv.convertFromXML((XMLQueryConverter.XMLQuery)xstream.fromXML(xstream.toXML(xmlQ)))));
     }
     
 }

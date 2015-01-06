@@ -104,4 +104,43 @@ public abstract class DefaultQuery implements Query{
         }
         return notification;
     }
+
+    @Override
+    public String toString() {
+        return "DefaultQuery{\n" +
+                "id='" + id + '\'' +
+                ",\n parameters=" + parameters +
+                ",\n schemaAttributes=" + schemaAttributes +
+                ",\n argumentExpressions=" + argumentExpressions +
+                ",\n subQueries=" + subQueries +
+                ",\n context=" + context +
+                ",\n notification=" + notification +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DefaultQuery)) return false;
+
+        DefaultQuery that = (DefaultQuery) o;
+
+        if (!argumentExpressions.equals(that.argumentExpressions)) return false;
+        if (!id.equals(that.id)) return false;
+        if (!parameters.equals(that.parameters)) return false;
+        if (!schemaAttributes.equals(that.schemaAttributes)) return false;
+        if (!subQueries.equals(that.subQueries)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + parameters.hashCode();
+        result = 31 * result + schemaAttributes.hashCode();
+        result = 31 * result + argumentExpressions.hashCode();
+        result = 31 * result + subQueries.hashCode();
+        return result;
+    }
 }
