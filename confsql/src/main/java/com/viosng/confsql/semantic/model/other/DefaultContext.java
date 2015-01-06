@@ -31,11 +31,12 @@ public class DefaultContext implements Context {
 
     @Override
     public boolean hasReference(@NotNull String objectReference) {
-        return objectReference.isEmpty() || objectAttributes.containsKey(objectReference);
+        return objectAttributes.size() == 1 || objectAttributes.containsKey(objectReference);
     }
 
     @Override
     public boolean hasAttribute(@NotNull String objectReference, @NotNull String attribute) {
-        return hasReference(objectReference) && objectAttributes.get(objectReference).contains(attribute);
+        return  objectAttributes.size() == 1 || 
+                (hasReference(objectReference) && objectAttributes.get(objectReference).contains(attribute));
     }
 }
