@@ -21,7 +21,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.viosng.confsql.semantic.model.queries.Query.Type;
+import static com.viosng.confsql.semantic.model.queries.Query.QueryType;
 
 public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuery, Query>{
 
@@ -50,7 +50,7 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
         public String id = "";
 
         @XStreamAsAttribute
-        public Type type;
+        public QueryType queryType;
 
         public XMLParameter[] parameters = new XMLParameter[0];
 
@@ -69,7 +69,7 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
             if (id != null ? !id.equals(xmlQuery.id) : xmlQuery.id != null) return false;
             if (!Arrays.equals(parameters, xmlQuery.parameters)) return false;
             if (!Arrays.equals(schema, xmlQuery.schema)) return false;
-            if (type != xmlQuery.type) return false;
+            if (queryType != xmlQuery.queryType) return false;
 
             return true;
         }
@@ -77,7 +77,7 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
         @Override
         public int hashCode() {
             int result = id != null ? id.hashCode() : 0;
-            result = 31 * result + (type != null ? type.hashCode() : 0);
+            result = 31 * result + (queryType != null ? queryType.hashCode() : 0);
             result = 31 * result + (parameters != null ? Arrays.hashCode(parameters) : 0);
             result = 31 * result + (schema != null ? Arrays.hashCode(schema) : 0);
             result = 31 * result + (arguments != null ? Arrays.hashCode(arguments) : 0);
@@ -86,21 +86,21 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
 
     }
 
-    private static EnumSet<Type> TYPES_WITH_SCHEMA = EnumSet.of(Type.FILTER, Type.AGGREGATION, Type.NEST, Type.GROUP_JOIN);
+    private static EnumSet<QueryType> typesWithSchema = EnumSet.of(QueryType.FILTER, QueryType.AGGREGATION, QueryType.NEST, QueryType.GROUP_JOIN);
     
     @NotNull
     @Override
     public XMLQuery convertToXML(@NotNull Query query) {
         XMLQuery xmlQuery = new XMLQuery();
         xmlQuery.id = query.id();
-        xmlQuery.type = query.type();
+        xmlQuery.queryType = query.type();
         xmlQuery.parameters = query.getParameters().stream().map(p -> new XMLParameter(p.getName(), p.getValue()))
                 .toArray(XMLParameter[]::new);
         xmlQuery.arguments = Stream.concat(
                 query.getSubQueries().stream().map(this::convertToXML),
                 query.getArgumentExpressions().stream().map(XMLExpressionConverter.getInstance()::convertToXML))
                 .toArray(XMLModelElement[]::new);
-        if (TYPES_WITH_SCHEMA.contains(query.type())) {
+        if (typesWithSchema.contains(query.type())) {
             xmlQuery.schema = query.getSchemaAttributes().stream().map(XMLExpressionConverter.getInstance()::convertToXML)
                     .toArray(XMLExpressionConverter.XMLExpression[]::new);
         }
@@ -125,7 +125,7 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
     public Query convertFromXML(@NotNull XMLQuery xml) {
         return new QueryBuilder()
                 .setId(xml.id)
-                .setType(xml.type)
+                .setQueryType(xml.queryType)
                 .setArgumentExpressions(convertExpressions(extractElementsWithType(xml.arguments, XMLExpressionConverter.XMLExpression.class)))
                 .setParameters(convertParameters(xml.parameters))
                 .setSchemaAttributes(convertExpressions(Arrays.stream(xml.schema)))

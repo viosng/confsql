@@ -23,7 +23,7 @@ public class QueryBuilder {
     private String id = ModelElement.UNDEFINED_ID;
 
     @Nullable
-    private Query.Type type;
+    private Query.QueryType queryType;
 
     @NotNull
     private List<Parameter> parameters = Collections.emptyList();
@@ -41,8 +41,8 @@ public class QueryBuilder {
     }
 
     @NotNull
-    public QueryBuilder setType(@NotNull Query.Type type) {
-        this.type = type;
+    public QueryBuilder setQueryType(@NotNull Query.QueryType queryType) {
+        this.queryType = queryType;
         return this;
     }
 
@@ -95,13 +95,13 @@ public class QueryBuilder {
     }
     
     public Query create() {
-        return create(this.type);
+        return create(this.queryType);
     }
 
     @Contract("null -> null")
-    public Query create(Query.Type type) {
-        if (type == null) return null;
-        switch (type) {
+    public Query create(Query.QueryType queryType) {
+        if (queryType == null) return null;
+        switch (queryType) {
             case PRIMARY:
                 return QueryFactory.primary(id, argumentExpressions, parameters);
             case FILTER:

@@ -42,12 +42,12 @@ public class Main {
 
         Query q = new QueryBuilder()
                 .setSubQueries(new QueryBuilder().setArgumentExpressions(ValueExpressionFactory.constant("a", "b"))
-                        .setId("prim").create(Query.Type.PRIMARY))
+                        .setId("prim").create(Query.QueryType.PRIMARY))
                 .setArgumentExpressions(BinaryPredicateExpressionFactory.greater(ValueExpressionFactory.attribute("prim", "c"), 
                         ValueExpressionFactory.constant("30")))
                 .setParameters(new Parameter("precision", "10"), new Parameter("size", "100"))
                 .setId("filt")
-                .setType(Query.Type.FILTER)
+                .setQueryType(Query.QueryType.FILTER)
                 .create();
         System.out.println(q);
         XMLQueryConverter.getInstance().configure(xstream);

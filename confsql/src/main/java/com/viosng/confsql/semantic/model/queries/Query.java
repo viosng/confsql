@@ -18,7 +18,7 @@ import java.util.List;
 public interface Query extends ModelElement {
 
     @NotNull
-    public Type type();
+    public QueryType type();
     
     @NotNull
     public List<Parameter> getParameters();
@@ -38,7 +38,7 @@ public interface Query extends ModelElement {
     @NotNull
     public Notification verify();
     
-    static enum Type {
+    static enum QueryType {
         PRIMARY,
         FILTER,
         FUSION,
@@ -71,48 +71,48 @@ public interface Query extends ModelElement {
     interface Primary extends Query {
         @NotNull
         @Override
-        default Type type() {return Type.PRIMARY;}
+        default QueryType type() {return QueryType.PRIMARY;}
     }
     
     interface Filter extends UnaryQuery {
         @NotNull
         @Override
-        default Type type() {return Type.FILTER;}
+        default QueryType type() {return QueryType.FILTER;}
     }
 
     interface Fusion extends Query{
         @NotNull
         @Override
-        default Type type() {return Type.FUSION;}
+        default QueryType type() {return QueryType.FUSION;}
     }
 
     interface Join extends BinaryQuery {
         @NotNull
         @Override
-        default Type type() {return Type.JOIN;}
+        default QueryType type() {return QueryType.JOIN;}
     }
     
     interface Aggregation extends UnaryQuery {
         @NotNull
         @Override
-        default Type type() {return Type.AGGREGATION;}
+        default QueryType type() {return QueryType.AGGREGATION;}
     }
 
     interface Nest extends UnaryQuery {
         @NotNull
         @Override
-        default Type type() {return Type.NEST;}
+        default QueryType type() {return QueryType.NEST;}
     }
 
     interface UnNest extends UnaryQuery {
         @NotNull
         @Override
-        default Type type() {return Type.UNNEST;}
+        default QueryType type() {return QueryType.UNNEST;}
     }
 
     interface GroupJoin extends BinaryQuery {
         @NotNull
         @Override
-        default Type type() {return Type.GROUP_JOIN;}
+        default QueryType type() {return QueryType.GROUP_JOIN;}
     }
 }
