@@ -23,7 +23,7 @@ public class BinaryPredicateExpressionFactory {
                                   @NotNull Type type, 
                                   @NotNull Expression left,
                                   @NotNull Expression right) {
-            super(id, type, right, left);
+            super(id, type, left, right);
         }
 
         public BinaryPredicateExpression(@NotNull Type type, @NotNull Expression left, @NotNull Expression right) {
