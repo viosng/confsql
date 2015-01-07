@@ -1,6 +1,7 @@
 package com.viosng.confsql.semantic.model.queries;
 
 import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
@@ -83,6 +84,12 @@ public class QueryTest {
                 ValueExpressionFactory.attribute("primary", "fieldC")
         );
         Query.Filter filter = QueryFactory.filter("filter", createPrimary(), emptyList(), PARAMETERS, schemaAttributes);
+        assertTrue(filter.verify().isOk());
+        List<Expression> argumentExpressions = Arrays.asList(
+                BinaryPredicateExpressionFactory.less(ValueExpressionFactory.attribute("filter", "fieldD"),
+                        ValueExpressionFactory.constant("40"))
+        );
+        filter = QueryFactory.filter("filter", filter, argumentExpressions, PARAMETERS, emptyList());
         assertTrue(filter.verify().isOk());
     }
 }

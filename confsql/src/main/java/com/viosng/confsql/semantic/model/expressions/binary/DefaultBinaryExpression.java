@@ -5,6 +5,8 @@ import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  * Created with IntelliJ IDEA.
  * User: vio
@@ -65,7 +67,8 @@ class DefaultBinaryExpression implements BinaryExpression{
     @NotNull
     @Override
     public Notification verify(@NotNull Context context) {
-        return new Notification();
+        return Arrays.asList(left, right).stream().map(a -> a.verify(context))
+                .collect(Notification::new, Notification::accept, Notification::accept);
     }
 
     @Override

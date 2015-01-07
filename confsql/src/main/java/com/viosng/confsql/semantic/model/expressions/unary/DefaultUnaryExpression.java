@@ -51,7 +51,7 @@ class DefaultUnaryExpression implements UnaryExpression{
     @NotNull
     @Override
     public Notification verify(@NotNull Context context) {
-        return new Notification();
+        return arg.verify(context);
     }
 
     @Override

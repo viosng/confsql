@@ -1,6 +1,7 @@
 package com.viosng.confsql.semantic.model.expressions.other;
 
 import com.google.common.base.Joiner;
+import com.viosng.confsql.semantic.model.ModelElement;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
@@ -181,6 +182,12 @@ public class ValueExpressionFactory {
 
         private AttributeExpression(@NotNull String objectReference, @NotNull String value) {
             super(objectReference, value);
+        }
+
+        @NotNull
+        @Override
+        public String id() {
+            return id.equals(ModelElement.UNDEFINED_ID) ?  value : id;
         }
     }
 
