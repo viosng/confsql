@@ -1,8 +1,6 @@
 package com.viosng.confsql.semantic.model.other;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,14 +9,11 @@ import org.slf4j.LoggerFactory;
  * Time: 2:08
  */
 public class Parameter {
-    protected Logger log = LoggerFactory.getLogger(getClass());
-    
     @NotNull
     private String name, value;
 
     public Parameter(@NotNull String name, @NotNull String value) {
         if (name.length() == 0) throw new IllegalArgumentException("Empty parameter name");
-        log.info("New parameter is created : name = {}, value = {}", name, value);
         this.name = name;
         this.value = value;
     }
@@ -31,14 +26,6 @@ public class Parameter {
     @NotNull
     public String getValue() {
         return value;
-    }
-
-    public void setName(@NotNull String name) {
-        this.name = name;
-    }
-
-    public void setValue(@NotNull String value) {
-        this.value = value;
     }
 
     @Override

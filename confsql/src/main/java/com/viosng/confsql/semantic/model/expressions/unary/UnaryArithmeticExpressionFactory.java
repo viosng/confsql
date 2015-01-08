@@ -14,20 +14,22 @@ public class UnaryArithmeticExpressionFactory {
 
     private UnaryArithmeticExpressionFactory(){}
 
-    public static class UnaryArithmeticExpression extends DefaultUnaryExpression implements ArithmeticExpression {
+    public static interface UnaryArithmeticExpression extends ArithmeticExpression, UnaryExpression {}
 
-        UnaryArithmeticExpression(@NotNull String id,
-                                  @NotNull Type type, 
-                                  @NotNull ArithmeticExpression arg) {
+    public static class UnaryArithmeticExpressionImpl extends DefaultUnaryExpression implements UnaryArithmeticExpression {
+
+        UnaryArithmeticExpressionImpl(@NotNull String id,
+                                      @NotNull Type type,
+                                      @NotNull ArithmeticExpression arg) {
             super(id, type, arg);
         }
     }
 
     public static UnaryArithmeticExpression minus(@NotNull ArithmeticExpression arg) {
-        return new UnaryArithmeticExpression(Expression.UNDEFINED_ID, Expression.Type.UNARY_MINUS, arg);
+        return new UnaryArithmeticExpressionImpl(Expression.UNDEFINED_ID, Expression.Type.UNARY_MINUS, arg);
     }
 
     public static UnaryArithmeticExpression minus(@NotNull ArithmeticExpression arg, @NotNull String id) {
-        return new UnaryArithmeticExpression(id, Expression.Type.UNARY_MINUS, arg);
+        return new UnaryArithmeticExpressionImpl(id, Expression.Type.UNARY_MINUS, arg);
     }
 }

@@ -15,50 +15,52 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BinaryPredicateExpressionFactory {
 
-    private BinaryPredicateExpressionFactory(){}
+    private BinaryPredicateExpressionFactory() {}
 
-    public static class BinaryPredicateExpression extends DefaultBinaryExpression implements PredicateExpression {
+    public static interface BinaryPredicateExpression extends PredicateExpression, BinaryExpression {}
+    
+    private static class BinaryPredicateExpressionImpl extends DefaultBinaryExpression implements BinaryPredicateExpression {
 
-        BinaryPredicateExpression(@NotNull String id,
-                                  @NotNull Type type, 
-                                  @NotNull Expression left,
-                                  @NotNull Expression right) {
+        BinaryPredicateExpressionImpl(@NotNull String id,
+                                      @NotNull Type type,
+                                      @NotNull Expression left,
+                                      @NotNull Expression right) {
             super(id, type, left, right);
         }
 
-        public BinaryPredicateExpression(@NotNull Type type, @NotNull Expression left, @NotNull Expression right) {
+        public BinaryPredicateExpressionImpl(@NotNull Type type, @NotNull Expression left, @NotNull Expression right) {
             super(type, left, right);
         }
     }
-    
-    public static BinaryPredicateExpression less(@NotNull ArithmeticExpression left, 
-                                           @NotNull ArithmeticExpression right) {
-        return new BinaryPredicateExpression(Expression.Type.LESS, left, right);
+
+    public static BinaryPredicateExpression less(@NotNull ArithmeticExpression left,
+                                                 @NotNull ArithmeticExpression right) {
+        return new BinaryPredicateExpressionImpl(Expression.Type.LESS, left, right);
     }
 
-    public static BinaryPredicateExpression lessOrEqual(@NotNull ArithmeticExpression left, 
-                                                  @NotNull ArithmeticExpression right) {
-        return new BinaryPredicateExpression(Expression.Type.LESS_OR_EQUAL, left, right);
+    public static BinaryPredicateExpression lessOrEqual(@NotNull ArithmeticExpression left,
+                                                        @NotNull ArithmeticExpression right) {
+        return new BinaryPredicateExpressionImpl(Expression.Type.LESS_OR_EQUAL, left, right);
     }
 
     public static BinaryPredicateExpression greater(@NotNull ArithmeticExpression left,
-                                              @NotNull ArithmeticExpression right) {
-        return new BinaryPredicateExpression(Expression.Type.GREATER, left, right);
+                                                    @NotNull ArithmeticExpression right) {
+        return new BinaryPredicateExpressionImpl(Expression.Type.GREATER, left, right);
     }
 
-    public static BinaryPredicateExpression greaterOrEqual(@NotNull ArithmeticExpression left, 
-                                                     @NotNull ArithmeticExpression right) {
-        return new BinaryPredicateExpression(Expression.Type.GREATER_OR_EQUAL, left, right);
+    public static BinaryPredicateExpression greaterOrEqual(@NotNull ArithmeticExpression left,
+                                                           @NotNull ArithmeticExpression right) {
+        return new BinaryPredicateExpressionImpl(Expression.Type.GREATER_OR_EQUAL, left, right);
     }
 
-    public static BinaryPredicateExpression equal(@NotNull ArithmeticExpression left, 
-                                            @NotNull ArithmeticExpression right) {
-        return new BinaryPredicateExpression(Expression.Type.EQUAL, left, right);
+    public static BinaryPredicateExpression equal(@NotNull ArithmeticExpression left,
+                                                  @NotNull ArithmeticExpression right) {
+        return new BinaryPredicateExpressionImpl(Expression.Type.EQUAL, left, right);
     }
 
-    public static BinaryPredicateExpression and(@NotNull PredicateExpression left, 
-                                          @NotNull PredicateExpression right) {
-        return new BinaryPredicateExpression(Expression.Type.AND, left, right) {
+    public static BinaryPredicateExpression and(@NotNull PredicateExpression left,
+                                                @NotNull PredicateExpression right) {
+        return new BinaryPredicateExpressionImpl(Expression.Type.AND, left, right) {
             @NotNull
             @Override
             public Notification verify(@NotNull Context context) {
@@ -67,9 +69,9 @@ public class BinaryPredicateExpressionFactory {
         };
     }
 
-    public static BinaryPredicateExpression or(@NotNull PredicateExpression left, 
-                                         @NotNull PredicateExpression right) {
-        return new BinaryPredicateExpression(Expression.Type.OR, left, right) {
+    public static BinaryPredicateExpression or(@NotNull PredicateExpression left,
+                                               @NotNull PredicateExpression right) {
+        return new BinaryPredicateExpressionImpl(Expression.Type.OR, left, right) {
             @NotNull
             @Override
             public Notification verify(@NotNull Context context) {
@@ -79,49 +81,39 @@ public class BinaryPredicateExpressionFactory {
     }
 
     public static BinaryPredicateExpression less(@NotNull ArithmeticExpression left,
-                                           @NotNull ArithmeticExpression right,
-                                           @NotNull String id) {
-        return new BinaryPredicateExpression(id, Expression.Type.LESS, left, right);
+                                                 @NotNull ArithmeticExpression right,
+                                                 @NotNull String id) {
+        return new BinaryPredicateExpressionImpl(id, Expression.Type.LESS, left, right);
     }
 
     public static BinaryPredicateExpression lessOrEqual(@NotNull ArithmeticExpression left,
-                                                  @NotNull ArithmeticExpression right,
-                                                  @NotNull String id) {
-        return new BinaryPredicateExpression(id, Expression.Type.LESS_OR_EQUAL, left, right);
+                                                        @NotNull ArithmeticExpression right,
+                                                        @NotNull String id) {
+        return new BinaryPredicateExpressionImpl(id, Expression.Type.LESS_OR_EQUAL, left, right);
     }
 
     public static BinaryPredicateExpression greater(@NotNull ArithmeticExpression left,
-                                              @NotNull ArithmeticExpression right,
-                                              @NotNull String id) {
-        return new BinaryPredicateExpression(id, Expression.Type.GREATER, left, right);
+                                                    @NotNull ArithmeticExpression right,
+                                                    @NotNull String id) {
+        return new BinaryPredicateExpressionImpl(id, Expression.Type.GREATER, left, right);
     }
 
     public static BinaryPredicateExpression greaterOrEqual(@NotNull ArithmeticExpression left,
-                                                     @NotNull ArithmeticExpression right,
-                                                     @NotNull String id) {
-        return new BinaryPredicateExpression(id, Expression.Type.GREATER_OR_EQUAL, left, right);
+                                                           @NotNull ArithmeticExpression right,
+                                                           @NotNull String id) {
+        return new BinaryPredicateExpressionImpl(id, Expression.Type.GREATER_OR_EQUAL, left, right);
     }
 
     public static BinaryPredicateExpression equal(@NotNull ArithmeticExpression left,
-                                            @NotNull ArithmeticExpression right,
-                                            @NotNull String id) {
-        return new BinaryPredicateExpression(id, Expression.Type.EQUAL, left, right);
+                                                  @NotNull ArithmeticExpression right,
+                                                  @NotNull String id) {
+        return new BinaryPredicateExpressionImpl(id, Expression.Type.EQUAL, left, right);
     }
 
     public static BinaryPredicateExpression and(@NotNull PredicateExpression left,
-                                          @NotNull PredicateExpression right,
-                                          @NotNull String id) {
-        return new BinaryPredicateExpression(id, Expression.Type.AND, left, right) {
-            @NotNull
-            @Override
-            public Notification verify(@NotNull Context context) { return verifyPredicate(context, left, right); }
-        };
-    }
-
-    public static BinaryPredicateExpression or(@NotNull PredicateExpression left,
-                                         @NotNull PredicateExpression right,
-                                         @NotNull String id) {
-        return new BinaryPredicateExpression(id, Expression.Type.OR, left, right) {
+                                                @NotNull PredicateExpression right,
+                                                @NotNull String id) {
+        return new BinaryPredicateExpressionImpl(id, Expression.Type.AND, left, right) {
             @NotNull
             @Override
             public Notification verify(@NotNull Context context) {
@@ -130,8 +122,20 @@ public class BinaryPredicateExpressionFactory {
         };
     }
 
-    private static Notification verifyPredicate(@NotNull Context context, 
-                                                @NotNull Expression left, 
+    public static BinaryPredicateExpression or(@NotNull PredicateExpression left,
+                                               @NotNull PredicateExpression right,
+                                               @NotNull String id) {
+        return new BinaryPredicateExpressionImpl(id, Expression.Type.OR, left, right) {
+            @NotNull
+            @Override
+            public Notification verify(@NotNull Context context) {
+                return verifyPredicate(context, left, right);
+            }
+        };
+    }
+
+    private static Notification verifyPredicate(@NotNull Context context,
+                                                @NotNull Expression left,
                                                 @NotNull Expression right) {
         Notification notification = new Notification();
         notification.addNotification(left.verify(context));

@@ -16,17 +16,19 @@ public class UnaryPredicateExpressionFactory {
 
     private UnaryPredicateExpressionFactory(){}
 
-    public static class UnaryPredicateExpression extends DefaultUnaryExpression implements PredicateExpression {
+    public static interface UnaryPredicateExpression extends PredicateExpression, UnaryExpression {}
 
-        UnaryPredicateExpression(@NotNull String id,
-                                 @NotNull Type type, @NotNull Expression arg) {
+    public static class UnaryPredicateExpressionImpl extends DefaultUnaryExpression implements UnaryPredicateExpression {
+
+        UnaryPredicateExpressionImpl(@NotNull String id,
+                                     @NotNull Type type, @NotNull Expression arg) {
             super(id, type, arg);
         }
 
     }
 
     public static UnaryPredicateExpression not(@NotNull PredicateExpression arg, @NotNull String id) {
-        return new UnaryPredicateExpression(id, Expression.Type.NOT, arg) {
+        return new UnaryPredicateExpressionImpl(id, Expression.Type.NOT, arg) {
             @NotNull
             @Override
             public Notification verify(@NotNull Context context) {

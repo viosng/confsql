@@ -17,6 +17,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -90,6 +91,6 @@ public class QueryTest {
                         ValueExpressionFactory.constant("40"))
         );
         filter = QueryFactory.filter("filter", filter, argumentExpressions, PARAMETERS, emptyList());
-        assertTrue(filter.verify().isOk());
+        assertFalse(filter.verify().isOk());
     }
 }
