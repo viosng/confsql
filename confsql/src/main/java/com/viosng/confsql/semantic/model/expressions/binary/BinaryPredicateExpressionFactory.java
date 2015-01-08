@@ -17,7 +17,7 @@ public class BinaryPredicateExpressionFactory {
 
     private BinaryPredicateExpressionFactory(){}
 
-    private static class BinaryPredicateExpression extends DefaultBinaryExpression implements PredicateExpression {
+    public static class BinaryPredicateExpression extends DefaultBinaryExpression implements PredicateExpression {
 
         BinaryPredicateExpression(@NotNull String id,
                                   @NotNull Type type, 
@@ -31,32 +31,32 @@ public class BinaryPredicateExpressionFactory {
         }
     }
     
-    public static PredicateExpression less(@NotNull ArithmeticExpression left, 
+    public static BinaryPredicateExpression less(@NotNull ArithmeticExpression left, 
                                            @NotNull ArithmeticExpression right) {
         return new BinaryPredicateExpression(Expression.Type.LESS, left, right);
     }
 
-    public static PredicateExpression lessOrEqual(@NotNull ArithmeticExpression left, 
+    public static BinaryPredicateExpression lessOrEqual(@NotNull ArithmeticExpression left, 
                                                   @NotNull ArithmeticExpression right) {
         return new BinaryPredicateExpression(Expression.Type.LESS_OR_EQUAL, left, right);
     }
 
-    public static PredicateExpression greater(@NotNull ArithmeticExpression left,
+    public static BinaryPredicateExpression greater(@NotNull ArithmeticExpression left,
                                               @NotNull ArithmeticExpression right) {
         return new BinaryPredicateExpression(Expression.Type.GREATER, left, right);
     }
 
-    public static PredicateExpression greaterOrEqual(@NotNull ArithmeticExpression left, 
+    public static BinaryPredicateExpression greaterOrEqual(@NotNull ArithmeticExpression left, 
                                                      @NotNull ArithmeticExpression right) {
         return new BinaryPredicateExpression(Expression.Type.GREATER_OR_EQUAL, left, right);
     }
 
-    public static PredicateExpression equal(@NotNull ArithmeticExpression left, 
+    public static BinaryPredicateExpression equal(@NotNull ArithmeticExpression left, 
                                             @NotNull ArithmeticExpression right) {
         return new BinaryPredicateExpression(Expression.Type.EQUAL, left, right);
     }
 
-    public static PredicateExpression and(@NotNull PredicateExpression left, 
+    public static BinaryPredicateExpression and(@NotNull PredicateExpression left, 
                                           @NotNull PredicateExpression right) {
         return new BinaryPredicateExpression(Expression.Type.AND, left, right) {
             @NotNull
@@ -67,7 +67,7 @@ public class BinaryPredicateExpressionFactory {
         };
     }
 
-    public static PredicateExpression or(@NotNull PredicateExpression left, 
+    public static BinaryPredicateExpression or(@NotNull PredicateExpression left, 
                                          @NotNull PredicateExpression right) {
         return new BinaryPredicateExpression(Expression.Type.OR, left, right) {
             @NotNull
@@ -78,37 +78,37 @@ public class BinaryPredicateExpressionFactory {
         };
     }
 
-    public static PredicateExpression less(@NotNull ArithmeticExpression left,
+    public static BinaryPredicateExpression less(@NotNull ArithmeticExpression left,
                                            @NotNull ArithmeticExpression right,
                                            @NotNull String id) {
         return new BinaryPredicateExpression(id, Expression.Type.LESS, left, right);
     }
 
-    public static PredicateExpression lessOrEqual(@NotNull ArithmeticExpression left,
+    public static BinaryPredicateExpression lessOrEqual(@NotNull ArithmeticExpression left,
                                                   @NotNull ArithmeticExpression right,
                                                   @NotNull String id) {
         return new BinaryPredicateExpression(id, Expression.Type.LESS_OR_EQUAL, left, right);
     }
 
-    public static PredicateExpression greater(@NotNull ArithmeticExpression left,
+    public static BinaryPredicateExpression greater(@NotNull ArithmeticExpression left,
                                               @NotNull ArithmeticExpression right,
                                               @NotNull String id) {
         return new BinaryPredicateExpression(id, Expression.Type.GREATER, left, right);
     }
 
-    public static PredicateExpression greaterOrEqual(@NotNull ArithmeticExpression left,
+    public static BinaryPredicateExpression greaterOrEqual(@NotNull ArithmeticExpression left,
                                                      @NotNull ArithmeticExpression right,
                                                      @NotNull String id) {
         return new BinaryPredicateExpression(id, Expression.Type.GREATER_OR_EQUAL, left, right);
     }
 
-    public static PredicateExpression equal(@NotNull ArithmeticExpression left,
+    public static BinaryPredicateExpression equal(@NotNull ArithmeticExpression left,
                                             @NotNull ArithmeticExpression right,
                                             @NotNull String id) {
         return new BinaryPredicateExpression(id, Expression.Type.EQUAL, left, right);
     }
 
-    public static PredicateExpression and(@NotNull PredicateExpression left,
+    public static BinaryPredicateExpression and(@NotNull PredicateExpression left,
                                           @NotNull PredicateExpression right,
                                           @NotNull String id) {
         return new BinaryPredicateExpression(id, Expression.Type.AND, left, right) {
@@ -118,7 +118,7 @@ public class BinaryPredicateExpressionFactory {
         };
     }
 
-    public static PredicateExpression or(@NotNull PredicateExpression left,
+    public static BinaryPredicateExpression or(@NotNull PredicateExpression left,
                                          @NotNull PredicateExpression right,
                                          @NotNull String id) {
         return new BinaryPredicateExpression(id, Expression.Type.OR, left, right) {

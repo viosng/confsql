@@ -5,18 +5,15 @@ import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpre
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.unary.UnaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.unary.UnaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.other.Context;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -79,14 +76,5 @@ public class ExpressionTest {
         return testData;
     }
 
-    @Test
-    public void testPredicates() throws Exception {
-        PredicateExpression predicate = BinaryPredicateExpressionFactory.and(ValueExpressionFactory.constant("constant"),
-                BinaryPredicateExpressionFactory.or(ValueExpressionFactory.constant("one"),ValueExpressionFactory.constant("two")));
-        assertFalse(predicate.verify(mock(Context.class)).isOk());
-        System.out.println(predicate.verify(mock(Context.class)));
-        predicate = BinaryPredicateExpressionFactory.and(ValueExpressionFactory.constant("True"), 
-                ValueExpressionFactory.functionCall("function", Arrays.asList(ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d"))));
-        assertTrue(predicate.verify(mock(Context.class)).isOk());
-    }
+
 }

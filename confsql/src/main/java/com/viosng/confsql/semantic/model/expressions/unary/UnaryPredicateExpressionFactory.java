@@ -16,7 +16,7 @@ public class UnaryPredicateExpressionFactory {
 
     private UnaryPredicateExpressionFactory(){}
 
-    private static class UnaryPredicateExpression extends DefaultUnaryExpression implements PredicateExpression {
+    public static class UnaryPredicateExpression extends DefaultUnaryExpression implements PredicateExpression {
 
         UnaryPredicateExpression(@NotNull String id,
                                  @NotNull Type type, @NotNull Expression arg) {
@@ -25,7 +25,7 @@ public class UnaryPredicateExpressionFactory {
 
     }
 
-    public static PredicateExpression not(@NotNull PredicateExpression arg, @NotNull String id) {
+    public static UnaryPredicateExpression not(@NotNull PredicateExpression arg, @NotNull String id) {
         return new UnaryPredicateExpression(id, Expression.Type.NOT, arg) {
             @NotNull
             @Override
@@ -40,7 +40,7 @@ public class UnaryPredicateExpressionFactory {
         };
     }
 
-    public static PredicateExpression not(@NotNull PredicateExpression arg) {
+    public static UnaryPredicateExpression not(@NotNull PredicateExpression arg) {
         return not(arg, Expression.UNDEFINED_ID);
     }
     

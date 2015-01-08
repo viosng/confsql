@@ -14,7 +14,7 @@ public class UnaryArithmeticExpressionFactory {
 
     private UnaryArithmeticExpressionFactory(){}
 
-    private static class UnaryArithmeticExpression extends DefaultUnaryExpression implements ArithmeticExpression {
+    public static class UnaryArithmeticExpression extends DefaultUnaryExpression implements ArithmeticExpression {
 
         UnaryArithmeticExpression(@NotNull String id,
                                   @NotNull Type type, 
@@ -23,11 +23,11 @@ public class UnaryArithmeticExpressionFactory {
         }
     }
 
-    public static ArithmeticExpression minus(@NotNull ArithmeticExpression arg) {
+    public static UnaryArithmeticExpression minus(@NotNull ArithmeticExpression arg) {
         return new UnaryArithmeticExpression(Expression.UNDEFINED_ID, Expression.Type.UNARY_MINUS, arg);
     }
 
-    public static ArithmeticExpression minus(@NotNull ArithmeticExpression arg, @NotNull String id) {
+    public static UnaryArithmeticExpression minus(@NotNull ArithmeticExpression arg, @NotNull String id) {
         return new UnaryArithmeticExpression(id, Expression.Type.UNARY_MINUS, arg);
     }
 }
