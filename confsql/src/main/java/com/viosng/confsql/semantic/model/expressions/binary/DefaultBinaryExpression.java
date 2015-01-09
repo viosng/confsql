@@ -15,9 +15,9 @@ import java.util.Arrays;
  */
 class DefaultBinaryExpression implements BinaryExpression{
     @NotNull
-    protected final String id;
+    private final String id;
     @NotNull
-    private Type type;
+    private final Type type;
     @NotNull
     protected final Expression left, right;
 

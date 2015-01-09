@@ -17,7 +17,7 @@ class DefaultUnaryExpression implements UnaryExpression{
     @NotNull
     protected final Expression arg;
     @NotNull
-    private Type type;
+    private final Type type;
 
     protected DefaultUnaryExpression(@NotNull String id, @NotNull Type type, @NotNull Expression arg) {
         this.id = id;

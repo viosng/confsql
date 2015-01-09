@@ -30,8 +30,7 @@ import static org.mockito.Mockito.when;
 @RunWith(Theories.class)
 public class QueryTest {
     public static Object[][] testData;
-    
-    private static Query Q_MOCK;
+
     private static final List<Parameter> PARAMETERS = Arrays.asList(
             new Parameter("constA", "valA"),
             new Parameter("constB", "valB"),
@@ -41,7 +40,7 @@ public class QueryTest {
 
     @BeforeClass
     public static void init(){
-        Q_MOCK = mock(Query.class);
+        Query Q_MOCK = mock(Query.class);
         when(Q_MOCK.id()).thenReturn("query");
         ValueExpression.AttributeExpression attributeExpression = mock(ValueExpression.AttributeExpression.class);
         when(attributeExpression.id()).thenReturn("attribute");

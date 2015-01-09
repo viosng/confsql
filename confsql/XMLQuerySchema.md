@@ -127,7 +127,7 @@ attributes from all arguments are included into the output q-set. Most of specia
 </query>
 ```
 
-As shown above, the fusion operator hasn't schema defenition, because of it modifies result object schema by itself.
+As shown above, the fusion operator hasn't schema definition, because of it modifies result object schema by itself.
 
 ####3. Join
 

@@ -20,9 +20,8 @@ public class Notification implements Consumer<Notification>{
     public Notification() {
     }
 
-    public Notification addNotification(@NotNull Notification notification) {
+    public void addNotification(@NotNull Notification notification) {
         errors.addAll(notification.errors);
-        return this;
     }
     
     public void error(@NotNull String message) {

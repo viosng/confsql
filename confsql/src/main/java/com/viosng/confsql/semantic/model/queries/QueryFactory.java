@@ -25,7 +25,7 @@ public class QueryFactory {
     private QueryFactory() {
     }
 
-    protected static List<Expression> combineSchemaAttributes(Stream<List<AttributeExpression>> attributeStream) {
+    private static List<Expression> combineSchemaAttributes(Stream<List<AttributeExpression>> attributeStream) {
         return new ArrayList<>(attributeStream.map(HashSet<AttributeExpression>::new)
                 .<HashSet<AttributeExpression>>collect(HashSet<AttributeExpression>::new,
                         HashSet<AttributeExpression>::addAll, HashSet<AttributeExpression>::addAll));
@@ -64,7 +64,6 @@ public class QueryFactory {
         return new FilterQuery(id, parameters, requiredSchemaAttributes, base, argumentExpressions);
     }
 
-    // todo add sub query list, not only two
     private static class FusionQuery extends DefaultQuery implements Query.Fusion {
 
         public FusionQuery(@NotNull String id,
@@ -73,7 +72,6 @@ public class QueryFactory {
             super(id, parameters, combineSchemaAttributes(subQueries.stream().map(Query::getQueryObjectAttributes)),
                     subQueries, Collections.emptyList());
         }
-        //todo  verify scopes
     }
 
     public static Query.Fusion fusion(@NotNull String id,
@@ -92,8 +90,6 @@ public class QueryFactory {
             super(id, parameters, combineSchemaAttributes(Arrays.asList(leftBase, rightBase).stream().map(Query::getQueryObjectAttributes)),
                     Arrays.asList(leftBase, rightBase), argumentExpressions);
         }
-        //todo  verify scopes
-        
     }
 
     public static Query.Join join(@NotNull String id,
@@ -188,7 +184,6 @@ public class QueryFactory {
             super(id, parameters, Collections.emptyList(), Arrays.asList(base), Arrays.asList(attribute));
             this.queryObjectAttributes = unNestSchemaGroup(id, attribute.id(), base.getQueryObjectAttributes());
         }
-        //todo  verify scopes
     }
 
     public static Query.UnNest unNest(@NotNull String id,

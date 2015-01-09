@@ -183,7 +183,7 @@ public class ValueExpressionFactory {
 
     private static class GroupExpression extends AbstractAttributeExpression implements ValueExpression.GroupExpression{
         @NotNull
-        private List<Expression> groupedAttributes;
+        private final List<Expression> groupedAttributes;
 
         private Notification notification;
 

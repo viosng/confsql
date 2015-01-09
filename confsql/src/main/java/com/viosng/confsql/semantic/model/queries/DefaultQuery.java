@@ -36,7 +36,7 @@ public abstract class DefaultQuery implements Query{
     @NotNull
     private final List<Query> subQueries;
     
-    protected Context context;
+    private Context context;
 
     private Notification notification;
 
@@ -149,7 +149,7 @@ public abstract class DefaultQuery implements Query{
         return this.type() == that.type() 
                 && argumentExpressions.equals(that.argumentExpressions) 
                 && id.equals(that.id) 
-                && parameters.equals(that.parameters) 
+                && parameters.equals(that.parameters)
                 && requiredSchemaAttributes.equals(that.requiredSchemaAttributes) 
                 && subQueries.equals(that.subQueries);
 

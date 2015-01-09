@@ -36,7 +36,7 @@ public interface Expression extends ModelElement {
         ATTRIBUTE("attribute"),
         GROUP("group");
 
-        private String name;
+        private final String name;
 
         public String getName() {
             return name;
