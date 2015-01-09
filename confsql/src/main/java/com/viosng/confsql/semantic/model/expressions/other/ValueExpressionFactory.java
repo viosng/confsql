@@ -164,6 +164,12 @@ public class ValueExpressionFactory {
         }
 
         @Override
+        public Expression getExpression(Type type) {
+            if (type == this.type()) return this;
+            else return arguments.stream().map(a -> a.getExpression(type)).filter(a -> a != null).findFirst().orElse(null);
+        }
+
+        @Override
         public String toString() {
             return value + "(" + Joiner.on(", ").join(arguments) + ")";
         }
@@ -173,12 +179,13 @@ public class ValueExpressionFactory {
         private AttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
             super(id, objectReference, value);
         }
-
     }
 
     private static class GroupExpression extends AbstractAttributeExpression implements ValueExpression.GroupExpression{
         @NotNull
         private List<Expression> groupedAttributes;
+
+        private Notification notification;
 
         public GroupExpression(@NotNull String id, 
                                @NotNull String objectReference, 
@@ -192,6 +199,16 @@ public class ValueExpressionFactory {
         @Override
         public List<Expression> getGroupedAttributes() {
             return groupedAttributes;
+        }
+
+        @NotNull
+        @Override
+        public Notification verify(@NotNull Context context) {
+            if (notification == null) {
+                notification = groupedAttributes.stream().map(e -> e.verify(context)).collect(Notification::new,
+                        Notification::accept, Notification::accept);
+            }
+            return notification;
         }
     }
     

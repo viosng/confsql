@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static com.viosng.confsql.semantic.model.expressions.other.ValueExpression.AttributeExpression;
+
 /**
  * Created with IntelliJ IDEA.
  * User: vio
@@ -20,9 +22,10 @@ public class QueryFactory {
     private QueryFactory() {
     }
 
-    protected static List<Expression> combineSchemaAttributes(Stream<List<Expression>> attributeStream) {
-        return new ArrayList<>(attributeStream.map(HashSet<Expression>::new).
-                <HashSet<Expression>>collect(HashSet<Expression>::new, HashSet<Expression>::addAll, HashSet<Expression>::addAll));
+    protected static List<Expression> combineSchemaAttributes(Stream<List<AttributeExpression>> attributeStream) {
+        return new ArrayList<>(attributeStream.map(HashSet<AttributeExpression>::new)
+                .<HashSet<AttributeExpression>>collect(HashSet<AttributeExpression>::new, 
+                        HashSet<AttributeExpression>::addAll, HashSet<AttributeExpression>::addAll));
     }
 
     private static class PrimaryQuery extends DefaultQuery implements Query.Primary {
@@ -64,7 +67,7 @@ public class QueryFactory {
         public FusionQuery(@NotNull String id,
                            @NotNull List<Parameter> parameters,
                            @NotNull List<Query> subQueries) {
-            super(id, parameters, combineSchemaAttributes(subQueries.stream().map(Query::getSchemaAttributes)),
+            super(id, parameters, combineSchemaAttributes(subQueries.stream().map(Query::getQueryObjectAttributes)),
                     subQueries, Collections.emptyList());
         }
         //todo  verify scopes
@@ -83,7 +86,7 @@ public class QueryFactory {
                          @NotNull Query leftBase,
                          @NotNull Query rightBase,
                          @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, combineSchemaAttributes(Arrays.asList(leftBase, rightBase).stream().map(Query::getSchemaAttributes)),
+            super(id, parameters, combineSchemaAttributes(Arrays.asList(leftBase, rightBase).stream().map(Query::getQueryObjectAttributes)),
                     Arrays.asList(leftBase, rightBase), argumentExpressions);
         }
         //todo  verify scopes
@@ -174,7 +177,7 @@ public class QueryFactory {
         private UnNestQuery(@NotNull String id,
                             @NotNull List<Parameter> parameters,
                             @NotNull Query base,
-                            @NotNull ValueExpression.AttributeExpression attribute) {
+                            @NotNull AttributeExpression attribute) {
             super(id, parameters, unNestSchemaGroup(base.getRequiredSchemaAttributes(), attribute.id()), Arrays.asList(base), Arrays.asList(attribute));
         }
         //todo  verify scopes
@@ -182,7 +185,7 @@ public class QueryFactory {
 
     public static Query.UnNest unNest(@NotNull String id,
                                       @NotNull Query base,
-                                      @NotNull ValueExpression.AttributeExpression attribute,
+                                      @NotNull AttributeExpression attribute,
                                       @NotNull List<Parameter> parameters) {
         return new UnNestQuery(id, parameters, base, attribute);
     }

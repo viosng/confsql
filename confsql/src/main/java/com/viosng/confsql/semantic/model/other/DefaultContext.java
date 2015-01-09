@@ -21,8 +21,8 @@ public class DefaultContext implements Context {
         if (!subQueries.isEmpty()) {
             objectAttributes = new HashMap<>();
             for (Query subQuery : subQueries) {
-                Set<String> attributes = new HashSet<>(subQuery.getSchemaAttributes().size());
-                attributes.addAll(subQuery.getRequiredSchemaAttributes().stream().map(Expression::id).collect(Collectors.toList()));
+                Set<String> attributes = new HashSet<>(subQuery.getQueryObjectAttributes().size());
+                attributes.addAll(subQuery.getQueryObjectAttributes().stream().map(Expression::id).collect(Collectors.toList()));
                 attributes.add("score"); // object score is always available
                 objectAttributes.put(subQuery.id(), attributes);
             }

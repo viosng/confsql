@@ -3,6 +3,7 @@ package com.viosng.confsql.semantic.model.queries;
 import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.ModelElement;
 import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.DefaultContext;
@@ -10,8 +11,8 @@ import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,7 +28,10 @@ public abstract class DefaultQuery implements Query{
     private final List<Parameter> parameters;
     
     @NotNull
-    private final List<Expression> schemaAttributes, requiredSchemaAttributes, argumentExpressions;
+    private final List<Expression> requiredSchemaAttributes, argumentExpressions;
+    
+    @NotNull
+    private final List<ValueExpression.AttributeExpression> queryObjectAttributes;
     
     @NotNull
     private final List<Query> subQueries;
@@ -43,10 +47,12 @@ public abstract class DefaultQuery implements Query{
         this.id = id;
         this.parameters = parameters;
         this.requiredSchemaAttributes = requiredSchemaAttributes;
-        this.schemaAttributes = Arrays.asList(requiredSchemaAttributes.stream()
+        this.queryObjectAttributes = requiredSchemaAttributes.stream()
                 .filter(a -> !a.id().equals(ModelElement.UNDEFINED_ID))
-                .map(a -> ValueExpressionFactory.attribute(id, a.id()))
-                .toArray(Expression[]::new));
+                .map(a -> a.type() == Expression.Type.GROUP
+                        ? ValueExpressionFactory.group(id, a.id(), ((ValueExpression.GroupExpression) a).getGroupedAttributes())
+                        : ValueExpressionFactory.attribute(id, a.id()))
+                .collect(Collectors.toList());
         this.argumentExpressions = argumentExpressions;
         this.subQueries = subQueries;
     }
@@ -71,8 +77,8 @@ public abstract class DefaultQuery implements Query{
 
     @NotNull
     @Override
-    public List<Expression> getSchemaAttributes() {
-        return schemaAttributes;
+    public List<ValueExpression.AttributeExpression> getQueryObjectAttributes() {
+        return queryObjectAttributes;
     }
 
     @NotNull
@@ -124,7 +130,7 @@ public abstract class DefaultQuery implements Query{
                 "id='" + id + '\'' +
                 ",\n parameters=" + parameters +
                 ",\n requiredSchemaAttributes=" + requiredSchemaAttributes +
-                ",\n schemaAttributes=" + schemaAttributes +
+                ",\n queryObjectAttributes=" + queryObjectAttributes +
                 ",\n argumentExpressions=" + argumentExpressions +
                 ",\n subQueries=" + subQueries +
                 ",\n context=" + context +

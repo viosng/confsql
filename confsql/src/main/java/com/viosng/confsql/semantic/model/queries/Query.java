@@ -2,6 +2,7 @@ package com.viosng.confsql.semantic.model.queries;
 
 import com.viosng.confsql.semantic.model.ModelElement;
 import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
@@ -24,7 +25,7 @@ public interface Query extends ModelElement {
     public List<Parameter> getParameters();
 
     @NotNull
-    public List<Expression> getSchemaAttributes();
+    public List<ValueExpression.AttributeExpression> getQueryObjectAttributes();
 
     @NotNull
     public List<Expression> getRequiredSchemaAttributes();

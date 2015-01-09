@@ -5,6 +5,7 @@ import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.junit.Test;
 
@@ -12,10 +13,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,7 +46,7 @@ public class QueryContextTest {
     }
     
     private static List<Expression> createSchemaAttributes(String objectName, List<String> attributes) {
-        return Arrays.asList(attributes.stream().map(a -> ValueExpressionFactory.attribute(objectName, a)).toArray(Expression[]::new));
+        return attributes.stream().map(a -> ValueExpressionFactory.attribute(objectName, a)).collect(Collectors.toList());
     }
 
     private Query.Filter createFilter(String objectName, List<String> attributes) {
@@ -69,8 +73,8 @@ public class QueryContextTest {
                 "filter2", Arrays.asList("fieldD", "fieldE"),
                 "filter3", Arrays.asList("fieldF", "fieldG", "fieldH")
         );
-        List<Query> filters = Arrays.asList(testData.entrySet().stream()
-                .map(e -> createFilter(e.getKey(), e.getValue())).toArray(Query[]::new));
+        List<Query> filters = testData.entrySet().stream()
+                .map(e -> createFilter(e.getKey(), e.getValue())).collect(Collectors.toList());
         Query.Fusion fusion = QueryFactory.fusion("fusion", PARAMETERS, filters);
         Context context = fusion.getContext();
         testData.entrySet().stream().forEach(e -> {
@@ -86,14 +90,13 @@ public class QueryContextTest {
         );
         wrongTestData.entrySet().stream()
                 .forEach(e -> e.getValue().stream()
-                        .forEach(a -> assertFalse(String.format("Object \"%s\" has attribute \"%s\"", e.getKey(), a), 
+                        .forEach(a -> assertFalse(String.format("Object \"%s\" has attribute \"%s\"", e.getKey(), a),
                                 context.hasAttribute(e.getKey(), a))));
     }
 
     @Test
     public void testJoin() throws Exception {
         Query.Filter filter1 = createFilter("filter1", Arrays.asList("fieldA", "fieldB", "fieldC"));
-        
         Query.Filter filter2 = createFilter("filter2", Arrays.asList("fieldD", "fieldE"));
         List<Expression> argumentExpressions = new ArrayList<>(Arrays.asList(
             BinaryPredicateExpressionFactory.less(ValueExpressionFactory.attribute("filter2","fieldD"),
@@ -130,4 +133,30 @@ public class QueryContextTest {
                 filter2.getArgumentExpressions(), filter2.getParameters(), requiredSchemaAttributes), argumentExpressions);
         assertTrue(join.verify().toString(), join.verify().isOk());
     }
+
+    @Test
+    public void testAggregation() throws Exception {
+        Query subQuery = mock(Query.class);
+        when(subQuery.id()).thenReturn("subQuery");
+        when(subQuery.verify()).thenReturn(new Notification());
+        List<String> attributes = Arrays.asList("a", "b", "c", "age");
+        List<Expression> requiredSchemaAttributes = new ArrayList<>(createSchemaAttributes("subQuery", attributes));
+        when(subQuery.getQueryObjectAttributes()).thenReturn(attributes.stream()
+                .map(a -> ValueExpressionFactory.attribute("subQuery", a)).collect(Collectors.toList()));
+        Query.Aggregation aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList(), emptyList(), 
+                requiredSchemaAttributes);
+        assertFalse(aggregation.verify().isOk());
+        
+        requiredSchemaAttributes.add(ValueExpressionFactory.functionCall("sum", Arrays.asList(ValueExpressionFactory.constant("1"))));
+        aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList(), emptyList(), requiredSchemaAttributes);
+        assertFalse(aggregation.verify().toString(), aggregation.verify().isOk());
+
+        requiredSchemaAttributes.add(ValueExpressionFactory.functionCall("sum",
+                Arrays.asList(ValueExpressionFactory.group("subQuery", "ages",
+                        Arrays.asList(ValueExpressionFactory.attribute("subQuery", "age"))))));
+        aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList(), emptyList(), requiredSchemaAttributes);
+        assertTrue(aggregation.verify().toString(), aggregation.verify().isOk());
+    }
+
+    
 }
