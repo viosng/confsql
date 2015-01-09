@@ -1,14 +1,17 @@
 package com.viosng.confsql.semantic.model.queries;
 
+import com.google.common.collect.ImmutableMap;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertFalse;
@@ -33,7 +36,7 @@ public class QueryContextTest {
     }
 
     @Test
-    public void testPrimary(){
+    public void testPrimary() throws Exception {
         Query.Primary primary = createPrimary();
         assertTrue(primary.verify().isOk());
     }
@@ -48,7 +51,7 @@ public class QueryContextTest {
     }
 
     @Test
-    public void testFilter(){
+    public void testFilter() throws Exception {
         Query.Filter filter = createFilter("filter", Arrays.asList("fieldA", "fieldB", "fieldC"));
         assertTrue(filter.verify().isOk());
         List<Expression> argumentExpressions = Arrays.asList(
@@ -60,7 +63,35 @@ public class QueryContextTest {
     }
 
     @Test
-    public void testJoin(){
+    public void testFusion() throws Exception {
+        Map<String, List<String>> testData = ImmutableMap.of(
+                "filter1", Arrays.asList("fieldA", "fieldB", "fieldC"),
+                "filter2", Arrays.asList("fieldD", "fieldE"),
+                "filter3", Arrays.asList("fieldF", "fieldG", "fieldH")
+        );
+        List<Query> filters = Arrays.asList(testData.entrySet().stream()
+                .map(e -> createFilter(e.getKey(), e.getValue())).toArray(Query[]::new));
+        Query.Fusion fusion = QueryFactory.fusion("fusion", PARAMETERS, filters);
+        Context context = fusion.getContext();
+        testData.entrySet().stream().forEach(e -> {
+            assertTrue(context.hasReference(e.getKey()));
+            e.getValue().stream().forEach(a -> assertTrue(context.hasAttribute(e.getKey(), a)));
+        });
+        
+        Map<String, List<String>> wrongTestData = ImmutableMap.of(
+                "filter3", Arrays.asList("fieldA", "fieldB", "fieldC"),
+                "filter1", Arrays.asList("fieldD", "fieldE"),
+                "filter2", Arrays.asList("fieldF", "fieldG", "fieldH"),
+                "filter4", Arrays.asList("fieldQ")
+        );
+        wrongTestData.entrySet().stream()
+                .forEach(e -> e.getValue().stream()
+                        .forEach(a -> assertFalse(String.format("Object \"%s\" has attribute \"%s\"", e.getKey(), a), 
+                                context.hasAttribute(e.getKey(), a))));
+    }
+
+    @Test
+    public void testJoin() throws Exception {
         Query.Filter filter1 = createFilter("filter1", Arrays.asList("fieldA", "fieldB", "fieldC"));
         
         Query.Filter filter2 = createFilter("filter2", Arrays.asList("fieldD", "fieldE"));
