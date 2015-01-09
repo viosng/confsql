@@ -7,6 +7,7 @@ import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.viosng.confsql.semantic.model.expressions.other.ValueExpression.AttributeExpression;
@@ -24,7 +25,7 @@ public class QueryFactory {
 
     protected static List<Expression> combineSchemaAttributes(Stream<List<AttributeExpression>> attributeStream) {
         return new ArrayList<>(attributeStream.map(HashSet<AttributeExpression>::new)
-                .<HashSet<AttributeExpression>>collect(HashSet<AttributeExpression>::new, 
+                .<HashSet<AttributeExpression>>collect(HashSet<AttributeExpression>::new,
                         HashSet<AttributeExpression>::addAll, HashSet<AttributeExpression>::addAll));
     }
 
@@ -163,9 +164,7 @@ public class QueryFactory {
             if (schemaAttribute.id().equals(groupId) && schemaAttribute.type().equals(Expression.Type.GROUP) &&
                     schemaAttribute instanceof ValueExpression.GroupExpression) {
                 ValueExpression.GroupExpression groupExpression = (ValueExpression.GroupExpression)schemaAttribute;
-                for (Expression attribute : groupExpression.getGroupedAttributes()) {
-                    newSchemaAttributes.add(attribute);
-                }
+                newSchemaAttributes.addAll(groupExpression.getGroupedAttributes().stream().collect(Collectors.toList()));
             } else {
                 newSchemaAttributes.add(schemaAttribute);
             }
@@ -178,7 +177,8 @@ public class QueryFactory {
                             @NotNull List<Parameter> parameters,
                             @NotNull Query base,
                             @NotNull AttributeExpression attribute) {
-            super(id, parameters, unNestSchemaGroup(base.getRequiredSchemaAttributes(), attribute.id()), Arrays.asList(base), Arrays.asList(attribute));
+            super(id, parameters, unNestSchemaGroup(base.getRequiredSchemaAttributes(), attribute.id()), 
+                    Arrays.asList(base), Arrays.asList(attribute));
         }
         //todo  verify scopes
     }
