@@ -16,9 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -72,19 +70,23 @@ public class QueryTest {
     }
     
     @Test
-    public void testPrimary() throws Exception {
+    public void testPrimary(){
         Query.Primary primary = createPrimary();
         assertTrue(primary.verify().isOk());
     }
 
-    @Test
-    public void testFilter() throws Exception {
+    private Query.Filter createFilter() {
         List<Expression> schemaAttributes = Arrays.asList(
                 ValueExpressionFactory.attribute("primary", "fieldA"),
                 ValueExpressionFactory.attribute("primary", "fieldB"),
                 ValueExpressionFactory.attribute("primary", "fieldC")
         );
-        Query.Filter filter = QueryFactory.filter("filter", createPrimary(), emptyList(), PARAMETERS, schemaAttributes);
+        return QueryFactory.filter("filter", createPrimary(), emptyList(), PARAMETERS, schemaAttributes);
+    }
+
+    @Test
+    public void testFilter() throws Exception {
+        Query.Filter filter = createFilter();
         assertTrue(filter.verify().isOk());
         List<Expression> argumentExpressions = Arrays.asList(
                 BinaryPredicateExpressionFactory.less(ValueExpressionFactory.attribute("filter", "fieldD"),

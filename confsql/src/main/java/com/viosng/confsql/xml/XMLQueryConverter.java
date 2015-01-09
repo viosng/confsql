@@ -101,7 +101,7 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
                 query.getArgumentExpressions().stream().map(XMLExpressionConverter.getInstance()::convertToXML))
                 .toArray(XMLModelElement[]::new);
         if (typesWithSchema.contains(query.type())) {
-            xmlQuery.schema = query.getSchemaAttributes().stream().map(XMLExpressionConverter.getInstance()::convertToXML)
+            xmlQuery.schema = query.getRequiredSchemaAttributes().stream().map(XMLExpressionConverter.getInstance()::convertToXML)
                     .toArray(XMLExpressionConverter.XMLExpression[]::new);
         }
         return xmlQuery;

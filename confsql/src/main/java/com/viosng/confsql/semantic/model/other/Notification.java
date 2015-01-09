@@ -29,11 +29,11 @@ public class Notification implements Consumer<Notification>{
         errors.add(message);
     }
 
-    public boolean isOk() { return errors.isEmpty(); };
+    public boolean isOk() { return errors.isEmpty(); }
 
     @Override
     public String toString() {
-        return isOk() ? "No errors are found" : "Errors : {" + Joiner.on(";\n").join(errors) + "}";
+        return isOk() ? "No errors were found" : "Errors : {" + Joiner.on(";\n").join(errors) + "}";
     }
 
     @Override

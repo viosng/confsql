@@ -42,10 +42,10 @@ public class QueryFactory {
     private static class FilterQuery extends DefaultQuery implements Query.Filter {
         private FilterQuery(@NotNull String id,
                             @NotNull List<Parameter> parameters,
-                            @NotNull List<Expression> schemaAttributes,
+                            @NotNull List<Expression> requiredSchemaAttributes,
                             @NotNull Query subQuery,
                             @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, schemaAttributes, Arrays.asList(subQuery), argumentExpressions);
+            super(id, parameters, requiredSchemaAttributes, Arrays.asList(subQuery), argumentExpressions);
         }
         
     }
@@ -54,8 +54,8 @@ public class QueryFactory {
                                       @NotNull Query base,
                                       @NotNull List<Expression> argumentExpressions,
                                       @NotNull List<Parameter> parameters,
-                                      @NotNull List<Expression> schemaAttributes) {
-        return new FilterQuery(id, parameters, schemaAttributes, base, argumentExpressions);
+                                      @NotNull List<Expression> requiredSchemaAttributes) {
+        return new FilterQuery(id, parameters, requiredSchemaAttributes, base, argumentExpressions);
     }
 
     // todo add sub query list, not only two
@@ -101,17 +101,17 @@ public class QueryFactory {
     private static class AggregationQuery extends DefaultQuery implements Query.Aggregation {
         private AggregationQuery(@NotNull String id,
                                  @NotNull List<Parameter> parameters,
-                                 @NotNull List<Expression> schemaAttributes,
+                                 @NotNull List<Expression> requiredSchemaAttributes,
                                  @NotNull Query base,
                                  @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, schemaAttributes, Arrays.asList(base), argumentExpressions);
+            super(id, parameters, requiredSchemaAttributes, Arrays.asList(base), argumentExpressions);
         }
 
         @NotNull
         @Override
         public Notification verify() {
             Notification notification = super.verify();
-            if (!getSchemaAttributes().stream().anyMatch(s -> s.getExpression(Expression.Type.GROUP) != null)) {
+            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.getExpression(Expression.Type.GROUP) != null)) {
                 notification.error("Aggregation operation with id = \"" + id() + 
                         "\" has no group operation result reference in schema attributes");
             }
@@ -123,23 +123,23 @@ public class QueryFactory {
                                                 @NotNull Query base,
                                                 @NotNull List<Expression> argumentExpressions,
                                                 @NotNull List<Parameter> parameters,
-                                                @NotNull List<Expression> schemaAttributes) {
-        return new AggregationQuery(id, parameters, schemaAttributes, base, argumentExpressions);
+                                                @NotNull List<Expression> requiredSchemaAttributes) {
+        return new AggregationQuery(id, parameters, requiredSchemaAttributes, base, argumentExpressions);
     }
 
     private static class NestQuery extends DefaultQuery implements Query.Nest {
         private NestQuery(@NotNull String id,
                           @NotNull List<Parameter> parameters,
-                          @NotNull List<Expression> schemaAttributes,
+                          @NotNull List<Expression> requiredSchemaAttributes,
                           @NotNull Query base) {
-            super(id, parameters, schemaAttributes, Arrays.asList(base), Collections.emptyList());
+            super(id, parameters, requiredSchemaAttributes, Arrays.asList(base), Collections.emptyList());
         }
 
         @NotNull
         @Override
         public Notification verify() {
             Notification notification = super.verify();
-            if (!getSchemaAttributes().stream().anyMatch(s -> s.type() == Expression.Type.GROUP)) {
+            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.type() == Expression.Type.GROUP)) {
                 notification.error("Nest operation with id = \"" + id() +
                         "\" has no group operation result reference in schema attributes");
             }
@@ -150,13 +150,13 @@ public class QueryFactory {
     public static Query.Nest nest(@NotNull String id,
                                   @NotNull Query base,
                                   @NotNull List<Parameter> parameters,
-                                  @NotNull List<Expression> schemaAttributes) {
-        return new NestQuery(id, parameters, schemaAttributes, base);
+                                  @NotNull List<Expression> requiredSchemaAttributes) {
+        return new NestQuery(id, parameters, requiredSchemaAttributes, base);
     }
     
-    private static List<Expression> unNestSchemaGroup(@NotNull List<Expression> schemaAttributes, String groupId) {
-        List<Expression> newSchemaAttributes = new ArrayList<>(schemaAttributes.size());
-        for (Expression schemaAttribute : schemaAttributes) {
+    private static List<Expression> unNestSchemaGroup(@NotNull List<Expression> requiredSchemaAttributes, String groupId) {
+        List<Expression> newSchemaAttributes = new ArrayList<>(requiredSchemaAttributes.size());
+        for (Expression schemaAttribute : requiredSchemaAttributes) {
             if (schemaAttribute.id().equals(groupId) && schemaAttribute.type().equals(Expression.Type.GROUP) &&
                     schemaAttribute instanceof ValueExpression.GroupExpression) {
                 ValueExpression.GroupExpression groupExpression = (ValueExpression.GroupExpression)schemaAttribute;
@@ -175,7 +175,7 @@ public class QueryFactory {
                             @NotNull List<Parameter> parameters,
                             @NotNull Query base,
                             @NotNull ValueExpression.AttributeExpression attribute) {
-            super(id, parameters, unNestSchemaGroup(base.getSchemaAttributes(), attribute.id()), Arrays.asList(base), Arrays.asList(attribute));
+            super(id, parameters, unNestSchemaGroup(base.getRequiredSchemaAttributes(), attribute.id()), Arrays.asList(base), Arrays.asList(attribute));
         }
         //todo  verify scopes
     }
@@ -191,11 +191,11 @@ public class QueryFactory {
 
         public GroupJoinQuery(@NotNull String id,
                               @NotNull List<Parameter> parameters,
-                              @NotNull List<Expression> schemaAttributes,
+                              @NotNull List<Expression> requiredSchemaAttributes,
                               @NotNull Query leftBase,
                               @NotNull Query rightBase,
                               @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, schemaAttributes, Arrays.asList(leftBase, rightBase), argumentExpressions);
+            super(id, parameters, requiredSchemaAttributes, Arrays.asList(leftBase, rightBase), argumentExpressions);
         }
 
         @NotNull
@@ -210,7 +210,7 @@ public class QueryFactory {
                                             @NotNull Query rightBase,
                                             @NotNull List<Expression> argumentExpressions,
                                             @NotNull List<Parameter> parameters,
-                                            @NotNull List<Expression> schemaAttributes) {
-        return new GroupJoinQuery(id, parameters, schemaAttributes, leftBase, rightBase, argumentExpressions);
+                                            @NotNull List<Expression> requiredSchemaAttributes) {
+        return new GroupJoinQuery(id, parameters, requiredSchemaAttributes, leftBase, rightBase, argumentExpressions);
     }
 }

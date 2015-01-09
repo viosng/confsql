@@ -1,7 +1,6 @@
 package com.viosng.confsql.semantic.model.expressions.other;
 
 import com.google.common.base.Joiner;
-import com.viosng.confsql.semantic.model.ModelElement;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
@@ -78,11 +77,6 @@ public class ValueExpressionFactory {
 
         protected AbstractAttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
             super(id, value);
-            this.objectReference = objectReference;
-        }
-
-        protected AbstractAttributeExpression(@NotNull String objectReference, @NotNull String value) {
-            super(value);
             this.objectReference = objectReference;
         }
 
@@ -180,15 +174,6 @@ public class ValueExpressionFactory {
             super(id, objectReference, value);
         }
 
-        private AttributeExpression(@NotNull String objectReference, @NotNull String value) {
-            super(objectReference, value);
-        }
-
-        @NotNull
-        @Override
-        public String id() {
-            return id.equals(ModelElement.UNDEFINED_ID) ?  value : id;
-        }
     }
 
     private static class GroupExpression extends AbstractAttributeExpression implements ValueExpression.GroupExpression{
@@ -200,13 +185,6 @@ public class ValueExpressionFactory {
                                @NotNull String value, 
                                @NotNull List<Expression> groupedAttributes) {
             super(id, objectReference, value);
-            this.groupedAttributes = groupedAttributes;
-        }
-
-        public GroupExpression(@NotNull String objectReference, 
-                               @NotNull String value, 
-                               @NotNull List<Expression> groupedAttributes) {
-            super(objectReference, value);
             this.groupedAttributes = groupedAttributes;
         }
 
@@ -227,13 +205,13 @@ public class ValueExpressionFactory {
     }
     
     public static ValueExpression.AttributeExpression attribute(@NotNull String objectReference, @NotNull String value) {
-        return new AttributeExpression(objectReference, value);
+        return new AttributeExpression(value, objectReference, value);
     }
 
     public static ValueExpression.GroupExpression group(@NotNull String objectReference, 
                                                         @NotNull String value, 
                                                         @NotNull List<Expression> groupedAttributes) {
-        return new GroupExpression(objectReference, value, groupedAttributes);
+        return new GroupExpression(value, objectReference, value, groupedAttributes);
     }
 
     public static ValueExpression.ConstantExpression constant(@NotNull String value, @NotNull String id) {

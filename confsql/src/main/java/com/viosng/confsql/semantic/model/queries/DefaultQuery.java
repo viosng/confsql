@@ -1,13 +1,16 @@
 package com.viosng.confsql.semantic.model.queries;
 
 import com.google.common.collect.Lists;
+import com.viosng.confsql.semantic.model.ModelElement;
 import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.DefaultContext;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,7 +27,7 @@ public abstract class DefaultQuery implements Query{
     private final List<Parameter> parameters;
     
     @NotNull
-    private final List<Expression> schemaAttributes, argumentExpressions;
+    private final List<Expression> schemaAttributes, requiredSchemaAttributes, argumentExpressions;
     
     @NotNull
     private final List<Query> subQueries;
@@ -35,11 +38,15 @@ public abstract class DefaultQuery implements Query{
 
     public DefaultQuery(@NotNull String id,
                         @NotNull List<Parameter> parameters,
-                        @NotNull List<Expression> schemaAttributes,
+                        @NotNull List<Expression> requiredSchemaAttributes,
                         @NotNull List<Query> subQueries, @NotNull List<Expression> argumentExpressions) {
         this.id = id;
         this.parameters = parameters;
-        this.schemaAttributes = schemaAttributes;
+        this.requiredSchemaAttributes = requiredSchemaAttributes;
+        this.schemaAttributes = Arrays.asList(requiredSchemaAttributes.stream()
+                .filter(a -> !a.id().equals(ModelElement.UNDEFINED_ID))
+                .map(a -> ValueExpressionFactory.attribute(id, a.id()))
+                .toArray(Expression[]::new));
         this.argumentExpressions = argumentExpressions;
         this.subQueries = subQueries;
     }
@@ -54,6 +61,12 @@ public abstract class DefaultQuery implements Query{
     @Override
     public List<Parameter> getParameters() {
         return parameters;
+    }
+
+    @NotNull
+    @Override
+    public List<Expression> getRequiredSchemaAttributes() {
+        return requiredSchemaAttributes;
     }
 
     @NotNull
@@ -96,7 +109,7 @@ public abstract class DefaultQuery implements Query{
             notification = Lists.newArrayList(
                     subQueries.stream().map(Query::verify)
                             .collect(Notification::new, Notification::accept, Notification::accept), 
-                    schemaAttributes.stream().map(e -> e.verify(getContext()))
+                    requiredSchemaAttributes.stream().map(e -> e.verify(getContext()))
                             .collect(Notification::new, Notification::accept, Notification::accept), 
                     argumentExpressions.stream().map(e -> e.verify(getContext()))
                             .collect(Notification::new, Notification::accept, Notification::accept))
@@ -110,6 +123,7 @@ public abstract class DefaultQuery implements Query{
         return "DefaultQuery{\n" +
                 "id='" + id + '\'' +
                 ",\n parameters=" + parameters +
+                ",\n requiredSchemaAttributes=" + requiredSchemaAttributes +
                 ",\n schemaAttributes=" + schemaAttributes +
                 ",\n argumentExpressions=" + argumentExpressions +
                 ",\n subQueries=" + subQueries +
@@ -128,7 +142,7 @@ public abstract class DefaultQuery implements Query{
         if (!argumentExpressions.equals(that.argumentExpressions)) return false;
         if (!id.equals(that.id)) return false;
         if (!parameters.equals(that.parameters)) return false;
-        if (!schemaAttributes.equals(that.schemaAttributes)) return false;
+        if (!requiredSchemaAttributes.equals(that.requiredSchemaAttributes)) return false;
         if (!subQueries.equals(that.subQueries)) return false;
 
         return true;
@@ -138,7 +152,7 @@ public abstract class DefaultQuery implements Query{
     public int hashCode() {
         int result = id.hashCode();
         result = 31 * result + parameters.hashCode();
-        result = 31 * result + schemaAttributes.hashCode();
+        result = 31 * result + requiredSchemaAttributes.hashCode();
         result = 31 * result + argumentExpressions.hashCode();
         result = 31 * result + subQueries.hashCode();
         return result;

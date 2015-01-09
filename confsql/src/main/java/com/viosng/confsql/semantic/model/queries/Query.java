@@ -27,6 +27,9 @@ public interface Query extends ModelElement {
     public List<Expression> getSchemaAttributes();
 
     @NotNull
+    public List<Expression> getRequiredSchemaAttributes();
+
+    @NotNull
     public List<Query> getSubQueries();
 
     @NotNull
