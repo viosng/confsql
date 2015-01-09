@@ -158,5 +158,22 @@ public class QueryContextTest {
         assertTrue(aggregation.verify().toString(), aggregation.verify().isOk());
     }
 
-    
+    @Test
+    public void testNest() throws Exception {
+        Query subQuery = mock(Query.class);
+        when(subQuery.id()).thenReturn("subQuery");
+        when(subQuery.verify()).thenReturn(new Notification());
+        List<String> attributes = Arrays.asList("a", "b", "c", "age");
+        List<Expression> requiredSchemaAttributes = new ArrayList<>(createSchemaAttributes("subQuery", attributes));
+        when(subQuery.getQueryObjectAttributes()).thenReturn(attributes.stream()
+                .map(a -> ValueExpressionFactory.attribute("subQuery", a)).collect(Collectors.toList()));
+        
+        Query.Nest nest = QueryFactory.nest("nest", subQuery, emptyList(), requiredSchemaAttributes);
+        assertFalse(nest.verify().toString(), nest.verify().isOk());
+
+        requiredSchemaAttributes.add(ValueExpressionFactory.group("subQuery", "ages",
+                        Arrays.asList(ValueExpressionFactory.attribute("subQuery", "age"))));
+        nest = QueryFactory.nest("nest", subQuery, emptyList(), requiredSchemaAttributes);
+        assertTrue(nest.verify().toString(), nest.verify().isOk());
+    }
 }
