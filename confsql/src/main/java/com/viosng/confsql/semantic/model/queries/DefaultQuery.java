@@ -31,7 +31,7 @@ public abstract class DefaultQuery implements Query{
     private final List<Expression> requiredSchemaAttributes, argumentExpressions;
     
     @NotNull
-    private final List<ValueExpression.AttributeExpression> queryObjectAttributes;
+    protected List<ValueExpression.AttributeExpression> queryObjectAttributes;
     
     @NotNull
     private final List<Query> subQueries;
@@ -43,7 +43,8 @@ public abstract class DefaultQuery implements Query{
     public DefaultQuery(@NotNull String id,
                         @NotNull List<Parameter> parameters,
                         @NotNull List<Expression> requiredSchemaAttributes,
-                        @NotNull List<Query> subQueries, @NotNull List<Expression> argumentExpressions) {
+                        @NotNull List<Query> subQueries, 
+                        @NotNull List<Expression> argumentExpressions) {
         this.id = id;
         this.parameters = parameters;
         this.requiredSchemaAttributes = requiredSchemaAttributes;

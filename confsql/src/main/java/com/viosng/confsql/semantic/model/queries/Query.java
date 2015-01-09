@@ -24,6 +24,9 @@ public interface Query extends ModelElement {
     @NotNull
     public List<Parameter> getParameters();
 
+    /**
+     * @return the list of query result attributes
+     */
     @NotNull
     public List<ValueExpression.AttributeExpression> getQueryObjectAttributes();
 

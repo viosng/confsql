@@ -1,7 +1,9 @@
 package com.viosng.confsql.semantic.model.queries;
 
+import com.viosng.confsql.semantic.model.ModelElement;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
@@ -157,14 +159,20 @@ public class QueryFactory {
                                   @NotNull List<Expression> requiredSchemaAttributes) {
         return new NestQuery(id, parameters, requiredSchemaAttributes, base);
     }
-    
-    private static List<Expression> unNestSchemaGroup(@NotNull List<Expression> requiredSchemaAttributes, String groupId) {
-        List<Expression> newSchemaAttributes = new ArrayList<>(requiredSchemaAttributes.size());
-        for (Expression schemaAttribute : requiredSchemaAttributes) {
+
+    @NotNull
+    private static List<AttributeExpression> unNestSchemaGroup(@NotNull String queryId,
+                                                               @NotNull String groupId, 
+                                                               @NotNull List<AttributeExpression> requiredSchemaAttributes) {
+        List<AttributeExpression> newSchemaAttributes = new ArrayList<>(requiredSchemaAttributes.size());
+        for (AttributeExpression schemaAttribute : requiredSchemaAttributes) {
             if (schemaAttribute.id().equals(groupId) && schemaAttribute.type().equals(Expression.Type.GROUP) &&
                     schemaAttribute instanceof ValueExpression.GroupExpression) {
                 ValueExpression.GroupExpression groupExpression = (ValueExpression.GroupExpression)schemaAttribute;
-                newSchemaAttributes.addAll(groupExpression.getGroupedAttributes().stream().collect(Collectors.toList()));
+                newSchemaAttributes.addAll(groupExpression.getGroupedAttributes().stream()
+                        .filter(a -> !a.id().equals(ModelElement.UNDEFINED_ID))
+                        .map(a -> ValueExpressionFactory.attribute(queryId, a.id()))
+                        .collect(Collectors.toList()));
             } else {
                 newSchemaAttributes.add(schemaAttribute);
             }
@@ -177,8 +185,8 @@ public class QueryFactory {
                             @NotNull List<Parameter> parameters,
                             @NotNull Query base,
                             @NotNull AttributeExpression attribute) {
-            super(id, parameters, unNestSchemaGroup(base.getRequiredSchemaAttributes(), attribute.id()), 
-                    Arrays.asList(base), Arrays.asList(attribute));
+            super(id, parameters, Collections.emptyList(), Arrays.asList(base), Arrays.asList(attribute));
+            this.queryObjectAttributes = unNestSchemaGroup(id, attribute.id(), base.getQueryObjectAttributes());
         }
         //todo  verify scopes
     }
@@ -203,8 +211,13 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        public Notification verify() { //todo
-            return super.verify();
+        public Notification verify() {
+            Notification notification = super.verify();
+            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.getExpression(Expression.Type.GROUP) != null)) {
+                notification.error("GroupJoin operation with id = \"" + id() +
+                        "\" has no group operation result reference in schema attributes");
+            }
+            return  notification;
         }
     }
     

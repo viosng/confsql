@@ -1,7 +1,9 @@
 package com.viosng.confsql.semantic.model.queries;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Context;
@@ -200,6 +202,32 @@ public class QueryContextTest {
         assertFalse(context.hasReference("subQuery1"));
         assertFalse(context.hasAttribute("subQuery1", "age3"));
     }
-    
-    
+
+    @Test
+    public void testGroupJoin() throws Exception {
+        Map<String, List<String>> testData = ImmutableMap.of(
+                "f1", Arrays.asList("a", "b"),
+                "f2", Arrays.asList("c", "d")
+        );
+        List<Query> queries = testData.entrySet().stream().map(e -> createFilter(e.getKey(), e.getValue())).collect(Collectors.toList());
+        List<Expression> arguments = Arrays.asList(
+                BinaryArithmeticExpressionFactory.plus(ValueExpressionFactory.attribute("f1", "a"), 
+                        ValueExpressionFactory.attribute("f2", "c")),
+                BinaryArithmeticExpressionFactory.plus(ValueExpressionFactory.attribute("f1", "b"), 
+                        ValueExpressionFactory.attribute("f2", "d"))
+        );
+        Query.GroupJoin groupJoin = QueryFactory.groupJoin("groupJoin", queries.get(0), queries.get(1), arguments, 
+                emptyList(), emptyList());
+        assertFalse(groupJoin.verify().toString(), groupJoin.verify().isOk());
+        
+        List<Expression> requiredSchema = Lists.newArrayList(
+                ValueExpressionFactory.functionCall("sum",
+                        Arrays.asList(ValueExpressionFactory.group("groupJoin", "ages",
+                                Arrays.asList(ValueExpressionFactory.attribute("f1", "a")))))
+        );
+        groupJoin = QueryFactory.groupJoin("groupJoin", queries.get(0), queries.get(1), arguments, emptyList(), requiredSchema);
+        assertTrue(groupJoin.verify().toString(), groupJoin.verify().isOk());
+        Context context = groupJoin.getContext();
+        testData.entrySet().stream().forEach(e -> e.getValue().stream().forEach(a -> assertTrue(context.hasAttribute(e.getKey(), a))));
+    }
 }

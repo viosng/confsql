@@ -18,6 +18,7 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.mock;
 public class QueryTest {
     public static Object[][] testData;
     
-    private static Query Q_MOCK = mock(Query.class);
+    private static Query Q_MOCK;
     private static final List<Parameter> PARAMETERS = Arrays.asList(
             new Parameter("constA", "valA"),
             new Parameter("constB", "valB"),
@@ -40,6 +41,10 @@ public class QueryTest {
 
     @BeforeClass
     public static void init(){
+        Q_MOCK = mock(Query.class);
+        when(Q_MOCK.id()).thenReturn("query");
+        ValueExpression.AttributeExpression attributeExpression = mock(ValueExpression.AttributeExpression.class);
+        when(attributeExpression.id()).thenReturn("attribute");
         testData = new Object[][] {
                 { QueryFactory.primary("pr", emptyList(), PARAMETERS), "pr", Query.QueryType.PRIMARY },
                 { QueryFactory.filter("ft", Q_MOCK, emptyList(), PARAMETERS, emptyList()), "ft", Query.QueryType.FILTER },
@@ -47,7 +52,7 @@ public class QueryTest {
                 { QueryFactory.join("jn", PARAMETERS, Q_MOCK, Q_MOCK, emptyList()), "jn", Query.QueryType.JOIN },
                 { QueryFactory.aggregation("ag", Q_MOCK, emptyList(), PARAMETERS, emptyList()), "ag", Query.QueryType.AGGREGATION },
                 { QueryFactory.nest("ne", Q_MOCK, PARAMETERS, emptyList()), "ne", Query.QueryType.NEST },
-                { QueryFactory.unNest("un", Q_MOCK, mock(ValueExpression.AttributeExpression.class), PARAMETERS), "un", Query.QueryType.UNNEST},
+                { QueryFactory.unNest("un", Q_MOCK, attributeExpression, PARAMETERS), "un", Query.QueryType.UNNEST},
                 { QueryFactory.groupJoin("gj", Q_MOCK, Q_MOCK, emptyList(), PARAMETERS, emptyList()), "gj", Query.QueryType.GROUP_JOIN },
         };
     }
@@ -70,7 +75,7 @@ public class QueryTest {
     }
     
     @Test
-    public void testPrimary(){
+    public void testPrimary() throws Exception {
         Query.Primary primary = createPrimary();
         assertTrue(primary.verify().isOk());
     }
