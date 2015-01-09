@@ -65,13 +65,12 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
 
             XMLQuery xmlQuery = (XMLQuery) o;
 
-            if (!Arrays.equals(arguments, xmlQuery.arguments)) return false;
-            if (id != null ? !id.equals(xmlQuery.id) : xmlQuery.id != null) return false;
-            if (!Arrays.equals(parameters, xmlQuery.parameters)) return false;
-            if (!Arrays.equals(schema, xmlQuery.schema)) return false;
-            if (queryType != xmlQuery.queryType) return false;
+            return Arrays.equals(arguments, xmlQuery.arguments) 
+                    && !(id != null ? !id.equals(xmlQuery.id) : xmlQuery.id != null) 
+                    && Arrays.equals(parameters, xmlQuery.parameters) 
+                    && Arrays.equals(schema, xmlQuery.schema) 
+                    && queryType == xmlQuery.queryType;
 
-            return true;
         }
 
         @Override
@@ -124,12 +123,12 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
     @Override
     public Query convertFromXML(@NotNull XMLQuery xml) {
         return new QueryBuilder()
-                .setId(xml.id)
-                .setQueryType(xml.queryType)
-                .setArgumentExpressions(convertExpressions(extractElementsWithType(xml.arguments, XMLExpressionConverter.XMLExpression.class)))
-                .setParameters(convertParameters(xml.parameters))
-                .setSchemaAttributes(convertExpressions(Arrays.stream(xml.schema)))
-                .setSubQueries(extractElementsWithType(xml.arguments, XMLQuery.class).map(this::convertFromXML).toArray(Query[]::new))
+                .id(xml.id)
+                .queryType(xml.queryType)
+                .argumentExpressions(convertExpressions(extractElementsWithType(xml.arguments, XMLExpressionConverter.XMLExpression.class)))
+                .parameters(convertParameters(xml.parameters))
+                .requiredSchemaAttributes(convertExpressions(Arrays.stream(xml.schema)))
+                .subQueries(extractElementsWithType(xml.arguments, XMLQuery.class).map(this::convertFromXML).toArray(Query[]::new))
                 .create();
     }
 

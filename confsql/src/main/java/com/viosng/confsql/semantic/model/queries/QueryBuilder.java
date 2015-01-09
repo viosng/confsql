@@ -4,7 +4,6 @@ import com.viosng.confsql.semantic.model.ModelElement;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,61 +34,61 @@ public class QueryBuilder {
     private List<Query> subQueries = Collections.emptyList();
 
     @NotNull
-    public QueryBuilder setId(@NotNull String id) {
+    public QueryBuilder id(@NotNull String id) {
         this.id = id;
         return this;
     }
 
     @NotNull
-    public QueryBuilder setQueryType(@NotNull Query.QueryType queryType) {
+    public QueryBuilder queryType(@NotNull Query.QueryType queryType) {
         this.queryType = queryType;
         return this;
     }
 
     @NotNull
-    public QueryBuilder setParameters(@NotNull List<Parameter> parameters) {
+    public QueryBuilder parameters(@NotNull List<Parameter> parameters) {
         this.parameters = parameters;
         return this;
     }
 
     @NotNull
-    public QueryBuilder setParameters(Parameter... parameters) {
+    public QueryBuilder parameters(Parameter... parameters) {
         if (parameters != null) this.parameters = Arrays.asList(parameters);
         return this;
     }
 
     @NotNull
-    public QueryBuilder setSchemaAttributes(@NotNull List<Expression> schemaAttributes) {
+    public QueryBuilder requiredSchemaAttributes(@NotNull List<Expression> schemaAttributes) {
         this.schemaAttributes = schemaAttributes;
         return this;
     }
 
     @NotNull
-    public QueryBuilder setSchemaAttributes(Expression... schemaAttributes) {
+    public QueryBuilder requiredSchemaAttributes(Expression... schemaAttributes) {
         if (schemaAttributes != null) this.schemaAttributes = Arrays.asList(schemaAttributes);
         return this;
     }
 
     @NotNull
-    public QueryBuilder setArgumentExpressions(@NotNull List<Expression> argumentExpressions) {
+    public QueryBuilder argumentExpressions(@NotNull List<Expression> argumentExpressions) {
         this.argumentExpressions = argumentExpressions;
         return this;
     }
 
     @NotNull
-    public QueryBuilder setArgumentExpressions(Expression... argumentExpressions) {
+    public QueryBuilder argumentExpressions(Expression... argumentExpressions) {
         if (argumentExpressions != null) this.argumentExpressions = Arrays.asList(argumentExpressions);
         return this;
     }
 
     @NotNull
-    public QueryBuilder setSubQueries(@NotNull List<Query> subQueries) {
+    public QueryBuilder subQueries(@NotNull List<Query> subQueries) {
         this.subQueries = subQueries;
         return this;
     }
 
     @NotNull
-    public QueryBuilder setSubQueries(Query... subQueries) {
+    public QueryBuilder subQueries(Query... subQueries) {
         if (subQueries != null) this.subQueries = Arrays.asList(subQueries);
         return this;
     }
@@ -98,14 +97,13 @@ public class QueryBuilder {
         return create(this.queryType);
     }
 
-    @Contract("null -> null")
     public Query create(Query.QueryType queryType) {
-        if (queryType == null) return null;
+        if (queryType == null) throw new IllegalArgumentException("QueryType reference is null");
         switch (queryType) {
             case PRIMARY:
                 return QueryFactory.primary(id, argumentExpressions, parameters);
             case FILTER:
-                checkSubQueriesNumber(1);
+                checkSubQueriesCount(1);
                 return QueryFactory.filter(id, subQueries.get(0), argumentExpressions, parameters, schemaAttributes);
             case FUSION:
                 if (subQueries.isEmpty()) {
@@ -113,16 +111,16 @@ public class QueryBuilder {
                 }
                 return QueryFactory.fusion(id, parameters, subQueries);
             case JOIN:
-                checkSubQueriesNumber(2);
+                checkSubQueriesCount(2);
                 return QueryFactory.join(id, parameters, subQueries.get(0), subQueries.get(1), argumentExpressions);
             case AGGREGATION:
-                checkSubQueriesNumber(1);
+                checkSubQueriesCount(1);
                 return QueryFactory.aggregation(id, subQueries.get(0), argumentExpressions, parameters, schemaAttributes);
             case NEST:
-                checkSubQueriesNumber(1);
+                checkSubQueriesCount(1);
                 return QueryFactory.nest(id, subQueries.get(0), parameters, schemaAttributes);
             case UNNEST:
-                checkSubQueriesNumber(1);
+                checkSubQueriesCount(1);
                 if (argumentExpressions.size() != 1 || 
                         argumentExpressions.get(0) == null || 
                         !(argumentExpressions.get(0) instanceof ValueExpression.AttributeExpression)) {
@@ -132,14 +130,14 @@ public class QueryBuilder {
                 return QueryFactory.unNest(id, subQueries.get(0), 
                         (ValueExpression.AttributeExpression)argumentExpressions.get(0), parameters);
             case GROUP_JOIN:
-                checkSubQueriesNumber(2);
+                checkSubQueriesCount(2);
                 return QueryFactory.groupJoin(id, subQueries.get(0), subQueries.get(1), argumentExpressions, parameters, 
                         schemaAttributes);
             default: throw new UnsupportedOperationException("Unknown query type");
         }
     }
     
-    private void checkSubQueriesNumber(int size) {
+    private void checkSubQueriesCount(int size) {
         if (subQueries.size() != size) {
             throw new IllegalArgumentException("Wrong number of sub queries, should be " + size);
         }

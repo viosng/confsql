@@ -146,13 +146,13 @@ public abstract class DefaultQuery implements Query{
 
         DefaultQuery that = (DefaultQuery) o;
 
-        if (!argumentExpressions.equals(that.argumentExpressions)) return false;
-        if (!id.equals(that.id)) return false;
-        if (!parameters.equals(that.parameters)) return false;
-        if (!requiredSchemaAttributes.equals(that.requiredSchemaAttributes)) return false;
-        if (!subQueries.equals(that.subQueries)) return false;
+        return this.type() == that.type() 
+                && argumentExpressions.equals(that.argumentExpressions) 
+                && id.equals(that.id) 
+                && parameters.equals(that.parameters) 
+                && requiredSchemaAttributes.equals(that.requiredSchemaAttributes) 
+                && subQueries.equals(that.subQueries);
 
-        return true;
     }
 
     @Override
@@ -162,6 +162,8 @@ public abstract class DefaultQuery implements Query{
         result = 31 * result + requiredSchemaAttributes.hashCode();
         result = 31 * result + argumentExpressions.hashCode();
         result = 31 * result + subQueries.hashCode();
+        result = 31 * result + (context != null ? context.hashCode() : 0);
+        result = 31 * result + (notification != null ? notification.hashCode() : 0);
         return result;
     }
 }
