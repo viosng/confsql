@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.queries;
+package com.viosng.confsql.semantic.model.algebra;
 
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;

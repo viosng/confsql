@@ -12,8 +12,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import com.viosng.confsql.semantic.model.queries.Query;
-import com.viosng.confsql.semantic.model.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebra.Query;
+import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.viosng.confsql.semantic.model.queries.Query.QueryType;
+import static com.viosng.confsql.semantic.model.algebra.Query.QueryType;
 
 public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuery, Query>{
 

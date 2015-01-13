@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.queries;
+package com.viosng.confsql.semantic.model.algebra;
 
 import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.ModelElement;

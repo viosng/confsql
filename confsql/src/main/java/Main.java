@@ -4,8 +4,8 @@ import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpr
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import com.viosng.confsql.semantic.model.queries.Query;
-import com.viosng.confsql.semantic.model.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebra.Query;
+import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
 import com.viosng.confsql.xml.XMLConverter;
 import com.viosng.confsql.xml.XMLExpressionConverter;
 import com.viosng.confsql.xml.XMLQueryConverter;

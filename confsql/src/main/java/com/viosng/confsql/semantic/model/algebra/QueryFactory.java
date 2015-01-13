@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.queries;
+package com.viosng.confsql.semantic.model.algebra;
 
 import com.viosng.confsql.semantic.model.ModelElement;
 import com.viosng.confsql.semantic.model.expressions.Expression;
@@ -39,6 +39,7 @@ public class QueryFactory {
         }
     }
 
+    @NotNull
     public static Query.Primary primary(@NotNull String id,
                                         @NotNull List<Expression> argumentExpressions,
                                         @NotNull List<Parameter> parameters) {
@@ -56,6 +57,7 @@ public class QueryFactory {
         
     }
 
+    @NotNull
     public static Query.Filter filter(@NotNull String id,
                                       @NotNull Query base,
                                       @NotNull List<Expression> argumentExpressions,
@@ -74,6 +76,7 @@ public class QueryFactory {
         }
     }
 
+    @NotNull
     public static Query.Fusion fusion(@NotNull String id,
                                       @NotNull List<Parameter> parameters,
                                       @NotNull List<Query> subQueries) {
@@ -92,6 +95,7 @@ public class QueryFactory {
         }
     }
 
+    @NotNull
     public static Query.Join join(@NotNull String id,
                                   @NotNull List<Parameter> parameters,
                                   @NotNull Query leftBase,
@@ -121,6 +125,7 @@ public class QueryFactory {
         }
     }
 
+    @NotNull
     public static Query.Aggregation aggregation(@NotNull String id,
                                                 @NotNull Query base,
                                                 @NotNull List<Expression> argumentExpressions,
@@ -149,6 +154,7 @@ public class QueryFactory {
         }
     }
 
+    @NotNull
     public static Query.Nest nest(@NotNull String id,
                                   @NotNull Query base,
                                   @NotNull List<Parameter> parameters,
@@ -186,6 +192,7 @@ public class QueryFactory {
         }
     }
 
+    @NotNull
     public static Query.UnNest unNest(@NotNull String id,
                                       @NotNull Query base,
                                       @NotNull AttributeExpression attribute,
@@ -215,7 +222,8 @@ public class QueryFactory {
             return  notification;
         }
     }
-    
+
+    @NotNull
     public static Query.GroupJoin groupJoin(@NotNull String id,
                                             @NotNull Query leftBase,
                                             @NotNull Query rightBase,
