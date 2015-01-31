@@ -117,7 +117,7 @@ public class QueryFactory {
         @Override
         public Notification verify() {
             Notification notification = super.verify();
-            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.getExpression(Expression.Type.GROUP) != null)) {
+            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.findExpressionByType(Expression.Type.GROUP) != null)) {
                 notification.error("Aggregation operation with id = \"" + id() + 
                         "\" has no group operation result reference in schema attributes");
             }
@@ -215,7 +215,7 @@ public class QueryFactory {
         @Override
         public Notification verify() {
             Notification notification = super.verify();
-            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.getExpression(Expression.Type.GROUP) != null)) {
+            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.findExpressionByType(Expression.Type.GROUP) != null)) {
                 notification.error("GroupJoin operation with id = \"" + id() +
                         "\" has no group operation result reference in schema attributes");
             }

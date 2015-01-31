@@ -10,6 +10,8 @@ import com.viosng.confsql.semantic.model.expressions.PredicateExpression;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryExpression;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.expressions.other.IfExpression;
+import com.viosng.confsql.semantic.model.expressions.other.IfExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.unary.UnaryArithmeticExpressionFactory;
@@ -111,8 +113,17 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
                         convertToXML(unaryExpression.getArg())
                 };
                 break;
+            case IF:
+                IfExpression ifExpression = (IfExpression) modelElement;
+                xmlExpression.arguments = new XMLExpression[] {
+                        convertToXML(ifExpression.getPredicate()),
+                        convertToXML(ifExpression.getExpressionOnTrue()),
+                        convertToXML(ifExpression.getExpressionOnFalse())
+                };
+                break;
             default:
-                if (!(modelElement instanceof BinaryExpression)) throw new IllegalArgumentException("Unsupported expression type");
+                if (!(modelElement instanceof BinaryExpression)) throw new IllegalArgumentException("Unsupported expression type - " + 
+                        modelElement.type());
                 BinaryExpression binaryExpression = (BinaryExpression) modelElement;
                 xmlExpression.arguments = new XMLExpression[]{
                         convertToXML(binaryExpression.getLeftArg()),
@@ -139,7 +150,12 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
 
             case ATTRIBUTE: return ValueExpressionFactory.attribute(xmlElement.objectReference, xmlElement.value, xmlElement.id);
 
-            case GROUP: return ValueExpressionFactory.group(xmlElement.objectReference, xmlElement.value, Collections.emptyList(), xmlElement.id);
+            case GROUP: return ValueExpressionFactory.group(xmlElement.objectReference, xmlElement.value, Collections.emptyList(), 
+                    xmlElement.id);
+            
+            case IF: return IfExpressionFactory.create(convertWithCheck(xmlElement.arguments[0], PredicateExpression.class),
+                    convertWithCheck(xmlElement.arguments[1], Expression.class),
+                    convertWithCheck(xmlElement.arguments[2], Expression.class));
             
             default: throw new IllegalArgumentException("Unsupported expression type:" + xmlElement.type);
         }

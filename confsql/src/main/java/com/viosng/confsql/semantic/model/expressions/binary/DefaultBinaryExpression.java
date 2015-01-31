@@ -57,10 +57,10 @@ class DefaultBinaryExpression implements BinaryExpression{
     }
 
     @Override
-    public Expression getExpression(Type type) {
+    public Expression findExpressionByType(Type type) {
         if (this.type == type) return this;
-        Expression leftType = left.getExpression(type);
-        return leftType != null ? leftType : right.getExpression(type);
+        Expression leftType = left.findExpressionByType(type);
+        return leftType != null ? leftType : right.findExpressionByType(type);
     }
 
 

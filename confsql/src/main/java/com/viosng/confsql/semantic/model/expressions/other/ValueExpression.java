@@ -19,7 +19,7 @@ public interface ValueExpression extends Expression {
     public String getValue();
 
     @Override
-    default Expression getExpression(Type type) {
+    default Expression findExpressionByType(Type type) {
         return type == type() ? this : null;
     }
     

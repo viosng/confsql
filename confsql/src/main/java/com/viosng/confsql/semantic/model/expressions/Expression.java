@@ -34,7 +34,8 @@ public interface Expression extends ModelElement {
         FUNCTION_CALL("function"),
         CONSTANT("constant"),
         ATTRIBUTE("attribute"),
-        GROUP("group");
+        GROUP("group"),
+        IF("if");
 
         private final String name;
 
@@ -48,10 +49,10 @@ public interface Expression extends ModelElement {
     }
 
     /**
-     * @param type   the expression type to find.
+     * @param type the expression type to find.
      * @return the instance with specific {@code type} expression sub tree or {@code null} if it won't be found.
      */
-    public Expression getExpression(Type type);
+    public Expression findExpressionByType(Type type);
 
     @NotNull
     public Notification verify(@NotNull Context context);

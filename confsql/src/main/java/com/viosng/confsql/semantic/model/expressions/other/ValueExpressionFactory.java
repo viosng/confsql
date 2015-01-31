@@ -164,9 +164,9 @@ public class ValueExpressionFactory {
         }
 
         @Override
-        public Expression getExpression(Type type) {
+        public Expression findExpressionByType(Type type) {
             if (type == this.type()) return this;
-            else return arguments.stream().map(a -> a.getExpression(type)).filter(a -> a != null).findFirst().orElse(null);
+            else return arguments.stream().map(a -> a.findExpressionByType(type)).filter(a -> a != null).findFirst().orElse(null);
         }
 
         @Override

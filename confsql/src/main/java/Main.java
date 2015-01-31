@@ -2,7 +2,9 @@ import com.thoughtworks.xstream.XStream;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.expressions.other.IfExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.expressions.unary.UnaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.algebra.Query;
 import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
@@ -28,7 +30,9 @@ public class Main {
         
         Expression expression = BinaryArithmeticExpressionFactory.plus(ValueExpressionFactory.constant("a"), 
                 ValueExpressionFactory.functionCall("b", 
-                        Arrays.asList(ValueExpressionFactory.constant("c"), ValueExpressionFactory.constant("d"))));
+                        Arrays.asList(IfExpressionFactory.create(UnaryPredicateExpressionFactory.not(ValueExpressionFactory.constant("nnn")), 
+                                        ValueExpressionFactory.constant("true"), ValueExpressionFactory.constant("false")), 
+                                ValueExpressionFactory.constant("d"))));
         
         XMLExpressionConverter.XMLExpression xmlExpression = XMLExpressionConverter.getInstance().convertToXML(expression);
         String xml = xstream.toXML(xmlExpression);
