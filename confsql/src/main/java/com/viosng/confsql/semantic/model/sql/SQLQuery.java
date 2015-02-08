@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * Time: 20:27
  */
 public interface SQLQuery {
-    static double a = .0e0;
+    static double a = +1;
     @NotNull
     public Query convertToQuery();
 }
