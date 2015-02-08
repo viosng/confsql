@@ -34,8 +34,8 @@ public class QueryBuilder {
     private List<Query> subQueries = Collections.emptyList();
 
     @NotNull
-    public QueryBuilder id(@NotNull String id) {
-        this.id = id;
+    public QueryBuilder id(@Nullable String id) {
+        if (id != null) this.id = id;
         return this;
     }
 

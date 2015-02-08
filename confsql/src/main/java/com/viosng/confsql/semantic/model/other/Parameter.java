@@ -13,7 +13,7 @@ public class Parameter {
     private String name, value;
 
     public Parameter(@NotNull String name, @NotNull String value) {
-        if (name.length() == 0) throw new IllegalArgumentException("Empty parameter name");
+        if (name.length() == 0) throw new IllegalArgumentException("Empty parameter sourceName");
         this.name = name;
         this.value = value;
     }
@@ -47,7 +47,7 @@ public class Parameter {
     @Override
     public String toString() {
         return "Parameter{" +
-                "name='" + name + '\'' +
+                "sourceName='" + name + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }

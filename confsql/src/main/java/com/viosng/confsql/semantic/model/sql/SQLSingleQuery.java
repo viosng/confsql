@@ -2,11 +2,12 @@ package com.viosng.confsql.semantic.model.sql;
 
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface SingleSQLQuery extends SQLQuery {
-    @NotNull
+public interface SQLSingleQuery extends SQLQuery {
+    @Nullable
     public String alias();
 
     @NotNull

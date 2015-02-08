@@ -1,0 +1,14 @@
+<query id = "..." type = "JOIN"> 
+    <parameters>
+        <parameter name="type" value="fuzzy"/>
+        <parameter name="precision" value="5"/>
+    </parameters> 
+    <arguments> 
+        <query id="leftQuery">...</query> 
+        <query id="rightQuery">...</query> 
+        <expression type="EQUAL">
+            <expression type="ATTRIBUTE" objectReference="leftQuery" value="distance"/>
+            <expression type="ATTRIBUTE" objectReference="rightQuery" value="distance"/>
+        </expression>
+    </arguments> 
+</query>
