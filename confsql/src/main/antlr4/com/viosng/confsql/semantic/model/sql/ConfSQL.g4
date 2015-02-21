@@ -2,7 +2,7 @@ grammar ConfSQL;
 
 stat : query EOF;
 
-query : expr;
+query : 'select' expr;
 
 expr : BIT_NEG expr                                                                              #bitNeg
      | MINUS expr                                                                                #neg
@@ -15,19 +15,24 @@ expr : BIT_NEG expr                                                             
      | expr ('IS'|'is') expr                                                                     #is
      | expr ('AND'|'and') expr                                                                   #and
      | expr ('OR'|'or') expr                                                                     #or
-     | expr ('LIKE'|'like') String                                                               #like
-     | expr ('BETWEEN'|'between') expr ('AND'|'and') expr                                        #between
-     | expr ('ALL'|'all'|'ANY'|'any'|'IN'|'in') LEFT_PAREN (query | expr_list) RIGHT_PAREN       #subQuery
-     | ('EXISTS'|'exists') LEFT_PAREN query RIGHT_PAREN                                          #exists
      | ('CAST'|'cast') expr ('as'|'AS') StringLiteral                                            #cast
      | ('CASE'|'case') expr? case_when_clause+ case_else_clause ('END'|'end')                    #case
+     | query                                                                                     #subQuery
      | Field                                                                                     #field
-     | StringLiteral (LEFT_PAREN expr_list? RIGHT_PAREN)?                                        #columnOrFunctionCall
+     | StringLiteral (LEFT_PAREN exprs_and_params RIGHT_PAREN)?                                  #columnOrFunctionCall
      | LEFT_PAREN expr RIGHT_PAREN                                                               #brackets
      | (NumberLiteral | String)                                                                  #constant
      ;
 
-expr_list : expr (',' expr)*;
+exprs_and_params 
+     : (expr_list SEMI_COLON)? param_list
+     | expr_list
+     ;
+
+param_list : param (COMMA param)*;
+param : (String | StringLiteral) EQUAL expr;
+
+expr_list : expr (COMMA expr)*;
 case_when_clause : ('WHEN' | 'when') w=expr ('THEN' | 'then') t=expr;
 case_else_clause : ('ELSE' | 'else') e=expr;
 
@@ -151,89 +156,5 @@ USING : 'USING' | 'using';
 WHEN : 'WHEN' | 'when';
 WHERE : 'WHERE' | 'where';
 WITH : 'WITH' | 'with';
-
-/*
-===============================================================================
-  Tokens for Case Insensitive Keywords
-===============================================================================
-*/
-fragment A
-	:	'A' | 'a';
-
-fragment B
-	:	'B' | 'b';
-
-fragment C
-	:	'C' | 'c';
-
-fragment D
-	:	'D' | 'd';
-
-fragment E
-	:	'E' | 'e';
-
-fragment F
-	:	'F' | 'f';
-
-fragment G
-	:	'G' | 'g';
-
-fragment H
-	:	'H' | 'h';
-
-fragment I
-	:	'I' | 'i';
-
-fragment J
-	:	'J' | 'j';
-
-fragment K
-	:	'K' | 'k';
-
-fragment L
-	:	'L' | 'l';
-
-fragment M
-	:	'M' | 'm';
-
-fragment N
-	:	'N' | 'n';
-
-fragment O
-	:	'O' | 'o';
-
-fragment P
-	:	'P' | 'p';
-
-fragment Q
-	:	'Q' | 'q';
-
-fragment R
-	:	'R' | 'r';
-
-fragment S
-	:	'S' | 's';
-
-fragment T
-	:	'T' | 't';
-
-fragment U
-	:	'U' | 'u';
-
-fragment V
-	:	'V' | 'v';
-
-fragment W
-	:	'W' | 'w';
-
-fragment X
-	:	'X' | 'x';
-
-fragment Y
-	:	'Y' | 'y';
-
-fragment Z
-	:	'Z' | 'z';
-
 
 WS : [\t \r\n] -> skip;
