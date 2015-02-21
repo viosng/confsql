@@ -1,6 +1,6 @@
-package com.viosng.confsql.semantic.model.sql.impl;
+package com.viosng.confsql.semantic.model.sql.old.impl;
 
-import com.viosng.confsql.semantic.model.sql.SQLQueryAll;
+import com.viosng.confsql.semantic.model.sql.old.SQLQueryAll;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,8 +1,8 @@
-package com.viosng.confsql.semantic.model.sql.impl;
+package com.viosng.confsql.semantic.model.sql.old.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import com.viosng.confsql.semantic.model.sql.SQLSingleQuery;
+import com.viosng.confsql.semantic.model.sql.old.SQLSingleQuery;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

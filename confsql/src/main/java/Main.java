@@ -1,4 +1,6 @@
 import com.thoughtworks.xstream.XStream;
+import com.viosng.confsql.semantic.model.algebra.Query;
+import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
 import com.viosng.confsql.semantic.model.expressions.Expression;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
@@ -6,13 +8,14 @@ import com.viosng.confsql.semantic.model.expressions.other.IfExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.expressions.unary.UnaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import com.viosng.confsql.semantic.model.algebra.Query;
-import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
+import com.viosng.confsql.semantic.model.sql.*;
 import com.viosng.confsql.xml.XMLConverter;
 import com.viosng.confsql.xml.XMLExpressionConverter;
 import com.viosng.confsql.xml.XMLQueryConverter;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 
-import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -23,17 +26,17 @@ import java.util.Arrays;
  */
 public class Main {
     
-    public static void main(String[] args) throws JAXBException {
+    public static void testXML() {
         XStream xstream = new XStream();
         XMLConverter<XMLExpressionConverter.XMLExpression, Expression> converter = XMLExpressionConverter.getInstance();
         converter.configure(xstream);
-        
-        Expression expression = BinaryArithmeticExpressionFactory.plus(ValueExpressionFactory.constant("a"), 
-                ValueExpressionFactory.functionCall("b", 
-                        Arrays.asList(IfExpressionFactory.create(UnaryPredicateExpressionFactory.not(ValueExpressionFactory.constant("nnn")), 
-                                        ValueExpressionFactory.constant("true"), ValueExpressionFactory.constant("false")), 
+
+        Expression expression = BinaryArithmeticExpressionFactory.plus(ValueExpressionFactory.constant("a"),
+                ValueExpressionFactory.functionCall("b",
+                        Arrays.asList(IfExpressionFactory.create(UnaryPredicateExpressionFactory.not(ValueExpressionFactory.constant("nnn")),
+                                        ValueExpressionFactory.constant("true"), ValueExpressionFactory.constant("false")),
                                 ValueExpressionFactory.constant("d"))));
-        
+
         XMLExpressionConverter.XMLExpression xmlExpression = XMLExpressionConverter.getInstance().convertToXML(expression);
         String xml = xstream.toXML(xmlExpression);
         System.out.println(xml);
@@ -59,6 +62,18 @@ public class Main {
         XMLQueryConverter.XMLQuery xmlQ = qConv.convertToXML(q);
         System.out.println(xstream.toXML(xmlQ));
         System.out.println(q.equals(qConv.convertFromXML((XMLQueryConverter.XMLQuery)xstream.fromXML(xstream.toXML(xmlQ)))));
+        
     }
+    
+    public static void main(String[] args) throws IOException {
+        ANTLRInputStream input = new ANTLRInputStream("TRUE AND UNKNOWN OR FALSE AND TRUE");
+        ConfSQLLexer lexer = new ConfSQLLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ConfSQLParser parser = new ConfSQLParser(tokens);
+        ConfSQLVisitor<SQLElement> visitor = new ConfSQLVisitorImpl();
+        System.out.println(visitor.visit(parser.stat()));
+    }
+    
+    
     
 }

@@ -2,7 +2,8 @@ package com.viosng.confsql.semantic.model.sql;
 
 import com.thoughtworks.xstream.XStream;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import com.viosng.confsql.semantic.model.sql.impl.SQLSourceImpl;
+import com.viosng.confsql.semantic.model.sql.old.impl.SQLSourceImpl;
+import com.viosng.confsql.semantic.model.sql.old.SQLSource;
 import com.viosng.confsql.xml.XMLQueryConverter;
 import org.junit.Test;
 

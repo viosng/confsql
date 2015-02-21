@@ -1,11 +1,11 @@
-package com.viosng.confsql.semantic.model.sql.impl;
+package com.viosng.confsql.semantic.model.sql.old.impl;
 
 import com.viosng.confsql.semantic.model.algebra.Query;
 import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
 import com.viosng.confsql.semantic.model.expressions.PredicateExpression;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import com.viosng.confsql.semantic.model.sql.SQLJoinQuery;
-import com.viosng.confsql.semantic.model.sql.SQLQuery;
+import com.viosng.confsql.semantic.model.sql.old.SQLJoinQuery;
+import com.viosng.confsql.semantic.model.sql.old.SQLQuery;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

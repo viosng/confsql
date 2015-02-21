@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.sql;
+package com.viosng.confsql.semantic.model.sql.old;
 
 import com.viosng.confsql.semantic.model.algebra.Query;
 import org.jetbrains.annotations.NotNull;

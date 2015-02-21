@@ -1,10 +1,10 @@
-package com.viosng.confsql.semantic.model.sql.impl;
+package com.viosng.confsql.semantic.model.sql.old.impl;
 
 import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.algebra.Query;
 import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import com.viosng.confsql.semantic.model.sql.SQLSource;
+import com.viosng.confsql.semantic.model.sql.old.SQLSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

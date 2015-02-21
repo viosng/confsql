@@ -1,0 +1,54 @@
+<query type="FILTER">
+    <schema>
+        <expression type="ATTRIBUTE" objectReference="" value="field"/>
+        <expression type="FUNCTION_CALL" value="aggregateFunction">
+            <parameters>
+                <parameter name="param1" value="p"/>
+                <parameter name="param2">
+                    <expression type="FUNCTION_CALL" value="round">
+                        <arguments>
+                            <expression type="ATTRIBUTE" value="score"/>
+                        </arguments>
+                    </expression>
+                </parameter>
+            </parameters>
+            <arguments>
+                <expression type="ATTRIBUTE" objectReference="" value="field"/>    
+            </arguments>
+        </expression>
+    </schema>
+    <arguments>
+        <query type="FILTER">
+            <parameters>
+                <parameter name="type" value="order"/>
+                <parameter name="order_type" value="desc"/>
+            </parameters>
+            <arguments>
+                <query type="AGGREGATION">
+                    <parameters>
+                        <parameter name="algorithm" value="nearest_neighbours"/>
+                        <parameter name="k" value="10"/>
+                    </parameters>
+                    <arguments>
+                        <query type="AGGREGATION">
+                            <parameters>
+                                <parameter name="algorithm" value="nearest_neighbours"/>
+                                <parameter name="k" value="10"/>
+                            </parameters>
+                            <arguments>
+                                <query type="PRIMARY">
+                                    <parameters>
+                                        <parameter name="sourceName" value="source"/>
+                                    </parameters>
+                                </query>
+                                <expression type="ATTRIBUTE" objectReference="source" value="field"/>
+                            </arguments>
+                        </query>
+                        <expression type="ATTRIBUTE" objectReference="" value="otherField"/>
+                    </arguments>
+                </query>
+                <expression type="ATTRIBUTE" objectReference="" value="otherField"/>
+            </arguments>
+        </query>
+    </arguments>
+</query>
