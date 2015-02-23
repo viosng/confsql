@@ -47,8 +47,8 @@ join_type
 join_condition : ('ON'|'on') expr ;
 
 table_primary
-     : table_or_query_name as_clause? paranthesized_column_name_list?                               #fromSource
-     | LEFT_PAREN query RIGHT_PAREN as_clause paranthesized_column_name_list?                       #fromSubQuery
+     : table_or_query_name as_clause? paranthesized_column_name_list?                #fromSource
+     | LEFT_PAREN query RIGHT_PAREN as_clause paranthesized_column_name_list?        #fromSubQuery
      ;
 
 table_or_query_name : StringLiteral | Field;
@@ -116,7 +116,7 @@ expr : BIT_NEG expr                                                             
      | expr ('OR'|'or') expr                                                                     #or
      | ('CAST'|'cast') expr ('as'|'AS') StringLiteral                                            #cast
      | ('CASE'|'case') expr? case_when_clause+ case_else_clause ('END'|'end')                    #case
-     | LEFT_PAREN query RIGHT_PAREN                                                              #subQueryExpr
+     | query                                                                                     #subQueryExpr
      | (NumberLiteral | String)                                                                  #constant
      | Field                                                                                     #fieldExpr
      | StringLiteral (LEFT_PAREN exprs_and_params RIGHT_PAREN)?                                  #columnOrFunctionCall
@@ -154,7 +154,7 @@ NumberLiteral : Real
 
 Bool_Constant : 'FALSE' | 'false' | 'TRUE' | 'true' | 'NULL' | 'null' ;
 Real : (RealWithoutExp | Int) ([eE] Sign? Int)* ;
-RealWithoutExp : '0' | (Int+) '.' Digit*
+RealWithoutExp : ('0' | (Int+)) '.' Digit*
                | '.' Digit+
                ;
 
