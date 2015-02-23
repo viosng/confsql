@@ -70,7 +70,7 @@ public class Main {
         ConfSQLLexer lexer = new ConfSQLLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ConfSQLParser parser = new ConfSQLParser(tokens);
-        ConfSQLVisitor<SQLElement> visitor = new ConfSQLVisitorImpl();
+        ConfSQLVisitor<SQLExpression> visitor = new ConfSQLVisitorImpl();
         System.out.println(visitor.visit(parser.stat()));
     }
     
