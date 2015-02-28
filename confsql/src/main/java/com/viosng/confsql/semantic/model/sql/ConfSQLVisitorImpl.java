@@ -15,18 +15,23 @@ import java.util.stream.Collectors;
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
-    public SQLExpression visitExprs_and_params(ConfSQLParser.Exprs_and_paramsContext ctx) {
+    public SQLExpression visitExprsAndParams(ConfSQLParser.ExprsAndParamsContext ctx) {
         return new SQLExpressionsAndParamsList(
-                ctx.expr_list() != null 
-                        ? (SQLExpressionList) visit(ctx.expr_list()) 
+                ctx.exprList() != null 
+                        ? (SQLExpressionList) visit(ctx.exprList()) 
                         : new SQLExpressionList(Collections.<SQLExpression>emptyList()),
-                ctx.param_list() != null
-                        ? (SQLExpressionList) visit(ctx.param_list())
+                ctx.paramList() != null
+                        ? (SQLExpressionList) visit(ctx.paramList())
                         : new SQLExpressionList(Collections.<SQLExpression>emptyList()));
     }
 
     @Override
-    public SQLExpression visitParam_list(ConfSQLParser.Param_listContext ctx) {
+    public SQLExpression visitParanthesizedParamList(ConfSQLParser.ParanthesizedParamListContext ctx) {
+        return visit(ctx.paramList());
+    }
+
+    @Override
+    public SQLExpression visitParamList(ConfSQLParser.ParamListContext ctx) {
         return new SQLExpressionList(ctx.param().stream().map(this::visit).collect(Collectors.toList()));
     }
 
@@ -38,7 +43,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     }
     
     @Override
-    public SQLExpression visitExpr_list(ConfSQLParser.Expr_listContext ctx) {
+    public SQLExpression visitExprList(ConfSQLParser.ExprListContext ctx) {
         return new SQLExpressionList(ctx.expr().stream().map(this::visit).collect(Collectors.toList()));
     }
 
@@ -112,18 +117,23 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     @Override
     public SQLExpression visitCase(ConfSQLParser.CaseContext ctx) {
         return new SQLCase(ctx.expr() != null ? visit(ctx.expr()) : null,
-                ctx.case_when_clause().stream().map(e -> (SQLCase.SQLWhenThenClause) visit(e)).collect(Collectors.toList()),
-                ctx.case_else_clause() != null ? visit(ctx.case_else_clause()) : null);
+                ctx.caseWhenClause().stream().map(e -> (SQLCase.SQLWhenThenClause) visit(e)).collect(Collectors.toList()),
+                ctx.caseElseClause() != null ? visit(ctx.caseElseClause()) : null);
     }
 
     @Override
-    public SQLExpression visitCase_when_clause(ConfSQLParser.Case_when_clauseContext ctx) {
+    public SQLExpression visitCaseWhenClause(ConfSQLParser.CaseWhenClauseContext ctx) {
         return new SQLCase.SQLWhenThenClause(visit(ctx.w), visit(ctx.t));
     }
 
     @Override
-    public SQLExpression visitCase_else_clause(ConfSQLParser.Case_else_clauseContext ctx) {
+    public SQLExpression visitCaseElseClause(ConfSQLParser.CaseElseClauseContext ctx) {
         return visit(ctx.expr());
+    }
+
+    @Override
+    public SQLExpression visitSubQueryExpr(ConfSQLParser.SubQueryExprContext ctx) {
+        return visit(ctx.query());
     }
 
     @Override
@@ -140,7 +150,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     public SQLExpression visitColumnOrFunctionCall(ConfSQLParser.ColumnOrFunctionCallContext ctx) {
         return ctx.LEFT_PAREN() == null 
                 ? new SQLField(ctx.StringLiteral().getText())
-                : new SQLFunctionCall(ctx.StringLiteral().getText(), (SQLExpressionsAndParamsList) visit(ctx.exprs_and_params()));
+                : new SQLFunctionCall(ctx.StringLiteral().getText(), (SQLExpressionsAndParamsList) visit(ctx.exprsAndParams()));
     }
 
     @Override

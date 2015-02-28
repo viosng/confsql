@@ -72,7 +72,7 @@ public class ConfSQLParserTest {
                                 new SQLParameter("a", new SQLConstant("3")),
                                 new SQLParameter("asdfs", new SQLConstant("true")),
                                 new SQLParameter("asdfs sdfsdfgsfd sdfsf", new SQLConstant("true")))),
-                visitor.visit(getParser("a=3,asdfs=true,\"asdfs sdfsdfgsfd sdfsf\"=true").param_list()));
+                visitor.visit(getParser("a=3,asdfs=true,\"asdfs sdfsdfgsfd sdfsf\"=true").paramList()));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class ConfSQLParserTest {
                         new SQLField("afsd.ds"),
                         new SQLConstant("\"sdfs\"")
                 )),
-                visitor.visit(getParser("1, afsd.ds, \"sdfs\"").expr_list()));
+                visitor.visit(getParser("1, afsd.ds, \"sdfs\"").exprList()));
     }
 
     @Test

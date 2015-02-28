@@ -8,17 +8,17 @@ stat : query EOF;
 ===============================================================================
 */
 
-query : ('select'|'SELECT') select_list table_expression?;
+query : ('select'|'SELECT') selectList tableExpression?;
 
-select_list : select_item (COMMA select_item)* ;
-select_item
-     : asterisk as_clause?                                                                       #all
-     | expr as_clause?                                                                           #selectExpr
+selectList : selectItem (COMMA selectItem)* ;
+selectItem
+     : asterisk asClause?                                                                       #all
+     | expr asClause?                                                                           #selectExpr
      ;
 
 asterisk : (StringLiteral DOT)? MULTIPLY;
 
-table_expression : from_clause where_clause? groupby_clause? having_clause? orderby_clause? limit_clause? ;
+tableExpression : fromClause whereClause? groupbyClause? havingClause? orderbyClause? limitClause? ;
 
 /*
 ===============================================================================
@@ -26,17 +26,17 @@ table_expression : from_clause where_clause? groupby_clause? having_clause? orde
 ===============================================================================
 */
 
-from_clause : ('FROM'|'from') paranthesized_param_list? table_reference_list;
+fromClause : ('FROM'|'from') paranthesizedParamList? tableReferenceList;
 
-table_reference_list :table_reference (COMMA table_reference)*;
+tableReferenceList :tableReference (COMMA tableReference)*;
 
-table_reference : joined_table | table_primary;
+tableReference : joinedTable | tablePrimary;
 
-joined_table : table_primary joined_table_primary+;
+joinedTable : tablePrimary joinedTablePrimary+;
 
-joined_table_primary : join_type? ('JOIN'|'join') paranthesized_param_list? table_primary join_condition?;
+joinedTablePrimary : joinType? ('JOIN'|'join') paranthesizedParamList? tablePrimary join_condition?;
 
-join_type
+joinType
      : ('INNER' | 'inner')
      | ('FUZZY' | 'fuzzy')
      | ('LEFT' | 'left')
@@ -46,15 +46,15 @@ join_type
 
 join_condition : ('ON'|'on') expr ;
 
-table_primary
-     : table_or_query_name as_clause? paranthesized_column_name_list?                #fromSource
-     | LEFT_PAREN query RIGHT_PAREN as_clause paranthesized_column_name_list?        #fromSubQuery
+tablePrimary
+     : tableOrQueryName asClause? paranthesizedColumnNameList?                #fromSource
+     | LEFT_PAREN query RIGHT_PAREN asClause paranthesizedColumnNameList?        #fromSubQuery
      ;
 
-table_or_query_name : StringLiteral | Field;
+tableOrQueryName : StringLiteral | Field;
 
-paranthesized_column_name_list : LEFT_PAREN column_name_list RIGHT_PAREN;
-column_name_list : StringLiteral (COMMA StringLiteral)*;
+paranthesizedColumnNameList : LEFT_PAREN columnNameList RIGHT_PAREN;
+columnNameList : StringLiteral (COMMA StringLiteral)*;
 
 /*
 ===============================================================================
@@ -62,7 +62,7 @@ column_name_list : StringLiteral (COMMA StringLiteral)*;
 ===============================================================================
 */
 
-where_clause : ('where'|'WHERE') expr;
+whereClause : ('where'|'WHERE') expr;
 
 /*
 ===============================================================================
@@ -70,7 +70,7 @@ where_clause : ('where'|'WHERE') expr;
 ===============================================================================
 */
 
-groupby_clause : ('group'|'GROUP') paranthesized_param_list? ('by'|'BY') expr_list;
+groupbyClause : ('group'|'GROUP') paranthesizedParamList? ('by'|'BY') exprList;
 
 /*
 ===============================================================================
@@ -78,7 +78,7 @@ groupby_clause : ('group'|'GROUP') paranthesized_param_list? ('by'|'BY') expr_li
 ===============================================================================
 */
 
-having_clause : ('having'|'HAVING') expr;
+havingClause : ('having'|'HAVING') expr;
 
 /*
 ===============================================================================
@@ -86,8 +86,8 @@ having_clause : ('having'|'HAVING') expr;
 ===============================================================================
 */
 
-orderby_clause : ('order'|'ORDER') paranthesized_param_list? ('by'|'BY') expr_list Order_Type?;
-Order_Type : 'ASC' | 'asc' | 'desc' | 'DESC';
+orderbyClause : ('order'|'ORDER') paranthesizedParamList? ('by'|'BY') exprList OrderType?;
+OrderType : 'ASC' | 'asc' | 'desc' | 'DESC';
 
 /*
 ===============================================================================
@@ -95,7 +95,7 @@ Order_Type : 'ASC' | 'asc' | 'desc' | 'DESC';
 ===============================================================================
 */
 
-limit_clause : ('limit'|'LIMIT') expr;
+limitClause : ('limit'|'LIMIT') expr;
 
 /*
 ===============================================================================
@@ -115,28 +115,28 @@ expr : BIT_NEG expr                                                             
      | expr ('AND'|'and') expr                                                                   #and
      | expr ('OR'|'or') expr                                                                     #or
      | ('CAST'|'cast') expr ('as'|'AS') StringLiteral                                            #cast
-     | ('CASE'|'case') expr? case_when_clause+ case_else_clause? ('END'|'end')                   #case
+     | ('CASE'|'case') expr? caseWhenClause+ caseElseClause? ('END'|'end')                   #case
      | query                                                                                     #subQueryExpr
      | (NumberLiteral | String)                                                                  #constant
      | Field                                                                                     #fieldExpr
-     | StringLiteral (LEFT_PAREN exprs_and_params RIGHT_PAREN)?                                  #columnOrFunctionCall
+     | StringLiteral (LEFT_PAREN exprsAndParams RIGHT_PAREN)?                                  #columnOrFunctionCall
      | LEFT_PAREN expr RIGHT_PAREN                                                               #brackets
      ;
 
-as_clause : ('as'|'AS')? StringLiteral;
+asClause : ('as'|'AS')? StringLiteral;
 
-exprs_and_params
-     : (expr_list SEMI_COLON)? param_list
-     | expr_list?
+exprsAndParams
+     : (exprList SEMI_COLON)? paramList
+     | exprList?
      ;
 
-paranthesized_param_list : LEFT_PAREN param_list RIGHT_PAREN;
-param_list : param (COMMA param)*;
+paranthesizedParamList : LEFT_PAREN paramList RIGHT_PAREN;
+paramList : param (COMMA param)*;
 param : name=(String | StringLiteral) EQUAL expr;
 
-expr_list : expr (COMMA expr)*;
-case_when_clause : ('WHEN' | 'when') w=expr ('THEN' | 'then') t=expr;
-case_else_clause : ('ELSE' | 'else') expr;
+exprList : expr (COMMA expr)*;
+caseWhenClause : ('WHEN' | 'when') w=expr ('THEN' | 'then') t=expr;
+caseElseClause : ('ELSE' | 'else') expr;
 
 /*
 ===============================================================================
@@ -146,10 +146,10 @@ case_else_clause : ('ELSE' | 'else') expr;
 
 NumberLiteral : Real
               | Int
-              | Bool_Constant
+              | BoolConstant
               ;
 
-Bool_Constant : 'FALSE' | 'false' | 'TRUE' | 'true' | 'NULL' | 'null' ;
+BoolConstant : 'FALSE' | 'false' | 'TRUE' | 'true' | 'NULL' | 'null' ;
 Real : (RealWithoutExp | Int) ([eE] Sign? Int)* ;
 RealWithoutExp : ('0' | (Int+)) '.' Digit*
                | '.' Digit+
