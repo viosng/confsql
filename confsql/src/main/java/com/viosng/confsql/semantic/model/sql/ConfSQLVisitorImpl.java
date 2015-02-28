@@ -43,6 +43,33 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     }
 
     @Override
+    public SQLExpression visitBitNeg(ConfSQLParser.BitNegContext ctx) {
+        return new SQLUnaryExpression(SQLExpression.ArithmeticType.BIT_NEG, visit(ctx.expr()));
+    }
+
+    @Override
+    public SQLExpression visitNeg(ConfSQLParser.NegContext ctx) {
+        return new SQLUnaryExpression(SQLExpression.ArithmeticType.MINUS, visit(ctx.expr()));
+    }
+
+    @Override
+    public SQLExpression visitPower(ConfSQLParser.PowerContext ctx) {
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.POWER, visit(ctx.expr(0)), visit(ctx.expr(1)));
+    }
+
+    @Override
+    public SQLExpression visitArithmFirst(ConfSQLParser.ArithmFirstContext ctx) {
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.getText()),
+                visit(ctx.expr(0)), visit(ctx.expr(1)));
+    }
+
+    @Override
+    public SQLExpression visitArithmSecond(ConfSQLParser.ArithmSecondContext ctx) {
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.getText()),
+                visit(ctx.expr(0)), visit(ctx.expr(1)));
+    }
+
+    @Override
     public SQLExpression visitConcatenation(ConfSQLParser.ConcatenationContext ctx) {
         return new SQLBinaryExpression(SQLExpression.ArithmeticType.CONCATENATION, visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
