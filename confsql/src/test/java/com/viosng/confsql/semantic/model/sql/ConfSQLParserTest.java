@@ -3,12 +3,9 @@ package com.viosng.confsql.semantic.model.sql;
 import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Token;
 import org.junit.Test;
 import org.junit.experimental.theories.Theories;
 import org.junit.runner.RunWith;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +23,7 @@ public class ConfSQLParserTest {
     }
 
     private void printVisit(String input) {
-        System.out.println(visitor.visit(getParser(input).query()));
+        System.out.println(visitor.visit(getParser(input).param()));
 
     }
 
@@ -36,11 +33,8 @@ public class ConfSQLParserTest {
     }
 
     @Test
-    public void testName() throws Exception {
-        String input = "1 + f(3)";
-        ConfSQLLexer l = new ConfSQLLexer(new ANTLRInputStream(input));
-        List<? extends Token> list = l.getAllTokens();
-        System.out.println(list);
+    public void testParam() throws Exception {
+        printVisit("pddfsgf.3=3");
     }
 
     @Test

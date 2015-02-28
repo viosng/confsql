@@ -115,7 +115,7 @@ expr : BIT_NEG expr                                                             
      | expr ('AND'|'and') expr                                                                   #and
      | expr ('OR'|'or') expr                                                                     #or
      | ('CAST'|'cast') expr ('as'|'AS') StringLiteral                                            #cast
-     | ('CASE'|'case') expr? case_when_clause+ case_else_clause ('END'|'end')                    #case
+     | ('CASE'|'case') expr? case_when_clause+ case_else_clause? ('END'|'end')                   #case
      | query                                                                                     #subQueryExpr
      | (NumberLiteral | String)                                                                  #constant
      | Field                                                                                     #fieldExpr
@@ -135,11 +135,11 @@ exprs_and_params
 
 paranthesized_param_list : LEFT_PAREN param_list RIGHT_PAREN;
 param_list : param (COMMA param)*;
-param : (String | StringLiteral) EQUAL expr;
+param : name=(String | StringLiteral) EQUAL expr;
 
 expr_list : expr (COMMA expr)*;
 case_when_clause : ('WHEN' | 'when') w=expr ('THEN' | 'then') t=expr;
-case_else_clause : ('ELSE' | 'else') e=expr;
+case_else_clause : ('ELSE' | 'else') expr;
 
 /*
 ===============================================================================

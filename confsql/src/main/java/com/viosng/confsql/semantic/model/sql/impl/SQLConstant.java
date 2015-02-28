@@ -1,5 +1,6 @@
-package com.viosng.confsql.semantic.model.sql;
+package com.viosng.confsql.semantic.model.sql.impl;
 
+import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,6 +20,21 @@ public class SQLConstant implements SQLExpression {
     @NotNull
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SQLConstant)) return false;
+
+        SQLConstant that = (SQLConstant) o;
+
+        return value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 
     @Override
