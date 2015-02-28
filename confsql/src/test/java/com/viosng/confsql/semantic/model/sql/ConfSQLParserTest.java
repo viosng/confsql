@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -32,7 +33,8 @@ public class ConfSQLParserTest {
     public void testField() throws Exception {
         assertEquals(new SQLField("abc"), visitor.visit(getParser("abc").expr()));
         assertEquals(new SQLField("a"), visitor.visit(getParser("a").expr()));
-        assertEquals(new SQLField("abc.d.e"), visitor.visit(getParser("abc.d.e").expr()));
+        assertEquals(new SQLField("aBC.d.e"), visitor.visit(getParser("aBC.d.e").expr()));
+        assertNotEquals(new SQLField("8a"), visitor.visit(getParser("8a").expr()));
     }
 
     @Test
@@ -134,24 +136,31 @@ public class ConfSQLParserTest {
 
     @Test
     public void testCase() throws Exception {
-        SQLCaseExpr caseExpr = new SQLCaseExpr(new SQLField("c"),
+        SQLCase caseExpr = new SQLCase(new SQLField("c"),
                 Arrays.asList(
-                        new SQLCaseExpr.SQLWhenThenClause(new SQLField("ca"), new SQLField("cb")),
-                        new SQLCaseExpr.SQLWhenThenClause(new SQLConstant("3"), new SQLField("sdfgsre")),
-                        new SQLCaseExpr.SQLWhenThenClause(new SQLConstant("\"wewe\""), new SQLConstant("123.323"))
+                        new SQLCase.SQLWhenThenClause(new SQLField("ca"), new SQLField("cb")),
+                        new SQLCase.SQLWhenThenClause(new SQLConstant("3"), new SQLField("sdfgsre")),
+                        new SQLCase.SQLWhenThenClause(new SQLConstant("\"wewe\""), new SQLConstant("123.323"))
                 ),
                 new SQLField("a.b.c"));
         assertEquals(caseExpr,
                 visitor.visit(getParser("case c when ca then cb when 3 then sdfgsre when \"wewe\" then 123.323 else a.b.c end").expr()));
 
-        caseExpr = new SQLCaseExpr(null,
+        caseExpr = new SQLCase(null,
                 Arrays.asList(
-                        new SQLCaseExpr.SQLWhenThenClause(new SQLField("ca"), new SQLField("cb")),
-                        new SQLCaseExpr.SQLWhenThenClause(new SQLConstant("3"), new SQLField("sdfgsre"))
+                        new SQLCase.SQLWhenThenClause(new SQLField("ca"), new SQLField("cb")),
+                        new SQLCase.SQLWhenThenClause(new SQLConstant("3"), new SQLField("sdfgsre"))
                 ),
                 null);
         assertEquals(caseExpr, visitor.visit(getParser("case when ca then cb when 3 then sdfgsre end").expr()));
     }
-    
-    
+
+    @Test
+    public void testCast() throws Exception {
+        SQLCast cast = new SQLCast(new SQLConstant("10."), "Double");
+        assertEquals(cast, visitor.visit(getParser("cast 10. AS Double").expr()));
+
+        cast = new SQLCast(new SQLField("a.as.ds"), "Int");
+        assertEquals(cast, visitor.visit(getParser("cast a.as.ds AS Int").expr()));
+    }
 }

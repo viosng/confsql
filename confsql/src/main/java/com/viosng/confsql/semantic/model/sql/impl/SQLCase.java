@@ -12,7 +12,7 @@ import java.util.List;
  * Date: 28.02.2015
  * Time: 13:38
  */
-public class SQLCaseExpr implements SQLExpression{
+public class SQLCase implements SQLExpression{
     
     public static class SQLWhenThenClause implements SQLExpression {
         
@@ -66,7 +66,7 @@ public class SQLCaseExpr implements SQLExpression{
     @NotNull
     private final List<SQLWhenThenClause> whenThenClauses;
 
-    public SQLCaseExpr(SQLExpression expression, @NotNull List<SQLWhenThenClause> whenThenClauses, SQLExpression elseExpression) {
+    public SQLCase(SQLExpression expression, @NotNull List<SQLWhenThenClause> whenThenClauses, SQLExpression elseExpression) {
         this.expression = expression;
         this.elseExpression = elseExpression;
         this.whenThenClauses = whenThenClauses;
@@ -90,9 +90,9 @@ public class SQLCaseExpr implements SQLExpression{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SQLCaseExpr)) return false;
+        if (!(o instanceof SQLCase)) return false;
 
-        SQLCaseExpr that = (SQLCaseExpr) o;
+        SQLCase that = (SQLCase) o;
 
         return !(elseExpression != null ? !elseExpression.equals(that.elseExpression) : that.elseExpression != null) 
                 && !(expression != null ? !expression.equals(that.expression) : that.expression != null) 

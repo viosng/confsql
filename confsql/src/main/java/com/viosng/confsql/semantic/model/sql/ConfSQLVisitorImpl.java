@@ -42,15 +42,20 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     }
 
     @Override
+    public SQLExpression visitCast(ConfSQLParser.CastContext ctx) {
+        return new SQLCast(visit(ctx.expr()), ctx.StringLiteral().getText());
+    }
+
+    @Override
     public SQLExpression visitCase(ConfSQLParser.CaseContext ctx) {
-        return new SQLCaseExpr(ctx.expr() != null ? visit(ctx.expr()) : null,
-                ctx.case_when_clause().stream().map(e -> (SQLCaseExpr.SQLWhenThenClause) visit(e)).collect(Collectors.toList()),
+        return new SQLCase(ctx.expr() != null ? visit(ctx.expr()) : null,
+                ctx.case_when_clause().stream().map(e -> (SQLCase.SQLWhenThenClause) visit(e)).collect(Collectors.toList()),
                 ctx.case_else_clause() != null ? visit(ctx.case_else_clause()) : null);
     }
 
     @Override
     public SQLExpression visitCase_when_clause(ConfSQLParser.Case_when_clauseContext ctx) {
-        return new SQLCaseExpr.SQLWhenThenClause(visit(ctx.w), visit(ctx.t));
+        return new SQLCase.SQLWhenThenClause(visit(ctx.w), visit(ctx.t));
     }
 
     @Override
