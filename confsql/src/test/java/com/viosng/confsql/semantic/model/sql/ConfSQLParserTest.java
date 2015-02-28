@@ -1,6 +1,7 @@
 package com.viosng.confsql.semantic.model.sql;
 
 import com.viosng.confsql.semantic.model.sql.expr.impl.*;
+import com.viosng.confsql.semantic.model.sql.query.SQLOrderByClause;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.Pair;
@@ -198,5 +199,28 @@ public class ConfSQLParserTest {
         for (Pair<SQLExpression.ArithmeticType, String> pair : testData) {
             assertEquals(pair.b, new SQLUnaryExpression(pair.a, c1), visitor.visit(getParser(pair.b).expr()));
         }
+    }
+
+    @Test
+    public void testLimitClause() throws Exception {
+        SQLExpression limit = new SQLConstant("3");
+        assertEquals(limit, visitor.visit(getParser("limit 3").limitClause()));
+    }
+
+    @Test
+    public void testOrderByClause() throws Exception {
+        SQLOrderByClause orderByClause = new SQLOrderByClause(
+                Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4"))),
+                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")),
+                "DESC"
+        );
+        assertEquals(orderByClause, visitor.visit(getParser("order(a=3,b=4) by a, b, c desc").orderByClause()));
+
+        orderByClause = new SQLOrderByClause(
+                Collections.<SQLParameter>emptyList(),
+                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")),
+                "ASC"
+        );
+        assertEquals(orderByClause, visitor.visit(getParser("order by a, b, c").orderByClause()));
     }
 }

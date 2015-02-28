@@ -22,7 +22,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
                         ? ((SQLParameterList) visit(ctx.paranthesizedParamList())).getParameterList() 
                         : Collections.<SQLParameter>emptyList(),
                 ((SQLExpressionList) visit(ctx.exprList())).getExpressionList(),
-                ctx.OrderType().getText());
+                ctx.OrderType() != null ? ctx.OrderType().getText() : "asc");
     }
 
     @Override
