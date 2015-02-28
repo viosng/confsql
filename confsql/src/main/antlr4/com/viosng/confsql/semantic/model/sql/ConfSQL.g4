@@ -123,10 +123,7 @@ expr : BIT_NEG expr                                                             
      | LEFT_PAREN expr RIGHT_PAREN                                                               #brackets
      ;
 
-Field : StringLiteral (DOT StringLiteral)+;
 as_clause : ('as'|'AS')? StringLiteral;
-StringLiteral: [a-zA-Z] [a-zA-Z0-9_]*;
-String: '"' (Esc|.)*? '"' ;
 
 exprs_and_params
      : (expr_list SEMI_COLON)? param_list
@@ -158,7 +155,12 @@ RealWithoutExp : ('0' | (Int+)) '.' Digit*
                | '.' Digit+
                ;
 
-Int : NonZeroDigit+ Digit* ;
+Int : (NonZeroDigit+ Digit*) | Digit ;
+
+Field : StringLiteral (DOT StringLiteral)+;
+StringLiteral: [a-zA-Z] [a-zA-Z0-9_]*;
+String: '"' (Esc|.)*? '"' ;
+
 LineComment : MinusSign MinusSign .*? '\r'? '\n' -> skip ;
 
 ASSIGN  : ':=';
