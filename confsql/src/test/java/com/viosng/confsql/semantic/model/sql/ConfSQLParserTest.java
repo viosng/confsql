@@ -154,13 +154,4 @@ public class ConfSQLParserTest {
                 null);
         assertEquals(caseExpr, visitor.visit(getParser("case when ca then cb when 3 then sdfgsre end").expr()));
     }
-
-    @Test
-    public void testCast() throws Exception {
-        SQLCast cast = new SQLCast(new SQLConstant("10."), "Double");
-        assertEquals(cast, visitor.visit(getParser("cast 10. AS Double").expr()));
-
-        cast = new SQLCast(new SQLField("a.as.ds"), "Int");
-        assertEquals(cast, visitor.visit(getParser("cast a.as.ds AS Int").expr()));
-    }
 }

@@ -2,6 +2,7 @@ package com.viosng.confsql.semantic.model.sql;
 
 import com.viosng.confsql.semantic.model.sql.impl.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -42,8 +43,43 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     }
 
     @Override
+    public SQLExpression visitConcatenation(ConfSQLParser.ConcatenationContext ctx) {
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.CONCATENATION, visit(ctx.expr(0)), visit(ctx.expr(1)));
+    }
+
+    @Override
+    public SQLExpression visitNot(ConfSQLParser.NotContext ctx) {
+        return new SQLUnaryExpression(SQLExpression.ArithmeticType.NOT, visit(ctx.expr()));
+    }
+
+    @Override
+    public SQLExpression visitComparing(ConfSQLParser.ComparingContext ctx) {
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.getText()), 
+                visit(ctx.expr(0)), visit(ctx.expr(1)));
+    }
+
+    @Override
+    public SQLExpression visitAnd(ConfSQLParser.AndContext ctx) {
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.AND, visit(ctx.expr(0)), visit(ctx.expr(1)));
+    }
+
+    @Override
+    public SQLExpression visitOr(ConfSQLParser.OrContext ctx) {
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.OR, visit(ctx.expr(0)), visit(ctx.expr(1)));
+    }
+
+    @Override
+    public SQLExpression visitIs(ConfSQLParser.IsContext ctx) {
+        return new SQLFunctionCall("is", new SQLExpressionsAndParamsList(
+                new SQLExpressionList(Arrays.asList(visit(ctx.expr(0)), visit(ctx.expr(1)))),
+                new SQLExpressionList(Collections.emptyList())));
+    }
+
+    @Override
     public SQLExpression visitCast(ConfSQLParser.CastContext ctx) {
-        return new SQLCast(visit(ctx.expr()), ctx.StringLiteral().getText());
+        return new SQLFunctionCall("cast", new SQLExpressionsAndParamsList(
+                new SQLExpressionList(Arrays.asList(visit(ctx.expr()), visit(ctx.StringLiteral()))),
+                new SQLExpressionList(Collections.emptyList())));
     }
 
     @Override

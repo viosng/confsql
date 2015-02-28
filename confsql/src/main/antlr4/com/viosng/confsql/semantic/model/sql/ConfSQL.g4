@@ -108,7 +108,7 @@ expr : BIT_NEG expr                                                             
      | <assoc=right> expr POWER expr                                                             #power
      | expr (MULTIPLY|DIVIDE|MODULAR) expr                                                       #arithmFirst
      | expr (PLUS|MINUS|BIT_AND|VERTICAL_BAR|BIT_XOR) expr                                       #arithmSecond
-     | expr CONCATENATION_OPERATOR expr                                                          #concatination
+     | expr CONCATENATION_OPERATOR expr                                                          #concatenation
      | ('NOT'|'not') expr                                                                        #not
      | expr (EQUAL|GTH|LTH|GEQ|LEQ|NOT_EQUAL) expr                                               #comparing
      | expr ('IS'|'is') expr                                                                     #is
