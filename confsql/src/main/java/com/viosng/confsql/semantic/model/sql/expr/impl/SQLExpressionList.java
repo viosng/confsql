@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.sql.impl;
+package com.viosng.confsql.semantic.model.sql.expr.impl;
 
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
@@ -14,15 +14,15 @@ import java.util.List;
 public class SQLExpressionList implements SQLExpression {
     
     @NotNull
-    private final List<SQLExpression> sqlExpressions;
+    private final List<SQLExpression> expressionList;
 
-    public SQLExpressionList(@NotNull List<SQLExpression> sqlExpressions) {
-        this.sqlExpressions = sqlExpressions;
+    public SQLExpressionList(@NotNull List<SQLExpression> expressionList) {
+        this.expressionList = expressionList;
     }
 
     @NotNull
-    public List<SQLExpression> getSqlExpressions() {
-        return sqlExpressions;
+    public List<SQLExpression> getExpressionList() {
+        return expressionList;
     }
 
     @Override
@@ -32,18 +32,18 @@ public class SQLExpressionList implements SQLExpression {
 
         SQLExpressionList that = (SQLExpressionList) o;
 
-        return sqlExpressions.equals(that.sqlExpressions);
+        return expressionList.equals(that.expressionList);
     }
 
     @Override
     public int hashCode() {
-        return sqlExpressions.hashCode();
+        return expressionList.hashCode();
     }
 
     @Override
     public String toString() {
         return "SQLExpressionList{" +
-                "sqlExpressions=" + sqlExpressions +
+                "expressionList=" + expressionList +
                 '}';
     }
 }

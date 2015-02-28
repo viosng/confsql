@@ -1,6 +1,6 @@
 package com.viosng.confsql.semantic.model.sql;
 
-import com.viosng.confsql.semantic.model.sql.impl.*;
+import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.Pair;
@@ -67,7 +67,7 @@ public class ConfSQLParserTest {
         } catch (NullPointerException ignored) {
         }
 
-        assertEquals(new SQLExpressionList(
+        assertEquals(new SQLParameterList(
                         Arrays.asList(
                                 new SQLParameter("a", new SQLConstant("3")),
                                 new SQLParameter("asdfs", new SQLConstant("true")),
@@ -87,49 +87,32 @@ public class ConfSQLParserTest {
 
     @Test
     public void testFunctionCall() throws Exception {
-        SQLFunctionCall functionCall = new SQLFunctionCall("f", 
-                new SQLExpressionsAndParamsList(
-                    new SQLExpressionList(
-                            Arrays.asList(
-                                new SQLConstant("1"),
-                                new SQLField("afsd.ds"),
-                                new SQLConstant("\"sdfs\"")
-                    )),
-                    new SQLExpressionList(
-                        Arrays.asList(
-                                new SQLParameter("a", new SQLConstant("3")),
-                                new SQLParameter("asdfs", new SQLConstant("true")),
-                                new SQLParameter("asdfs sdfsdfgsfd sdfsf", new SQLConstant("true"))))));
+        SQLFunctionCall functionCall = new SQLFunctionCall("f",
+                Arrays.asList(
+                        new SQLConstant("1"),
+                        new SQLField("afsd.ds"),
+                        new SQLConstant("\"sdfs\"")
+                ),
+                Arrays.asList(
+                        new SQLParameter("a", new SQLConstant("3")),
+                        new SQLParameter("asdfs", new SQLConstant("true")),
+                        new SQLParameter("asdfs sdfsdfgsfd sdfsf", new SQLConstant("true"))));
         assertEquals(functionCall, 
                 visitor.visit(getParser("f(1, afsd.ds, \"sdfs\"; a=3,asdfs=true,\"asdfs sdfsdfgsfd sdfsf\"=true)").expr()));
 
         functionCall = new SQLFunctionCall("args",
-                new SQLExpressionsAndParamsList(
-                        new SQLExpressionList(
-                                Arrays.asList(
-                                        new SQLConstant("1"),
-                                        new SQLField("afsd.ds"),
-                                        new SQLConstant("\"sdfs\"")
-                                )),
-                        new SQLExpressionList(Collections.<SQLExpression>emptyList())));
+                Arrays.asList(new SQLConstant("1"), new SQLField("afsd.ds"), new SQLConstant("\"sdfs\"")), Collections.<SQLParameter>emptyList());
         
         assertEquals(functionCall, visitor.visit(getParser("args(1, afsd.ds, \"sdfs\")").expr()));
 
-        functionCall = new SQLFunctionCall("params",
-                new SQLExpressionsAndParamsList(
-                        new SQLExpressionList(Collections.<SQLExpression>emptyList()),
-                        new SQLExpressionList(
-                                Arrays.asList(
-                                        new SQLParameter("a", new SQLConstant("3")),
-                                        new SQLParameter("asdfs", new SQLConstant("true")),
-                                        new SQLParameter("asdfs sdfsdfgsfd sdfsf", new SQLConstant("true"))))));
+        functionCall = new SQLFunctionCall("params", Collections.<SQLExpression>emptyList(), Arrays.asList(
+                                new SQLParameter("a", new SQLConstant("3")),
+                                new SQLParameter("asdfs", new SQLConstant("true")),
+                                new SQLParameter("asdfs sdfsdfgsfd sdfsf", new SQLConstant("true"))));
 
         assertEquals(functionCall, visitor.visit(getParser("params(a=3,asdfs=true,\"asdfs sdfsdfgsfd sdfsf\"=true)").expr()));
 
-        functionCall = new SQLFunctionCall("empty",
-                new SQLExpressionsAndParamsList(
-                        new SQLExpressionList(Collections.<SQLExpression>emptyList()),
-                        new SQLExpressionList(Collections.<SQLExpression>emptyList())));
+        functionCall = new SQLFunctionCall("empty",Collections.<SQLExpression>emptyList(), Collections.<SQLParameter>emptyList());
 
         assertEquals(functionCall, visitor.visit(getParser("empty()").expr()));
     }
@@ -157,9 +140,8 @@ public class ConfSQLParserTest {
 
     @Test
     public void testCast() throws Exception {
-        SQLExpression cast = new SQLFunctionCall("cast", new SQLExpressionsAndParamsList(
-                new SQLExpressionList(Arrays.asList(new SQLConstant("23"), new SQLConstant("Int"))),
-                new SQLExpressionList(Collections.emptyList())));
+        SQLExpression cast = new SQLFunctionCall("cast", Arrays.asList(new SQLConstant("23"), new SQLConstant("Int")), 
+                Collections.emptyList());
         assertEquals(cast, visitor.visit(getParser("cast 23 as Int").expr()));
         assertNotEquals(cast, visitor.visit(getParser("cast 23 as B").expr()));
         assertNotEquals(cast, visitor.visit(getParser("cast 24 as Int").expr()));
@@ -167,9 +149,8 @@ public class ConfSQLParserTest {
 
     @Test
     public void testIs() throws Exception {
-        SQLExpression cast = new SQLFunctionCall("is", new SQLExpressionsAndParamsList(
-                new SQLExpressionList(Arrays.asList(new SQLConstant("23"), new SQLConstant("42"))),
-                new SQLExpressionList(Collections.emptyList())));
+        SQLExpression cast = new SQLFunctionCall("is", Arrays.asList(new SQLConstant("23"), new SQLConstant("42")), 
+                Collections.emptyList());
         assertEquals(cast, visitor.visit(getParser("23 is 42").expr()));
         assertNotEquals(cast, visitor.visit(getParser("23 is 43").expr()));
         assertNotEquals(cast, visitor.visit(getParser("24 is 42").expr()));

@@ -1,6 +1,7 @@
 package com.viosng.confsql.semantic.model.sql;
 
-import com.viosng.confsql.semantic.model.sql.impl.*;
+import com.viosng.confsql.semantic.model.sql.expr.impl.*;
+import com.viosng.confsql.semantic.model.sql.query.SQLOrderByClause;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,14 +16,34 @@ import java.util.stream.Collectors;
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
+    public SQLExpression visitOrderByClause(ConfSQLParser.OrderByClauseContext ctx) {
+        return new SQLOrderByClause(
+                ctx.paranthesizedParamList() != null 
+                        ? ((SQLParameterList) visit(ctx.paranthesizedParamList())).getParameterList() 
+                        : Collections.<SQLParameter>emptyList(),
+                ((SQLExpressionList) visit(ctx.exprList())).getExpressionList(),
+                ctx.OrderType().getText());
+    }
+
+    @Override
+    public SQLExpression visitLimitClause(ConfSQLParser.LimitClauseContext ctx) {
+        return visit(ctx.expr());
+    }
+
+    @Override
+    public SQLExpression visitAsClause(ConfSQLParser.AsClauseContext ctx) {
+        return new SQLConstant(ctx.StringLiteral().getText());
+    }
+
+    @Override
     public SQLExpression visitExprsAndParams(ConfSQLParser.ExprsAndParamsContext ctx) {
         return new SQLExpressionsAndParamsList(
                 ctx.exprList() != null 
-                        ? (SQLExpressionList) visit(ctx.exprList()) 
+                        ? (SQLExpressionList) visit(ctx.exprList())
                         : new SQLExpressionList(Collections.<SQLExpression>emptyList()),
                 ctx.paramList() != null
-                        ? (SQLExpressionList) visit(ctx.paramList())
-                        : new SQLExpressionList(Collections.<SQLExpression>emptyList()));
+                        ? (SQLParameterList) visit(ctx.paramList())
+                        : new SQLParameterList(Collections.<SQLParameter>emptyList()));
     }
 
     @Override
@@ -32,7 +53,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitParamList(ConfSQLParser.ParamListContext ctx) {
-        return new SQLExpressionList(ctx.param().stream().map(this::visit).collect(Collectors.toList()));
+        return new SQLParameterList(ctx.param().stream().map(p -> (SQLParameter) visit(p)).collect(Collectors.toList()));
     }
 
     @Override
@@ -102,16 +123,13 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitIs(ConfSQLParser.IsContext ctx) {
-        return new SQLFunctionCall("is", new SQLExpressionsAndParamsList(
-                new SQLExpressionList(Arrays.asList(visit(ctx.expr(0)), visit(ctx.expr(1)))),
-                new SQLExpressionList(Collections.emptyList())));
+        return new SQLFunctionCall("is", Arrays.asList(visit(ctx.expr(0)), visit(ctx.expr(1))), Collections.emptyList());
     }
 
     @Override
     public SQLExpression visitCast(ConfSQLParser.CastContext ctx) {
-        return new SQLFunctionCall("cast", new SQLExpressionsAndParamsList(
-                new SQLExpressionList(Arrays.asList(visit(ctx.expr()), new SQLConstant(ctx.StringLiteral().getText()))),
-                new SQLExpressionList(Collections.emptyList())));
+        return new SQLFunctionCall("cast", Arrays.asList(visit(ctx.expr()), new SQLConstant(ctx.StringLiteral().getText())), 
+                Collections.emptyList());
     }
 
     @Override
@@ -148,9 +166,13 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitColumnOrFunctionCall(ConfSQLParser.ColumnOrFunctionCallContext ctx) {
-        return ctx.LEFT_PAREN() == null 
-                ? new SQLField(ctx.StringLiteral().getText())
-                : new SQLFunctionCall(ctx.StringLiteral().getText(), (SQLExpressionsAndParamsList) visit(ctx.exprsAndParams()));
+        if (ctx.LEFT_PAREN() == null) {
+            return new SQLField(ctx.StringLiteral().getText());
+        } else {
+            SQLExpressionsAndParamsList epList = (SQLExpressionsAndParamsList) visit(ctx.exprsAndParams());
+            return new SQLFunctionCall(ctx.StringLiteral().getText(), epList.getExpressionList().getExpressionList(), 
+                    epList.getParameterList().getParameterList());
+        }
     }
 
     @Override

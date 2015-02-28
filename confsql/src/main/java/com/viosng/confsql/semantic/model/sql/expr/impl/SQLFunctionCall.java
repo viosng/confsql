@@ -1,7 +1,9 @@
-package com.viosng.confsql.semantic.model.sql.impl;
+package com.viosng.confsql.semantic.model.sql.expr.impl;
 
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,11 +17,15 @@ public class SQLFunctionCall implements SQLExpression {
     private final String name;
     
     @NotNull
-    private final SQLExpressionsAndParamsList expressionsAndParamsList;
+    private final List<SQLExpression> arguments;
+    
+    @NotNull
+    private final List<SQLParameter> parameters;
 
-    public SQLFunctionCall(@NotNull String name, @NotNull SQLExpressionsAndParamsList expressionsAndParamsList) {
+    public SQLFunctionCall(@NotNull String name, @NotNull List<SQLExpression> arguments, @NotNull List<SQLParameter> parameters) {
         this.name = name;
-        this.expressionsAndParamsList = expressionsAndParamsList;
+        this.arguments = arguments;
+        this.parameters = parameters;
     }
 
     @NotNull
@@ -28,8 +34,13 @@ public class SQLFunctionCall implements SQLExpression {
     }
 
     @NotNull
-    public SQLExpressionsAndParamsList getExpressionsAndParamsList() {
-        return expressionsAndParamsList;
+    public List<SQLExpression> getArguments() {
+        return arguments;
+    }
+
+    @NotNull
+    public List<SQLParameter> getParameters() {
+        return parameters;
     }
 
     @Override
@@ -39,13 +50,14 @@ public class SQLFunctionCall implements SQLExpression {
 
         SQLFunctionCall that = (SQLFunctionCall) o;
 
-        return expressionsAndParamsList.equals(that.expressionsAndParamsList) && name.equals(that.name);
+        return arguments.equals(that.arguments) && name.equals(that.name) && parameters.equals(that.parameters);
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + expressionsAndParamsList.hashCode();
+        result = 31 * result + arguments.hashCode();
+        result = 31 * result + parameters.hashCode();
         return result;
     }
 
@@ -53,7 +65,8 @@ public class SQLFunctionCall implements SQLExpression {
     public String toString() {
         return "SQLFunctionCall{" +
                 "name='" + name + '\'' +
-                ", expressionsAndParamsList=" + expressionsAndParamsList +
+                ", arguments=" + arguments +
+                ", parameters=" + parameters +
                 '}';
     }
 }

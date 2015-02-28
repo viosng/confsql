@@ -18,7 +18,7 @@ selectItem
 
 asterisk : (StringLiteral DOT)? MULTIPLY;
 
-tableExpression : fromClause whereClause? groupbyClause? havingClause? orderbyClause? limitClause? ;
+tableExpression : fromClause whereClause? groupbyClause? havingClause? orderByClause? limitClause? ;
 
 /*
 ===============================================================================
@@ -48,7 +48,7 @@ join_condition : ('ON'|'on') expr ;
 
 tablePrimary
      : tableOrQueryName asClause? paranthesizedColumnNameList?                #fromSource
-     | LEFT_PAREN query RIGHT_PAREN asClause paranthesizedColumnNameList?        #fromSubQuery
+     | LEFT_PAREN query RIGHT_PAREN asClause paranthesizedColumnNameList?     #fromSubQuery
      ;
 
 tableOrQueryName : StringLiteral | Field;
@@ -86,7 +86,7 @@ havingClause : ('having'|'HAVING') expr;
 ===============================================================================
 */
 
-orderbyClause : ('order'|'ORDER') paranthesizedParamList? ('by'|'BY') exprList OrderType?;
+orderByClause : ('order'|'ORDER') paranthesizedParamList? ('by'|'BY') exprList OrderType?;
 OrderType : 'ASC' | 'asc' | 'desc' | 'DESC';
 
 /*
@@ -115,11 +115,11 @@ expr : BIT_NEG expr                                                             
      | expr ('AND'|'and') expr                                                                   #and
      | expr ('OR'|'or') expr                                                                     #or
      | ('CAST'|'cast') expr ('as'|'AS') StringLiteral                                            #cast
-     | ('CASE'|'case') expr? caseWhenClause+ caseElseClause? ('END'|'end')                   #case
+     | ('CASE'|'case') expr? caseWhenClause+ caseElseClause? ('END'|'end')                       #case
      | query                                                                                     #subQueryExpr
      | (NumberLiteral | String)                                                                  #constant
      | Field                                                                                     #fieldExpr
-     | StringLiteral (LEFT_PAREN exprsAndParams RIGHT_PAREN)?                                  #columnOrFunctionCall
+     | StringLiteral (LEFT_PAREN exprsAndParams RIGHT_PAREN)?                                    #columnOrFunctionCall
      | LEFT_PAREN expr RIGHT_PAREN                                                               #brackets
      ;
 
