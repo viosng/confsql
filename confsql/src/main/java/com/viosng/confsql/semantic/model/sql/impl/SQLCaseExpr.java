@@ -111,8 +111,8 @@ public class SQLCaseExpr implements SQLExpression{
     public String toString() {
         return "SQLCaseExpr{" +
                 "expression=" + expression +
-                ", elseExpression=" + elseExpression +
                 ", whenThenClauses=" + whenThenClauses +
+                ", elseExpression=" + elseExpression +
                 '}';
     }
 }

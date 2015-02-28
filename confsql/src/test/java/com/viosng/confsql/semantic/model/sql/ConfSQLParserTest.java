@@ -1,9 +1,6 @@
 package com.viosng.confsql.semantic.model.sql;
 
-import com.viosng.confsql.semantic.model.sql.impl.SQLConstant;
-import com.viosng.confsql.semantic.model.sql.impl.SQLExpressionList;
-import com.viosng.confsql.semantic.model.sql.impl.SQLField;
-import com.viosng.confsql.semantic.model.sql.impl.SQLParameter;
+import com.viosng.confsql.semantic.model.sql.impl.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.Test;
@@ -11,6 +8,7 @@ import org.junit.experimental.theories.Theories;
 import org.junit.runner.RunWith;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -64,7 +62,8 @@ public class ConfSQLParserTest {
         try {
             visitor.visit(getParser("a.f=3").param());
             fail();
-        } catch (NullPointerException ignored){}
+        } catch (NullPointerException ignored) {
+        }
 
         assertEquals(new SQLExpressionList(
                         Arrays.asList(
@@ -74,4 +73,85 @@ public class ConfSQLParserTest {
                 visitor.visit(getParser("a=3,asdfs=true,\"asdfs sdfsdfgsfd sdfsf\"=true").param_list()));
     }
 
+    @Test
+    public void testExprList() throws Exception {
+        assertEquals(new SQLExpressionList(Arrays.asList(
+                        new SQLConstant("1"),
+                        new SQLField("afsd.ds"),
+                        new SQLConstant("\"sdfs\"")
+                )),
+                visitor.visit(getParser("1, afsd.ds, \"sdfs\"").expr_list()));
+    }
+
+    @Test
+    public void testFunctionCall() throws Exception {
+        SQLFunctionCall functionCall = new SQLFunctionCall("f", 
+                new SQLExpressionsAndParamsList(
+                    new SQLExpressionList(
+                            Arrays.asList(
+                                new SQLConstant("1"),
+                                new SQLField("afsd.ds"),
+                                new SQLConstant("\"sdfs\"")
+                    )),
+                    new SQLExpressionList(
+                        Arrays.asList(
+                                new SQLParameter("a", new SQLConstant("3")),
+                                new SQLParameter("asdfs", new SQLConstant("true")),
+                                new SQLParameter("asdfs sdfsdfgsfd sdfsf", new SQLConstant("true"))))));
+        assertEquals(functionCall, 
+                visitor.visit(getParser("f(1, afsd.ds, \"sdfs\"; a=3,asdfs=true,\"asdfs sdfsdfgsfd sdfsf\"=true)").expr()));
+
+        functionCall = new SQLFunctionCall("args",
+                new SQLExpressionsAndParamsList(
+                        new SQLExpressionList(
+                                Arrays.asList(
+                                        new SQLConstant("1"),
+                                        new SQLField("afsd.ds"),
+                                        new SQLConstant("\"sdfs\"")
+                                )),
+                        new SQLExpressionList(Collections.<SQLExpression>emptyList())));
+        
+        assertEquals(functionCall, visitor.visit(getParser("args(1, afsd.ds, \"sdfs\")").expr()));
+
+        functionCall = new SQLFunctionCall("params",
+                new SQLExpressionsAndParamsList(
+                        new SQLExpressionList(Collections.<SQLExpression>emptyList()),
+                        new SQLExpressionList(
+                                Arrays.asList(
+                                        new SQLParameter("a", new SQLConstant("3")),
+                                        new SQLParameter("asdfs", new SQLConstant("true")),
+                                        new SQLParameter("asdfs sdfsdfgsfd sdfsf", new SQLConstant("true"))))));
+
+        assertEquals(functionCall, visitor.visit(getParser("params(a=3,asdfs=true,\"asdfs sdfsdfgsfd sdfsf\"=true)").expr()));
+
+        functionCall = new SQLFunctionCall("empty",
+                new SQLExpressionsAndParamsList(
+                        new SQLExpressionList(Collections.<SQLExpression>emptyList()),
+                        new SQLExpressionList(Collections.<SQLExpression>emptyList())));
+
+        assertEquals(functionCall, visitor.visit(getParser("empty()").expr()));
+    }
+
+    @Test
+    public void testCase() throws Exception {
+        SQLCaseExpr caseExpr = new SQLCaseExpr(new SQLField("c"),
+                Arrays.asList(
+                        new SQLCaseExpr.SQLWhenThenClause(new SQLField("ca"), new SQLField("cb")),
+                        new SQLCaseExpr.SQLWhenThenClause(new SQLConstant("3"), new SQLField("sdfgsre")),
+                        new SQLCaseExpr.SQLWhenThenClause(new SQLConstant("\"wewe\""), new SQLConstant("123.323"))
+                ),
+                new SQLField("a.b.c"));
+        assertEquals(caseExpr,
+                visitor.visit(getParser("case c when ca then cb when 3 then sdfgsre when \"wewe\" then 123.323 else a.b.c end").expr()));
+
+        caseExpr = new SQLCaseExpr(null,
+                Arrays.asList(
+                        new SQLCaseExpr.SQLWhenThenClause(new SQLField("ca"), new SQLField("cb")),
+                        new SQLCaseExpr.SQLWhenThenClause(new SQLConstant("3"), new SQLField("sdfgsre"))
+                ),
+                null);
+        assertEquals(caseExpr, visitor.visit(getParser("case when ca then cb when 3 then sdfgsre end").expr()));
+    }
+    
+    
 }

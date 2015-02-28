@@ -2,6 +2,7 @@ package com.viosng.confsql.semantic.model.sql;
 
 import com.viosng.confsql.semantic.model.sql.impl.*;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -14,8 +15,13 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitExprs_and_params(ConfSQLParser.Exprs_and_paramsContext ctx) {
-        return new SQLExpressionsAndParamsList((SQLExpressionList) visit(ctx.expr_list()),
-                (SQLExpressionList) visit(ctx.param_list()));
+        return new SQLExpressionsAndParamsList(
+                ctx.expr_list() != null 
+                        ? (SQLExpressionList) visit(ctx.expr_list()) 
+                        : new SQLExpressionList(Collections.<SQLExpression>emptyList()),
+                ctx.param_list() != null
+                        ? (SQLExpressionList) visit(ctx.param_list())
+                        : new SQLExpressionList(Collections.<SQLExpression>emptyList()));
     }
 
     @Override
