@@ -16,6 +16,23 @@ import java.util.stream.Collectors;
  */
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
+    
+    
+    @Override
+    public SQLExpression visitTableOrQueryName(ConfSQLParser.TableOrQueryNameContext ctx) {
+        return new SQLField(ctx.getText());
+    }
+
+    @Override
+    public SQLExpression visitParanthesizedColumnNameList(ConfSQLParser.ParanthesizedColumnNameListContext ctx) {
+        return visit(ctx.columnNameList());
+    }
+
+    @Override
+    public SQLExpression visitColumnNameList(ConfSQLParser.ColumnNameListContext ctx) {
+        return new SQLExpressionList(ctx.StringLiteral().stream().map(s -> new SQLField(s.getText())).collect(Collectors.toList()));
+    }
+
     @Override
     public SQLExpression visitWhereClause(ConfSQLParser.WhereClauseContext ctx) {
         return visit(ctx.expr());
@@ -52,7 +69,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitAsClause(ConfSQLParser.AsClauseContext ctx) {
-        return new SQLConstant(ctx.StringLiteral().getText());
+        return new SQLField(ctx.StringLiteral().getText());
     }
 
     @Override
