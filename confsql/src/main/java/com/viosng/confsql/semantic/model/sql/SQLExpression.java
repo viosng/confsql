@@ -31,7 +31,7 @@ public interface SQLExpression {
         GT("GT", ">"), 
         LT("LT", "<"), 
         GE("GE", ">="), 
-        LEQ("LE", "<="), 
+        LE("LE", "<="),
         NOT_EQUAL("!=", "<>"),
         NOT("not", "!"),
         CONCATENATION("||"),

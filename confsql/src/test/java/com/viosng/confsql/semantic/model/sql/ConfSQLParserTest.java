@@ -3,16 +3,16 @@ package com.viosng.confsql.semantic.model.sql;
 import com.viosng.confsql.semantic.model.sql.impl.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.Pair;
 import org.junit.Test;
 import org.junit.experimental.theories.Theories;
 import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -153,5 +153,69 @@ public class ConfSQLParserTest {
                 ),
                 null);
         assertEquals(caseExpr, visitor.visit(getParser("case when ca then cb when 3 then sdfgsre end").expr()));
+    }
+
+    @Test
+    public void testCast() throws Exception {
+        SQLExpression cast = new SQLFunctionCall("cast", new SQLExpressionsAndParamsList(
+                new SQLExpressionList(Arrays.asList(new SQLConstant("23"), new SQLConstant("Int"))),
+                new SQLExpressionList(Collections.emptyList())));
+        assertEquals(cast, visitor.visit(getParser("cast 23 as Int").expr()));
+        assertNotEquals(cast, visitor.visit(getParser("cast 23 as B").expr()));
+        assertNotEquals(cast, visitor.visit(getParser("cast 24 as Int").expr()));
+    }
+
+    @Test
+    public void testIs() throws Exception {
+        SQLExpression cast = new SQLFunctionCall("is", new SQLExpressionsAndParamsList(
+                new SQLExpressionList(Arrays.asList(new SQLConstant("23"), new SQLConstant("42"))),
+                new SQLExpressionList(Collections.emptyList())));
+        assertEquals(cast, visitor.visit(getParser("23 is 42").expr()));
+        assertNotEquals(cast, visitor.visit(getParser("23 is 43").expr()));
+        assertNotEquals(cast, visitor.visit(getParser("24 is 42").expr()));
+    }
+
+    @Test
+    public void testBinaryExpressions() throws Exception {
+        SQLField c1 = new SQLField("c1");
+        SQLField c2 = new SQLField("c2");
+        List<Pair<SQLExpression.ArithmeticType, String>>  testData = Arrays.asList(
+                new Pair<>(SQLExpression.ArithmeticType.PLUS, "c1 + c2"),
+                new Pair<>(SQLExpression.ArithmeticType.MINUS, "c1 - c2"),
+                new Pair<>(SQLExpression.ArithmeticType.MULTIPLY, "c1 * c2"),
+                new Pair<>(SQLExpression.ArithmeticType.DIVIDE, "c1 / c2"),
+                new Pair<>(SQLExpression.ArithmeticType.MODULAR, "c1 % c2"),
+                new Pair<>(SQLExpression.ArithmeticType.POWER, "c1 ** c2"),
+                new Pair<>(SQLExpression.ArithmeticType.AND, "c1 and c2"),
+                new Pair<>(SQLExpression.ArithmeticType.OR, "c1 or c2"),
+                new Pair<>(SQLExpression.ArithmeticType.BIT_AND, "c1 & c2"),
+                new Pair<>(SQLExpression.ArithmeticType.BIT_OR, "c1 | c2"),
+                new Pair<>(SQLExpression.ArithmeticType.BIT_XOR, "c1 ^ c2"),
+                new Pair<>(SQLExpression.ArithmeticType.CONCATENATION, "c1 || c2"),
+                new Pair<>(SQLExpression.ArithmeticType.EQUAL, "c1 = c2"),
+                new Pair<>(SQLExpression.ArithmeticType.NOT_EQUAL, "c1 != c2"),
+                new Pair<>(SQLExpression.ArithmeticType.NOT_EQUAL, "c1 <> c2"),
+                new Pair<>(SQLExpression.ArithmeticType.GT, "c1 > c2"),
+                new Pair<>(SQLExpression.ArithmeticType.LT, "c1 < c2"),
+                new Pair<>(SQLExpression.ArithmeticType.GE, "c1 >= c2"),
+                new Pair<>(SQLExpression.ArithmeticType.LE, "c1 <= c2")
+        );
+        for (Pair<SQLExpression.ArithmeticType, String> pair : testData) {
+            assertEquals(pair.b, new SQLBinaryExpression(pair.a, c1, c2), visitor.visit(getParser(pair.b).expr()));
+            assertNotEquals(pair.b, new SQLBinaryExpression(pair.a, c2, c1), visitor.visit(getParser(pair.b).expr()));
+        }
+    }
+
+    @Test
+    public void testUnaryExpressions() throws Exception {
+        SQLField c1 = new SQLField("c1");
+        List<Pair<SQLExpression.ArithmeticType, String>>  testData = Arrays.asList(
+                new Pair<>(SQLExpression.ArithmeticType.BIT_NEG, "~ c1"),
+                new Pair<>(SQLExpression.ArithmeticType.MINUS, "-c1"),
+                new Pair<>(SQLExpression.ArithmeticType.NOT, "not c1")
+        );
+        for (Pair<SQLExpression.ArithmeticType, String> pair : testData) {
+            assertEquals(pair.b, new SQLUnaryExpression(pair.a, c1), visitor.visit(getParser(pair.b).expr()));
+        }
     }
 }

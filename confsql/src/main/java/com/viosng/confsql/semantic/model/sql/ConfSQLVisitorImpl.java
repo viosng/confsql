@@ -59,13 +59,13 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitArithmFirst(ConfSQLParser.ArithmFirstContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.getText()),
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.op.getText()),
                 visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
     @Override
     public SQLExpression visitArithmSecond(ConfSQLParser.ArithmSecondContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.getText()),
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.op.getText()),
                 visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
@@ -81,7 +81,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitComparing(ConfSQLParser.ComparingContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.getText()), 
+        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.comp.getText()),
                 visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
@@ -105,7 +105,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     @Override
     public SQLExpression visitCast(ConfSQLParser.CastContext ctx) {
         return new SQLFunctionCall("cast", new SQLExpressionsAndParamsList(
-                new SQLExpressionList(Arrays.asList(visit(ctx.expr()), visit(ctx.StringLiteral()))),
+                new SQLExpressionList(Arrays.asList(visit(ctx.expr()), new SQLConstant(ctx.StringLiteral().getText()))),
                 new SQLExpressionList(Collections.emptyList())));
     }
 

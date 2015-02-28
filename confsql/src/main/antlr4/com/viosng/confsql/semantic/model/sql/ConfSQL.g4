@@ -106,11 +106,11 @@ limit_clause : ('limit'|'LIMIT') expr;
 expr : BIT_NEG expr                                                                              #bitNeg
      | MINUS expr                                                                                #neg
      | <assoc=right> expr POWER expr                                                             #power
-     | expr (MULTIPLY|DIVIDE|MODULAR) expr                                                       #arithmFirst
-     | expr (PLUS|MINUS|BIT_AND|VERTICAL_BAR|BIT_XOR) expr                                       #arithmSecond
+     | expr op=(MULTIPLY|DIVIDE|MODULAR) expr                                                    #arithmFirst
+     | expr op=(PLUS|MINUS|BIT_AND|VERTICAL_BAR|BIT_XOR) expr                                    #arithmSecond
      | expr CONCATENATION_OPERATOR expr                                                          #concatenation
      | ('NOT'|'not') expr                                                                        #not
-     | expr (EQUAL|GTH|LTH|GEQ|LEQ|NOT_EQUAL) expr                                               #comparing
+     | expr comp=(EQUAL|GTH|LTH|GEQ|LEQ|NOT_EQUAL) expr                                          #comparing
      | expr ('IS'|'is') expr                                                                     #is
      | expr ('AND'|'and') expr                                                                   #and
      | expr ('OR'|'or') expr                                                                     #or
