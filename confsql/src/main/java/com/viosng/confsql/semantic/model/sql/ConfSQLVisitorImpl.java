@@ -16,6 +16,11 @@ import java.util.stream.Collectors;
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
+    public SQLExpression visitHavingClause(ConfSQLParser.HavingClauseContext ctx) {
+        return visit(ctx.expr());
+    }
+
+    @Override
     public SQLExpression visitOrderByClause(ConfSQLParser.OrderByClauseContext ctx) {
         return new SQLOrderByClause(
                 ctx.paranthesizedParamList() != null 

@@ -223,4 +223,10 @@ public class ConfSQLParserTest {
         );
         assertEquals(orderByClause, visitor.visit(getParser("order by a, b, c").orderByClause()));
     }
+
+    @Test
+    public void testHavingClause() throws Exception {
+        SQLExpression having = new SQLConstant("3");
+        assertEquals(having, visitor.visit(getParser("having 3").havingClause()));
+    }
 }
