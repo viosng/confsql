@@ -243,4 +243,10 @@ public class ConfSQLParserTest {
                 Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")));
         assertEquals(groupByClause, visitor.visit(getParser("group by a, b, c").groupByClause()));
     }
+
+    @Test
+    public void testWhereClause() throws Exception {
+        SQLExpression where = new SQLConstant("3");
+        assertEquals(where, visitor.visit(getParser("where 3").whereClause()));
+    }
 }

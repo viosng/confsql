@@ -16,6 +16,10 @@ import java.util.stream.Collectors;
  */
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
+    @Override
+    public SQLExpression visitWhereClause(ConfSQLParser.WhereClauseContext ctx) {
+        return visit(ctx.expr());
+    }
 
     @Override
     public SQLExpression visitGroupByClause(ConfSQLParser.GroupByClauseContext ctx) {
