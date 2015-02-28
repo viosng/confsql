@@ -1,6 +1,7 @@
 package com.viosng.confsql.semantic.model.sql;
 
 import com.viosng.confsql.semantic.model.sql.expr.impl.*;
+import com.viosng.confsql.semantic.model.sql.query.SQLGroupByClause;
 import com.viosng.confsql.semantic.model.sql.query.SQLOrderByClause;
 
 import java.util.Arrays;
@@ -14,6 +15,16 @@ import java.util.stream.Collectors;
  * Time: 12:59
  */
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
+
+
+    @Override
+    public SQLExpression visitGroupByClause(ConfSQLParser.GroupByClauseContext ctx) {
+        return new SQLGroupByClause(
+                ctx.paranthesizedParamList() != null
+                        ? ((SQLParameterList) visit(ctx.paranthesizedParamList())).getParameterList()
+                        : Collections.<SQLParameter>emptyList(),
+                ((SQLExpressionList) visit(ctx.exprList())).getExpressionList());
+    }
 
     @Override
     public SQLExpression visitHavingClause(ConfSQLParser.HavingClauseContext ctx) {

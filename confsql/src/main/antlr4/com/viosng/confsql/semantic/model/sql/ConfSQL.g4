@@ -18,7 +18,7 @@ selectItem
 
 asterisk : (StringLiteral DOT)? MULTIPLY;
 
-tableExpression : fromClause whereClause? groupbyClause? havingClause? orderByClause? limitClause? ;
+tableExpression : fromClause whereClause? groupByClause? havingClause? orderByClause? limitClause? ;
 
 /*
 ===============================================================================
@@ -70,7 +70,7 @@ whereClause : ('where'|'WHERE') expr;
 ===============================================================================
 */
 
-groupbyClause : ('group'|'GROUP') paranthesizedParamList? ('by'|'BY') exprList;
+groupByClause : ('group'|'GROUP') paranthesizedParamList? ('by'|'BY') exprList;
 
 /*
 ===============================================================================

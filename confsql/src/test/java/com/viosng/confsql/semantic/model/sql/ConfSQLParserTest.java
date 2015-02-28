@@ -1,6 +1,7 @@
 package com.viosng.confsql.semantic.model.sql;
 
 import com.viosng.confsql.semantic.model.sql.expr.impl.*;
+import com.viosng.confsql.semantic.model.sql.query.SQLGroupByClause;
 import com.viosng.confsql.semantic.model.sql.query.SQLOrderByClause;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -228,5 +229,18 @@ public class ConfSQLParserTest {
     public void testHavingClause() throws Exception {
         SQLExpression having = new SQLConstant("3");
         assertEquals(having, visitor.visit(getParser("having 3").havingClause()));
+    }
+
+    @Test
+    public void testGroupByClause() throws Exception {
+        SQLGroupByClause groupByClause = new SQLGroupByClause(
+                Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4"))),
+                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")));
+        assertEquals(groupByClause, visitor.visit(getParser("group(a=3,b=4) by a, b, c").groupByClause()));
+
+        groupByClause = new SQLGroupByClause(
+                Collections.<SQLParameter>emptyList(),
+                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")));
+        assertEquals(groupByClause, visitor.visit(getParser("group by a, b, c").groupByClause()));
     }
 }
