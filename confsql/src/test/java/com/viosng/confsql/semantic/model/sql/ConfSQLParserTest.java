@@ -325,7 +325,8 @@ public class ConfSQLParserTest {
     }
 
     @Test
-    public void testTableExpression() throws Exception {
+    public void testStat() throws Exception {
+        
         SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
@@ -364,8 +365,18 @@ public class ConfSQLParserTest {
         
         SQLTableExpression tableExpression = new SQLTableExpression(fromClause, whereClause, groupByClause, havingClause, 
                 orderByClause, limitClause);
+        
+        List<SQLSelectItem> selectItemList = Arrays.asList(
+                new SQLSelectItem(new SQLAsteriskSelectItem("obj"), new SQLField("obj1")),
+                new SQLSelectItem(new SQLAsteriskSelectItem(null), null),
+                new SQLSelectItem(new SQLConstant("3"), null),
+                new SQLSelectItem(new SQLField("a.a.a"), new SQLField("b"))
+        );
+        
+        SQLQuery query = new SQLQuery(selectItemList, tableExpression);
 
-        assertEquals(tableExpression, visitor.visit(getParser(
+        assertEquals(query, visitor.visit(getParser(
+                        "select obj.* as obj1, *, 3, a.a.a as b " +
                         "from(a=3,b=4) source " +
                         "full join(a=3,b=4) source on a = b " +
                         "left join(a=3,b=4) source " +
@@ -374,6 +385,6 @@ public class ConfSQLParserTest {
                         "group(a=3,b=4) by a, b, c " + 
                         "having 3 " +
                         "order(a=3,b=4) by a, b, c desc " +
-                        "limit 3").tableExpression()));
+                        "limit 3").stat()));
     }
 }

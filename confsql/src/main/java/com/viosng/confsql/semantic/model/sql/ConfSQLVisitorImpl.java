@@ -17,6 +17,39 @@ import java.util.stream.Collectors;
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
+    public SQLExpression visitStat(ConfSQLParser.StatContext ctx) {
+        return visit(ctx.query());
+    }
+
+    @Override
+    public SQLExpression visitQuery(ConfSQLParser.QueryContext ctx) {
+        return new SQLQuery(
+                ((SQLExpressionList) visit(ctx.selectList())).getExpressionList().stream()
+                        .map(e -> (SQLSelectItem) e).collect(Collectors.toList()),
+                ctx.tableExpression() != null ? (SQLTableExpression) visit(ctx.tableExpression()) : null);
+    }
+
+    @Override
+    public SQLExpression visitSelectList(ConfSQLParser.SelectListContext ctx) {
+        return new SQLExpressionList(ctx.selectItem().stream().map(this::visit).collect(Collectors.toList()));
+    }
+
+    @Override
+    public SQLExpression visitAll(ConfSQLParser.AllContext ctx) {
+        return new SQLSelectItem(visit(ctx.asterisk()), ctx.asClause() != null ? (SQLField) visit(ctx.asClause()) : null);
+    }
+
+    @Override
+    public SQLExpression visitSelectExpr(ConfSQLParser.SelectExprContext ctx) {
+        return new SQLSelectItem(visit(ctx.expr()), ctx.asClause() != null ? (SQLField) visit(ctx.asClause()) : null);
+    }
+
+    @Override
+    public SQLExpression visitAsterisk(ConfSQLParser.AsteriskContext ctx) {
+        return new SQLAsteriskSelectItem(ctx.StringLiteral() != null ? ctx.StringLiteral().getText() : null);
+    }
+
+    @Override
     public SQLExpression visitTableExpression(ConfSQLParser.TableExpressionContext ctx) {
         SQLFromClause fromClause = (SQLFromClause) visit(ctx.fromClause());
         SQLExpression whereClause = ctx.whereClause() != null ? visit(ctx.whereClause()) : null;
