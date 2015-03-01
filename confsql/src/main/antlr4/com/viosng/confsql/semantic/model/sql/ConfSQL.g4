@@ -30,21 +30,17 @@ fromClause : ('FROM'|'from') paranthesizedParamList? tableReferenceList;
 
 tableReferenceList :tableReference (COMMA tableReference)*;
 
-tableReference : joinedTable | tablePrimary;
+tableReference : tablePrimary joinedTablePrimary*;
 
-joinedTable : tablePrimary joinedTablePrimary+;
+joinedTablePrimary : JoinType? ('JOIN'|'join') paranthesizedParamList? tablePrimary (('ON'|'on') expr)?;
 
-joinedTablePrimary : joinType? ('JOIN'|'join') paranthesizedParamList? tablePrimary join_condition?;
-
-joinType
+JoinType
      : ('INNER' | 'inner')
      | ('FUZZY' | 'fuzzy')
      | ('LEFT' | 'left')
      | ('RIGHT' | 'right')
      | ('FULL' | 'full')
      ;
-
-join_condition : ('ON'|'on') expr ;
 
 tablePrimary
      : tableOrQueryName asClause? paranthesizedColumnNameList?                #fromSource

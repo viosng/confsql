@@ -1,11 +1,11 @@
 package com.viosng.confsql.semantic.model.sql;
 
 import com.viosng.confsql.semantic.model.sql.expr.impl.*;
-import com.viosng.confsql.semantic.model.sql.query.SQLGroupByClause;
-import com.viosng.confsql.semantic.model.sql.query.SQLOrderByClause;
+import com.viosng.confsql.semantic.model.sql.query.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -15,9 +15,62 @@ import java.util.stream.Collectors;
  * Time: 12:59
  */
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
+    
+    
+    @Override
+    public SQLExpression visitFromClause(ConfSQLParser.FromClauseContext ctx) {
+        List<SQLParameter> parameterList = ctx.paranthesizedParamList() != null 
+                ? ((SQLParameterList)visit(ctx.paranthesizedParamList())).getParameterList()
+                : Collections.<SQLParameter>emptyList();
+        List<SQLTableReference>  tableReferenceList = ((SQLExpressionList)visit(ctx.tableReferenceList()))
+                .getExpressionList().stream().map(e -> (SQLTableReference)e).collect(Collectors.toList());
+        return new SQLFromClause(parameterList, tableReferenceList);
+    }
 
-    
-    
+    @Override
+    public SQLExpression visitTableReferenceList(ConfSQLParser.TableReferenceListContext ctx) {
+        return new SQLExpressionList(ctx.tableReference().stream().map(this::visit).collect(Collectors.toList()));
+    }
+
+    @Override
+    public SQLExpression visitTableReference(ConfSQLParser.TableReferenceContext ctx) {
+        return new SQLTableReference((SQLTablePrimary)visit(ctx.tablePrimary()),
+                ctx.joinedTablePrimary().stream().map(j -> (SQLJoinedTablePrimary) visit(j)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public SQLExpression visitJoinedTablePrimary(ConfSQLParser.JoinedTablePrimaryContext ctx) {
+        return new SQLJoinedTablePrimary(
+                ctx.JoinType() != null ? ctx.JoinType().getText() : "inner",
+                ctx.paranthesizedParamList() != null 
+                        ? ((SQLParameterList)visit(ctx.paranthesizedParamList())).getParameterList() 
+                        : Collections.<SQLParameter>emptyList(),
+                (SQLTablePrimary)visit(ctx.tablePrimary()),
+                ctx.expr() != null ? visit(ctx.expr()) : null);
+    }
+
+    @Override
+    public SQLExpression visitFromSource(ConfSQLParser.FromSourceContext ctx) {
+        SQLField tableName =  (SQLField) visit(ctx.tableOrQueryName());
+        String alias = ctx.asClause() != null ? ((SQLField)visit(ctx.asClause())).getName() : tableName.getName();
+        return new SQLTablePrimary(tableName, alias, getColumnList(ctx.paranthesizedColumnNameList()));
+    }
+
+    @Override
+    public SQLExpression visitFromSubQuery(ConfSQLParser.FromSubQueryContext ctx) {
+        return new SQLTablePrimary(visit(ctx.query()), ((SQLField)visit(ctx.asClause())).getName(), 
+                getColumnList(ctx.paranthesizedColumnNameList()));
+    }
+
+    private List<String> getColumnList(ConfSQLParser.ParanthesizedColumnNameListContext ctx) {
+        if (ctx != null) {
+            List<SQLExpression> expressionList = ((SQLExpressionList)visit(ctx)).getExpressionList();
+            return expressionList.stream().map(e -> ((SQLField) e).getName()).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     @Override
     public SQLExpression visitTableOrQueryName(ConfSQLParser.TableOrQueryNameContext ctx) {
         return new SQLField(ctx.getText());

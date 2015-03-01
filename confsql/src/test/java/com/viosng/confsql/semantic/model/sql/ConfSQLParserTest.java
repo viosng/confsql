@@ -1,14 +1,11 @@
 package com.viosng.confsql.semantic.model.sql;
 
 import com.viosng.confsql.semantic.model.sql.expr.impl.*;
-import com.viosng.confsql.semantic.model.sql.query.SQLGroupByClause;
-import com.viosng.confsql.semantic.model.sql.query.SQLOrderByClause;
+import com.viosng.confsql.semantic.model.sql.query.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.Pair;
 import org.junit.Test;
-import org.junit.experimental.theories.Theories;
-import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,7 +20,6 @@ import static org.junit.Assert.*;
  * Time: 18:10
  */
 
-@RunWith(Theories.class)
 public class ConfSQLParserTest {
     private ConfSQLVisitor<SQLExpression> visitor = new ConfSQLVisitorImpl();
 
@@ -248,5 +244,83 @@ public class ConfSQLParserTest {
     public void testWhereClause() throws Exception {
         SQLExpression where = new SQLConstant("3");
         assertEquals(where, visitor.visit(getParser("where 3").whereClause()));
+    }
+
+    @Test
+    public void testTablePrimary() throws Exception {
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "alias", Arrays.asList("a", "b", "c"));
+        assertEquals(tablePrimary, visitor.visit(getParser("source as alias (a, b, c)").tablePrimary()));
+
+        tablePrimary = new SQLTablePrimary(new SQLField("source"), "source",
+                Collections.<String>emptyList());
+        assertEquals(tablePrimary, visitor.visit(getParser("source").tablePrimary()));
+    }
+
+    @Test
+    public void testJoinedTablePrimary() throws Exception {
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "alias", Arrays.asList("a", "b", "c"));
+        List<SQLParameter> parameterList = 
+                Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
+        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(SQLExpression.ArithmeticType.EQUAL, 
+                new SQLField("a"), new SQLField("b"));
+        SQLJoinedTablePrimary joinedTablePrimary = new SQLJoinedTablePrimary("full", parameterList, tablePrimary, binaryExpression);
+
+        assertEquals(joinedTablePrimary,
+                visitor.visit(getParser("full join(a=3,b=4) source as alias (a, b, c) on a = b").joinedTablePrimary()));
+
+        joinedTablePrimary = new SQLJoinedTablePrimary("full", parameterList, tablePrimary, null);
+
+        assertEquals(joinedTablePrimary,
+                visitor.visit(getParser("full join(a=3,b=4) source as alias (a, b, c)").joinedTablePrimary()));
+
+        joinedTablePrimary = new SQLJoinedTablePrimary("inner", Collections.<SQLParameter>emptyList(), tablePrimary, null);
+
+        assertEquals(joinedTablePrimary,
+                visitor.visit(getParser("join source as alias (a, b, c)").joinedTablePrimary()));
+    }
+
+    @Test
+    public void testTableReference() throws Exception {
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
+        List<SQLParameter> parameterList =
+                Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
+        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(SQLExpression.ArithmeticType.EQUAL,
+                new SQLField("a"), new SQLField("b"));
+        
+        List<SQLJoinedTablePrimary> joinedTablePrimaryList = Arrays.asList(
+                new SQLJoinedTablePrimary("full", parameterList, tablePrimary, binaryExpression),
+                new SQLJoinedTablePrimary("left", parameterList, tablePrimary, null),
+                new SQLJoinedTablePrimary("inner", Collections.<SQLParameter>emptyList(), tablePrimary, null)
+        );
+        SQLTableReference tableReference = new SQLTableReference(tablePrimary, joinedTablePrimaryList);
+
+        assertEquals(tableReference, visitor.visit(getParser(
+                "source full join(a=3,b=4) source on a = b left join(a=3,b=4) source inner join source ").tableReference()));
+    }
+
+    @Test
+    public void testFromClause() throws Exception {
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
+        List<SQLParameter> parameterList =
+                Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
+        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(SQLExpression.ArithmeticType.EQUAL,
+                new SQLField("a"), new SQLField("b"));
+
+        List<SQLJoinedTablePrimary> joinedTablePrimaryList = Arrays.asList(
+                new SQLJoinedTablePrimary("full", parameterList, tablePrimary, binaryExpression),
+                new SQLJoinedTablePrimary("left", parameterList, tablePrimary, null),
+                new SQLJoinedTablePrimary("inner", Collections.<SQLParameter>emptyList(), tablePrimary, null)
+        );
+        SQLTableReference tableReference = new SQLTableReference(tablePrimary, joinedTablePrimaryList);
+        
+        List<SQLTableReference> tableReferenceList = Arrays.asList(
+                tableReference,
+                new SQLTableReference(tablePrimary, Collections.<SQLJoinedTablePrimary>emptyList())
+        );
+        
+        SQLFromClause fromClause = new SQLFromClause(parameterList, tableReferenceList);
+
+        assertEquals(fromClause, visitor.visit(getParser(
+                "from(a=3,b=4) source full join(a=3,b=4) source on a = b left join(a=3,b=4) source inner join source, source").fromClause()));
     }
 }
