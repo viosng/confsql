@@ -15,8 +15,18 @@ import java.util.stream.Collectors;
  * Time: 12:59
  */
 public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
-    
-    
+
+    @Override
+    public SQLExpression visitTableExpression(ConfSQLParser.TableExpressionContext ctx) {
+        SQLFromClause fromClause = (SQLFromClause) visit(ctx.fromClause());
+        SQLExpression whereClause = ctx.whereClause() != null ? visit(ctx.whereClause()) : null;
+        SQLGroupByClause groupByClause = ctx.groupByClause() != null ? (SQLGroupByClause) visit(ctx.groupByClause()) : null;
+        SQLExpression havingClause = ctx.havingClause() != null ? visit(ctx.havingClause()) : null;
+        SQLOrderByClause orderByClause = ctx.orderByClause() != null ? (SQLOrderByClause) visit(ctx.orderByClause()) : null;
+        SQLExpression limitClause = ctx.limitClause() != null ? visit(ctx.limitClause()) : null;
+        return new SQLTableExpression(fromClause, whereClause, groupByClause, havingClause, orderByClause, limitClause);
+    }
+
     @Override
     public SQLExpression visitFromClause(ConfSQLParser.FromClauseContext ctx) {
         List<SQLParameter> parameterList = ctx.paranthesizedParamList() != null 

@@ -323,4 +323,57 @@ public class ConfSQLParserTest {
         assertEquals(fromClause, visitor.visit(getParser(
                 "from(a=3,b=4) source full join(a=3,b=4) source on a = b left join(a=3,b=4) source inner join source, source").fromClause()));
     }
+
+    @Test
+    public void testTableExpression() throws Exception {
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
+        List<SQLParameter> parameterList =
+                Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
+        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(SQLExpression.ArithmeticType.EQUAL,
+                new SQLField("a"), new SQLField("b"));
+
+        List<SQLJoinedTablePrimary> joinedTablePrimaryList = Arrays.asList(
+                new SQLJoinedTablePrimary("full", parameterList, tablePrimary, binaryExpression),
+                new SQLJoinedTablePrimary("left", parameterList, tablePrimary, null),
+                new SQLJoinedTablePrimary("inner", Collections.<SQLParameter>emptyList(), tablePrimary, null)
+        );
+        SQLTableReference tableReference = new SQLTableReference(tablePrimary, joinedTablePrimaryList);
+
+        List<SQLTableReference> tableReferenceList = Arrays.asList(
+                tableReference,
+                new SQLTableReference(tablePrimary, Collections.<SQLJoinedTablePrimary>emptyList())
+        );
+
+        SQLFromClause fromClause = new SQLFromClause(parameterList, tableReferenceList);
+
+        SQLExpression whereClause = new SQLConstant("3");
+
+        SQLGroupByClause groupByClause = new SQLGroupByClause(
+                Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4"))),
+                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")));
+
+        SQLExpression havingClause = new SQLConstant("3");
+
+        SQLOrderByClause orderByClause = new SQLOrderByClause(
+                Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4"))),
+                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")),
+                "DESC"
+        );
+
+        SQLExpression limitClause = new SQLConstant("3");
+        
+        SQLTableExpression tableExpression = new SQLTableExpression(fromClause, whereClause, groupByClause, havingClause, 
+                orderByClause, limitClause);
+
+        assertEquals(tableExpression, visitor.visit(getParser(
+                        "from(a=3,b=4) source " +
+                        "full join(a=3,b=4) source on a = b " +
+                        "left join(a=3,b=4) source " +
+                        "inner join source, source " + 
+                        "where 3" +
+                        "group(a=3,b=4) by a, b, c " + 
+                        "having 3 " +
+                        "order(a=3,b=4) by a, b, c desc " +
+                        "limit 3").tableExpression()));
+    }
 }
