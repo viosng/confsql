@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.sql;
 
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import com.viosng.confsql.semantic.model.sql.query.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -158,28 +159,28 @@ public class ConfSQLParserTest {
     public void testBinaryExpressions() throws Exception {
         SQLField c1 = new SQLField("c1");
         SQLField c2 = new SQLField("c2");
-        List<Pair<SQLExpression.ArithmeticType, String>>  testData = Arrays.asList(
-                new Pair<>(SQLExpression.ArithmeticType.PLUS, "c1 + c2"),
-                new Pair<>(SQLExpression.ArithmeticType.MINUS, "c1 - c2"),
-                new Pair<>(SQLExpression.ArithmeticType.MULTIPLY, "c1 * c2"),
-                new Pair<>(SQLExpression.ArithmeticType.DIVIDE, "c1 / c2"),
-                new Pair<>(SQLExpression.ArithmeticType.MODULAR, "c1 % c2"),
-                new Pair<>(SQLExpression.ArithmeticType.POWER, "c1 ** c2"),
-                new Pair<>(SQLExpression.ArithmeticType.AND, "c1 and c2"),
-                new Pair<>(SQLExpression.ArithmeticType.OR, "c1 or c2"),
-                new Pair<>(SQLExpression.ArithmeticType.BIT_AND, "c1 & c2"),
-                new Pair<>(SQLExpression.ArithmeticType.BIT_OR, "c1 | c2"),
-                new Pair<>(SQLExpression.ArithmeticType.BIT_XOR, "c1 ^ c2"),
-                new Pair<>(SQLExpression.ArithmeticType.CONCATENATION, "c1 || c2"),
-                new Pair<>(SQLExpression.ArithmeticType.EQUAL, "c1 = c2"),
-                new Pair<>(SQLExpression.ArithmeticType.NOT_EQUAL, "c1 != c2"),
-                new Pair<>(SQLExpression.ArithmeticType.NOT_EQUAL, "c1 <> c2"),
-                new Pair<>(SQLExpression.ArithmeticType.GT, "c1 > c2"),
-                new Pair<>(SQLExpression.ArithmeticType.LT, "c1 < c2"),
-                new Pair<>(SQLExpression.ArithmeticType.GE, "c1 >= c2"),
-                new Pair<>(SQLExpression.ArithmeticType.LE, "c1 <= c2")
+        List<Pair<ArithmeticType, String>>  testData = Arrays.asList(
+                new Pair<>(ArithmeticType.PLUS, "c1 + c2"),
+                new Pair<>(ArithmeticType.MINUS, "c1 - c2"),
+                new Pair<>(ArithmeticType.MULTIPLY, "c1 * c2"),
+                new Pair<>(ArithmeticType.DIVIDE, "c1 / c2"),
+                new Pair<>(ArithmeticType.MODULAR, "c1 % c2"),
+                new Pair<>(ArithmeticType.POWER, "c1 ** c2"),
+                new Pair<>(ArithmeticType.AND, "c1 and c2"),
+                new Pair<>(ArithmeticType.OR, "c1 or c2"),
+                new Pair<>(ArithmeticType.BIT_AND, "c1 & c2"),
+                new Pair<>(ArithmeticType.BIT_OR, "c1 | c2"),
+                new Pair<>(ArithmeticType.BIT_XOR, "c1 ^ c2"),
+                new Pair<>(ArithmeticType.CONCATENATION, "c1 || c2"),
+                new Pair<>(ArithmeticType.EQUAL, "c1 = c2"),
+                new Pair<>(ArithmeticType.NOT_EQUAL, "c1 != c2"),
+                new Pair<>(ArithmeticType.NOT_EQUAL, "c1 <> c2"),
+                new Pair<>(ArithmeticType.GT, "c1 > c2"),
+                new Pair<>(ArithmeticType.LT, "c1 < c2"),
+                new Pair<>(ArithmeticType.GE, "c1 >= c2"),
+                new Pair<>(ArithmeticType.LE, "c1 <= c2")
         );
-        for (Pair<SQLExpression.ArithmeticType, String> pair : testData) {
+        for (Pair<ArithmeticType, String> pair : testData) {
             assertEquals(pair.b, new SQLBinaryExpression(pair.a, c1, c2), visitor.visit(getParser(pair.b).expr()));
             assertNotEquals(pair.b, new SQLBinaryExpression(pair.a, c2, c1), visitor.visit(getParser(pair.b).expr()));
         }
@@ -188,12 +189,12 @@ public class ConfSQLParserTest {
     @Test
     public void testUnaryExpressions() throws Exception {
         SQLField c1 = new SQLField("c1");
-        List<Pair<SQLExpression.ArithmeticType, String>>  testData = Arrays.asList(
-                new Pair<>(SQLExpression.ArithmeticType.BIT_NEG, "~ c1"),
-                new Pair<>(SQLExpression.ArithmeticType.MINUS, "-c1"),
-                new Pair<>(SQLExpression.ArithmeticType.NOT, "not c1")
+        List<Pair<ArithmeticType, String>>  testData = Arrays.asList(
+                new Pair<>(ArithmeticType.BIT_NEG, "~ c1"),
+                new Pair<>(ArithmeticType.MINUS, "-c1"),
+                new Pair<>(ArithmeticType.NOT, "not c1")
         );
-        for (Pair<SQLExpression.ArithmeticType, String> pair : testData) {
+        for (Pair<ArithmeticType, String> pair : testData) {
             assertEquals(pair.b, new SQLUnaryExpression(pair.a, c1), visitor.visit(getParser(pair.b).expr()));
         }
     }
@@ -261,7 +262,7 @@ public class ConfSQLParserTest {
         SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "alias", Arrays.asList("a", "b", "c"));
         List<SQLParameter> parameterList = 
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
-        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(SQLExpression.ArithmeticType.EQUAL, 
+        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
                 new SQLField("a"), new SQLField("b"));
         SQLJoinedTablePrimary joinedTablePrimary = new SQLJoinedTablePrimary("full", parameterList, tablePrimary, binaryExpression);
 
@@ -284,7 +285,7 @@ public class ConfSQLParserTest {
         SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
-        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(SQLExpression.ArithmeticType.EQUAL,
+        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
                 new SQLField("a"), new SQLField("b"));
         
         List<SQLJoinedTablePrimary> joinedTablePrimaryList = Arrays.asList(
@@ -303,7 +304,7 @@ public class ConfSQLParserTest {
         SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
-        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(SQLExpression.ArithmeticType.EQUAL,
+        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
                 new SQLField("a"), new SQLField("b"));
 
         List<SQLJoinedTablePrimary> joinedTablePrimaryList = Arrays.asList(
@@ -330,7 +331,7 @@ public class ConfSQLParserTest {
         SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
-        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(SQLExpression.ArithmeticType.EQUAL,
+        SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
                 new SQLField("a"), new SQLField("b"));
 
         List<SQLJoinedTablePrimary> joinedTablePrimaryList = Arrays.asList(

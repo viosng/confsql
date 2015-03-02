@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.sql;
 
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import com.viosng.confsql.semantic.model.sql.query.*;
 
@@ -203,55 +204,55 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitBitNeg(ConfSQLParser.BitNegContext ctx) {
-        return new SQLUnaryExpression(SQLExpression.ArithmeticType.BIT_NEG, visit(ctx.expr()));
+        return new SQLUnaryExpression(ArithmeticType.BIT_NEG, visit(ctx.expr()));
     }
 
     @Override
     public SQLExpression visitNeg(ConfSQLParser.NegContext ctx) {
-        return new SQLUnaryExpression(SQLExpression.ArithmeticType.MINUS, visit(ctx.expr()));
+        return new SQLUnaryExpression(ArithmeticType.MINUS, visit(ctx.expr()));
     }
 
     @Override
     public SQLExpression visitPower(ConfSQLParser.PowerContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.POWER, visit(ctx.expr(0)), visit(ctx.expr(1)));
+        return new SQLBinaryExpression(ArithmeticType.POWER, visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
     @Override
     public SQLExpression visitArithmFirst(ConfSQLParser.ArithmFirstContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.op.getText()),
+        return new SQLBinaryExpression(ArithmeticType.resolveArithmeticType(ctx.op.getText()),
                 visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
     @Override
     public SQLExpression visitArithmSecond(ConfSQLParser.ArithmSecondContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.op.getText()),
+        return new SQLBinaryExpression(ArithmeticType.resolveArithmeticType(ctx.op.getText()),
                 visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
     @Override
     public SQLExpression visitConcatenation(ConfSQLParser.ConcatenationContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.CONCATENATION, visit(ctx.expr(0)), visit(ctx.expr(1)));
+        return new SQLBinaryExpression(ArithmeticType.CONCATENATION, visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
     @Override
     public SQLExpression visitNot(ConfSQLParser.NotContext ctx) {
-        return new SQLUnaryExpression(SQLExpression.ArithmeticType.NOT, visit(ctx.expr()));
+        return new SQLUnaryExpression(ArithmeticType.NOT, visit(ctx.expr()));
     }
 
     @Override
     public SQLExpression visitComparing(ConfSQLParser.ComparingContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.resolveArithmeticType(ctx.comp.getText()),
+        return new SQLBinaryExpression(ArithmeticType.resolveArithmeticType(ctx.comp.getText()),
                 visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
     @Override
     public SQLExpression visitAnd(ConfSQLParser.AndContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.AND, visit(ctx.expr(0)), visit(ctx.expr(1)));
+        return new SQLBinaryExpression(ArithmeticType.AND, visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
     @Override
     public SQLExpression visitOr(ConfSQLParser.OrContext ctx) {
-        return new SQLBinaryExpression(SQLExpression.ArithmeticType.OR, visit(ctx.expr(0)), visit(ctx.expr(1)));
+        return new SQLBinaryExpression(ArithmeticType.OR, visit(ctx.expr(0)), visit(ctx.expr(1)));
     }
 
     @Override
