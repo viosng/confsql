@@ -1,9 +1,10 @@
 package com.viosng.confsql.semantic.model.algebra;
 
 import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.viosng.confsql.semantic.model.expressions.other.ValueExpression.AttributeExpression;
+import static com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression.AttributeExpression;
 
 /**
  * Created with IntelliJ IDEA.
@@ -117,7 +118,7 @@ public class QueryFactory {
         @Override
         public Notification verify() {
             Notification notification = super.verify();
-            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.findExpressionByType(Expression.Type.GROUP) != null)) {
+            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.findExpressionByType(ArithmeticType.GROUP) != null)) {
                 notification.error("Aggregation operation with id = \"" + id() + 
                         "\" has no group operation result reference in schema attributes");
             }
@@ -146,7 +147,7 @@ public class QueryFactory {
         @Override
         public Notification verify() {
             Notification notification = super.verify();
-            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.type() == Expression.Type.GROUP)) {
+            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.type() == ArithmeticType.GROUP)) {
                 notification.error("Nest operation with id = \"" + id() +
                         "\" has no group operation result reference in schema attributes");
             }
@@ -168,7 +169,7 @@ public class QueryFactory {
                                                                @NotNull List<AttributeExpression> requiredSchemaAttributes) {
         List<AttributeExpression> newSchemaAttributes = new ArrayList<>(requiredSchemaAttributes.size());
         for (AttributeExpression schemaAttribute : requiredSchemaAttributes) {
-            if (schemaAttribute.id().equals(groupId) && schemaAttribute.type().equals(Expression.Type.GROUP) &&
+            if (schemaAttribute.id().equals(groupId) && schemaAttribute.type().equals(ArithmeticType.GROUP) &&
                     schemaAttribute instanceof ValueExpression.GroupExpression) {
                 ValueExpression.GroupExpression groupExpression = (ValueExpression.GroupExpression)schemaAttribute;
                 newSchemaAttributes.addAll(groupExpression.getGroupedAttributes().stream()
@@ -215,7 +216,7 @@ public class QueryFactory {
         @Override
         public Notification verify() {
             Notification notification = super.verify();
-            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.findExpressionByType(Expression.Type.GROUP) != null)) {
+            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.findExpressionByType(ArithmeticType.GROUP) != null)) {
                 notification.error("GroupJoin operation with id = \"" + id() +
                         "\" has no group operation result reference in schema attributes");
             }

@@ -1,7 +1,8 @@
-package com.viosng.confsql.semantic.model.expressions.unary;
+package com.viosng.confsql.semantic.model.algebra.expressions.unary;
 
-import com.viosng.confsql.semantic.model.expressions.ArithmeticExpression;
-import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.ArithmeticExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,17 +20,17 @@ public class UnaryArithmeticExpressionFactory {
     public static class UnaryArithmeticExpressionImpl extends DefaultUnaryExpression implements UnaryArithmeticExpression {
 
         UnaryArithmeticExpressionImpl(@NotNull String id,
-                                      @NotNull Type type,
+                                      @NotNull ArithmeticType type,
                                       @NotNull ArithmeticExpression arg) {
             super(id, type, arg);
         }
     }
 
     public static UnaryArithmeticExpression minus(@NotNull ArithmeticExpression arg) {
-        return new UnaryArithmeticExpressionImpl(Expression.UNDEFINED_ID, Expression.Type.UNARY_MINUS, arg);
+        return new UnaryArithmeticExpressionImpl(Expression.UNDEFINED_ID, ArithmeticType.MINUS, arg);
     }
 
     public static UnaryArithmeticExpression minus(@NotNull ArithmeticExpression arg, @NotNull String id) {
-        return new UnaryArithmeticExpressionImpl(id, Expression.Type.UNARY_MINUS, arg);
+        return new UnaryArithmeticExpressionImpl(id, ArithmeticType.MINUS, arg);
     }
 }

@@ -1,9 +1,9 @@
 package com.viosng.confsql.semantic.model.algebra;
 
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -2,13 +2,10 @@ package com.viosng.confsql.semantic.model.algebra;
 
 import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.DefaultContext;
-import com.viosng.confsql.semantic.model.other.Notification;
-import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.other.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -50,7 +47,7 @@ public abstract class DefaultQuery implements Query{
         this.requiredSchemaAttributes = requiredSchemaAttributes;
         this.queryObjectAttributes = requiredSchemaAttributes.stream()
                 .filter(a -> !a.id().equals(ModelElement.UNDEFINED_ID))
-                .map(a -> a.type() == Expression.Type.GROUP
+                .map(a -> a.type() == ArithmeticType.GROUP
                         ? ValueExpressionFactory.group(id, a.id(), ((ValueExpression.GroupExpression) a).getGroupedAttributes())
                         : ValueExpressionFactory.attribute(id, a.id()))
                 .collect(Collectors.toList());

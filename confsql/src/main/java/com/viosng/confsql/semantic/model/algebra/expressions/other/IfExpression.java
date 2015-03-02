@@ -1,7 +1,8 @@
-package com.viosng.confsql.semantic.model.expressions.other;
+package com.viosng.confsql.semantic.model.algebra.expressions.other;
 
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,8 +15,8 @@ public interface IfExpression extends Expression {
     
     @Override
     @NotNull
-    default Type type() {
-        return Type.IF;
+    default ArithmeticType type() {
+        return ArithmeticType.IF;
     }
 
     @NotNull

@@ -10,7 +10,7 @@ package com.viosng.confsql.xml;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.algebra.Query;
 import com.viosng.confsql.semantic.model.algebra.QueryBuilder;

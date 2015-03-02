@@ -1,7 +1,8 @@
-package com.viosng.confsql.semantic.model.expressions.other;
+package com.viosng.confsql.semantic.model.algebra.expressions.other;
 
 import com.google.common.base.Joiner;
-import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
@@ -164,9 +165,9 @@ public class ValueExpressionFactory {
         }
 
         @Override
-        public Expression findExpressionByType(Type type) {
-            if (type == this.type()) return this;
-            else return arguments.stream().map(a -> a.findExpressionByType(type)).filter(a -> a != null).findFirst().orElse(null);
+        public Expression findExpressionByType(ArithmeticType arithmeticType) {
+            if (arithmeticType == this.type()) return this;
+            else return arguments.stream().map(a -> a.findExpressionByType(arithmeticType)).filter(a -> a != null).findFirst().orElse(null);
         }
 
         @Override

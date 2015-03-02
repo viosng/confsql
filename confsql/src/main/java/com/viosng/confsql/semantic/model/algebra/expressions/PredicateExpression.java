@@ -1,6 +1,7 @@
-package com.viosng.confsql.semantic.model.expressions;
+package com.viosng.confsql.semantic.model.algebra.expressions;
 
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface PredicateExpression extends Expression {
     public static boolean isInvalidBooleanConstant(@NotNull Expression argument) {
-        if (argument.type() == Expression.Type.CONSTANT){
+        if (argument.type() == ArithmeticType.CONSTANT){
             String lowerCaseValue = ((ValueExpression.ConstantExpression) argument).getValue().toLowerCase();
             return !(lowerCaseValue.equals("true") || lowerCaseValue.equals("false"));
         }

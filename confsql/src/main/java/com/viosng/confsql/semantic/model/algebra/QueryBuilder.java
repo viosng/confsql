@@ -1,8 +1,8 @@
 package com.viosng.confsql.semantic.model.algebra;
 
 import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

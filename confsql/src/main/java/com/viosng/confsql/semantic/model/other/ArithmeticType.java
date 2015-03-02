@@ -33,6 +33,11 @@ public enum ArithmeticType {
     NOT_EQUAL("!=", "<>"),
     NOT("not", "!"),
     CONCATENATION("||"),
+    FUNCTION_CALL("function"),
+    CONSTANT("constant"),
+    ATTRIBUTE("attribute"),
+    GROUP("group"),
+    IF("if"),
     UNDEFINED()
     ;
 

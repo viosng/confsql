@@ -1,6 +1,7 @@
-package com.viosng.confsql.semantic.model.expressions.unary;
+package com.viosng.confsql.semantic.model.algebra.expressions.unary;
 
-import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
@@ -17,9 +18,9 @@ class DefaultUnaryExpression implements UnaryExpression{
     @NotNull
     protected final Expression arg;
     @NotNull
-    private final Type type;
+    private final ArithmeticType type;
 
-    protected DefaultUnaryExpression(@NotNull String id, @NotNull Type type, @NotNull Expression arg) {
+    protected DefaultUnaryExpression(@NotNull String id, @NotNull ArithmeticType type, @NotNull Expression arg) {
         this.id = id;
         this.arg = arg;
         this.type = type;
@@ -33,13 +34,13 @@ class DefaultUnaryExpression implements UnaryExpression{
 
     @NotNull
     @Override
-    public Type type() {
+    public ArithmeticType type() {
         return type;
     }
 
     @Override
-    public Expression findExpressionByType(Type type) {
-        return this.type == type ? this : arg.findExpressionByType(type);
+    public Expression findExpressionByType(ArithmeticType arithmeticType) {
+        return this.type == arithmeticType ? this : arg.findExpressionByType(arithmeticType);
     }
 
     @NotNull
@@ -72,7 +73,7 @@ class DefaultUnaryExpression implements UnaryExpression{
 
     @Override
     public String toString() {
-        return "(" + type.getName() + " " + arg + ")";
+        return "(" + type + " " + arg + ")";
     }
 
 }

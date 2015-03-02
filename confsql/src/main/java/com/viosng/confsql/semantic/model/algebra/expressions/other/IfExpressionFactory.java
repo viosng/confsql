@@ -1,8 +1,9 @@
-package com.viosng.confsql.semantic.model.expressions.other;
+package com.viosng.confsql.semantic.model.algebra.expressions.other;
 
 import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
@@ -56,11 +57,11 @@ public class IfExpressionFactory {
         }
 
         @Override
-        public Expression findExpressionByType(Type type) {
-            if (this.type() == type) return this;
-            Expression exp = predicate.findExpressionByType(type);
+        public Expression findExpressionByType(ArithmeticType arithmeticType) {
+            if (this.type() == arithmeticType) return this;
+            Expression exp = predicate.findExpressionByType(arithmeticType);
             return exp != null ? exp : (
-                    (exp = expressionOnTrue.findExpressionByType(type)) != null ? exp : expressionOnFalse.findExpressionByType(type));
+                    (exp = expressionOnTrue.findExpressionByType(arithmeticType)) != null ? exp : expressionOnFalse.findExpressionByType(arithmeticType));
         }
 
         @NotNull

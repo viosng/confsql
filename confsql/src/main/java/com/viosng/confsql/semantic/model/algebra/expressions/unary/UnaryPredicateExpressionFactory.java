@@ -1,7 +1,8 @@
-package com.viosng.confsql.semantic.model.expressions.unary;
+package com.viosng.confsql.semantic.model.algebra.expressions.unary;
 
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
@@ -21,14 +22,14 @@ public class UnaryPredicateExpressionFactory {
     public static class UnaryPredicateExpressionImpl extends DefaultUnaryExpression implements UnaryPredicateExpression {
 
         UnaryPredicateExpressionImpl(@NotNull String id,
-                                     @NotNull Type type, @NotNull Expression arg) {
+                                     @NotNull ArithmeticType type, @NotNull Expression arg) {
             super(id, type, arg);
         }
 
     }
 
     public static UnaryPredicateExpression not(@NotNull PredicateExpression arg, @NotNull String id) {
-        return new UnaryPredicateExpressionImpl(id, Expression.Type.NOT, arg) {
+        return new UnaryPredicateExpressionImpl(id, ArithmeticType.NOT, arg) {
             @NotNull
             @Override
             public Notification verify(@NotNull Context context) {

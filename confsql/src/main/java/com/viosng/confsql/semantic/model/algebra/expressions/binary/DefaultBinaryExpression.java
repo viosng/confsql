@@ -1,6 +1,7 @@
-package com.viosng.confsql.semantic.model.expressions.binary;
+package com.viosng.confsql.semantic.model.algebra.expressions.binary;
 
-import com.viosng.confsql.semantic.model.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
@@ -17,18 +18,18 @@ class DefaultBinaryExpression implements BinaryExpression{
     @NotNull
     private final String id;
     @NotNull
-    private final Type type;
+    private final ArithmeticType type;
     @NotNull
     protected final Expression left, right;
 
-    protected DefaultBinaryExpression(@NotNull String id, @NotNull Type type, @NotNull Expression left, @NotNull Expression right) {
+    protected DefaultBinaryExpression(@NotNull String id, @NotNull ArithmeticType type, @NotNull Expression left, @NotNull Expression right) {
         this.id = id;
         this.type = type;
         this.left = left;
         this.right = right;
     }
 
-    protected DefaultBinaryExpression(@NotNull Type type, @NotNull Expression left, @NotNull Expression right) {
+    protected DefaultBinaryExpression(@NotNull ArithmeticType type, @NotNull Expression left, @NotNull Expression right) {
         this(Expression.UNDEFINED_ID, type, left, right);
     }
 
@@ -52,15 +53,15 @@ class DefaultBinaryExpression implements BinaryExpression{
 
     @NotNull
     @Override
-    public Type type() {
+    public ArithmeticType type() {
         return type;
     }
 
     @Override
-    public Expression findExpressionByType(Type type) {
-        if (this.type == type) return this;
-        Expression leftType = left.findExpressionByType(type);
-        return leftType != null ? leftType : right.findExpressionByType(type);
+    public Expression findExpressionByType(ArithmeticType arithmeticType) {
+        if (this.type == arithmeticType) return this;
+        Expression leftType = left.findExpressionByType(arithmeticType);
+        return leftType != null ? leftType : right.findExpressionByType(arithmeticType);
     }
 
 
@@ -92,6 +93,6 @@ class DefaultBinaryExpression implements BinaryExpression{
 
     @Override
     public String toString() {
-        return "(" + left + " " + type.getName() + " " + right + ")";
+        return "(" + left + " " + type + " " + right + ")";
     }
 }

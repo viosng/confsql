@@ -1,12 +1,13 @@
-package com.viosng.confsql.semantic.model.expressions;
+package com.viosng.confsql.semantic.model.algebra;
 
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryExpression;
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.unary.UnaryArithmeticExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.unary.UnaryExpression;
-import com.viosng.confsql.semantic.model.expressions.unary.UnaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryArithmeticExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.unary.UnaryArithmeticExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.unary.UnaryExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.unary.UnaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Context;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;

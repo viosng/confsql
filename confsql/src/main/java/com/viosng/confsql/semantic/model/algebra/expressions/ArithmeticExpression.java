@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.expressions;
+package com.viosng.confsql.semantic.model.algebra.expressions;
 
 /**
  * Created with IntelliJ IDEA.

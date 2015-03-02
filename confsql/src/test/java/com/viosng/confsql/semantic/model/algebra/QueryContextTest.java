@@ -2,10 +2,10 @@ package com.viosng.confsql.semantic.model.algebra;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryArithmeticExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;

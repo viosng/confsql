@@ -4,26 +4,27 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import com.viosng.confsql.semantic.model.expressions.ArithmeticExpression;
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.PredicateExpression;
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryArithmeticExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryExpression;
-import com.viosng.confsql.semantic.model.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.other.IfExpression;
-import com.viosng.confsql.semantic.model.expressions.other.IfExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.expressions.other.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.unary.UnaryArithmeticExpressionFactory;
-import com.viosng.confsql.semantic.model.expressions.unary.UnaryExpression;
-import com.viosng.confsql.semantic.model.expressions.unary.UnaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.ArithmeticExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryArithmeticExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.IfExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.IfExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.unary.UnaryArithmeticExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.expressions.unary.UnaryExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.unary.UnaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static com.viosng.confsql.semantic.model.expressions.Expression.Type;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,7 +48,7 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
         public String id, objectReference, value;
 
         @XStreamAsAttribute
-        public Expression.Type type;
+        public ArithmeticType type;
         
         @XStreamImplicit
         public XMLExpression[] arguments;
@@ -107,12 +108,14 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
                 xmlExpression.value = ((ValueExpression) modelElement).getValue();
                 break;
             case NOT:
-            case UNARY_MINUS:
-                UnaryExpression unaryExpression = (UnaryExpression) modelElement;
-                xmlExpression.arguments = new XMLExpression[]{
-                        convertToXML(unaryExpression.getArg())
-                };
-                break;
+            case MINUS:
+                if (modelElement instanceof UnaryExpression) {
+                    UnaryExpression unaryExpression = (UnaryExpression) modelElement;
+                    xmlExpression.arguments = new XMLExpression[]{
+                            convertToXML(unaryExpression.getArg())
+                    };
+                    break;
+                }
             case IF:
                 IfExpression ifExpression = (IfExpression) modelElement;
                 xmlExpression.arguments = new XMLExpression[] {
@@ -161,34 +164,34 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
         }
     }
     
-    private static EnumSet<Expression.Type> allowedArithmeticTypes = EnumSet.of(Type.PLUS, Type.MINUS, 
-            Type.MULTIPLICATION, Type.DIVISION, Type.POWER, Type.UNARY_MINUS, Type.GREATER, Type.GREATER_OR_EQUAL, 
-            Type.LESS, Type.LESS_OR_EQUAL, Type.EQUAL);
+    private static EnumSet<ArithmeticType> allowedArithmeticArithmeticTypes = EnumSet.of(ArithmeticType.PLUS, ArithmeticType.MINUS, 
+            ArithmeticType.MULTIPLY, ArithmeticType.DIVIDE, ArithmeticType.POWER, ArithmeticType.GT, ArithmeticType.GE, 
+            ArithmeticType.LT, ArithmeticType.LE, ArithmeticType.EQUAL);
     
     private Expression processArithmeticExpressionArguments(@NotNull XMLExpression xmlExpression) {
-        if (!allowedArithmeticTypes.contains(xmlExpression.type)) return null;
+        if (!allowedArithmeticArithmeticTypes.contains(xmlExpression.type)) return null;
         ArithmeticExpression[] exps = Arrays.stream(xmlExpression.arguments)
                 .map(e -> convertWithCheck(e, ArithmeticExpression.class)).toArray(ArithmeticExpression[]::new);
         switch (xmlExpression.type) {
             case PLUS: return BinaryArithmeticExpressionFactory.plus(exps[0], exps[1], xmlExpression.id);
 
-            case MINUS: return BinaryArithmeticExpressionFactory.minus(exps[0], exps[1], xmlExpression.id);
+            case MINUS: return exps.length == 2 
+                    ? BinaryArithmeticExpressionFactory.minus(exps[0], exps[1], xmlExpression.id)
+                    : UnaryArithmeticExpressionFactory.minus(exps[0], xmlExpression.id);
 
-            case MULTIPLICATION: return BinaryArithmeticExpressionFactory.multiplication(exps[0], exps[1], xmlExpression.id);
+            case MULTIPLY: return BinaryArithmeticExpressionFactory.multiplication(exps[0], exps[1], xmlExpression.id);
 
-            case DIVISION: return BinaryArithmeticExpressionFactory.division(exps[0], exps[1], xmlExpression.id);
+            case DIVIDE: return BinaryArithmeticExpressionFactory.division(exps[0], exps[1], xmlExpression.id);
 
             case POWER: return BinaryArithmeticExpressionFactory.power(exps[0], exps[1], xmlExpression.id);
 
-            case UNARY_MINUS: return UnaryArithmeticExpressionFactory.minus(exps[0], xmlExpression.id);
+            case GT: return BinaryPredicateExpressionFactory.greater(exps[0], exps[1], xmlExpression.id);
 
-            case GREATER: return BinaryPredicateExpressionFactory.greater(exps[0], exps[1], xmlExpression.id);
+            case GE: return BinaryPredicateExpressionFactory.greaterOrEqual(exps[0], exps[1], xmlExpression.id);
 
-            case GREATER_OR_EQUAL: return BinaryPredicateExpressionFactory.greaterOrEqual(exps[0], exps[1], xmlExpression.id);
+            case LT: return BinaryPredicateExpressionFactory.less(exps[0], exps[1], xmlExpression.id);
 
-            case LESS: return BinaryPredicateExpressionFactory.less(exps[0], exps[1], xmlExpression.id);
-
-            case LESS_OR_EQUAL: return BinaryPredicateExpressionFactory.lessOrEqual(exps[0], exps[1], xmlExpression.id);
+            case LE: return BinaryPredicateExpressionFactory.lessOrEqual(exps[0], exps[1], xmlExpression.id);
 
             case EQUAL: return BinaryPredicateExpressionFactory.equal(exps[0], exps[1], xmlExpression.id);
             
@@ -196,10 +199,10 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
         }
     }
 
-    private static EnumSet<Expression.Type> allowedPredicateTypes = EnumSet.of(Type.AND, Type.OR, Type.NOT);
+    private static EnumSet<ArithmeticType> allowedPredicateArithmeticTypes = EnumSet.of(ArithmeticType.AND, ArithmeticType.OR, ArithmeticType.NOT);
 
     private Expression processPredicateExpressionArguments(@NotNull XMLExpression xmlExpression) {
-        if (!allowedPredicateTypes.contains(xmlExpression.type)) return null;
+        if (!allowedPredicateArithmeticTypes.contains(xmlExpression.type)) return null;
         PredicateExpression[] exps = Arrays.asList(xmlExpression.arguments).stream()
                 .map(e -> convertWithCheck(e, ArithmeticExpression.class)).toArray(PredicateExpression[]::new);
         switch (xmlExpression.type) {

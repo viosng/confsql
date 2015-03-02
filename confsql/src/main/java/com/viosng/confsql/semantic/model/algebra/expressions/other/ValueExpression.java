@@ -1,8 +1,9 @@
-package com.viosng.confsql.semantic.model.expressions.other;
+package com.viosng.confsql.semantic.model.algebra.expressions.other;
 
-import com.viosng.confsql.semantic.model.expressions.ArithmeticExpression;
-import com.viosng.confsql.semantic.model.expressions.Expression;
-import com.viosng.confsql.semantic.model.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.ArithmeticExpression;
+import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -19,21 +20,21 @@ public interface ValueExpression extends Expression {
     public String getValue();
 
     @Override
-    default Expression findExpressionByType(Type type) {
-        return type == type() ? this : null;
+    default Expression findExpressionByType(ArithmeticType arithmeticType) {
+        return arithmeticType == type() ? this : null;
     }
     
     public interface ConstantExpression extends ValueExpression, ArithmeticExpression, PredicateExpression {
         @NotNull
         @Override
-        public default Type type() { return Type.CONSTANT; }
+        public default ArithmeticType type() { return ArithmeticType.CONSTANT; }
     }
     
     public interface FunctionCallExpression extends ValueExpression, ArithmeticExpression, PredicateExpression {
 
         @NotNull
         @Override
-        public default Type type() { return Type.FUNCTION_CALL; }
+        public default ArithmeticType type() { return ArithmeticType.FUNCTION_CALL; }
         
         @NotNull
         public List<Expression> getArguments();
@@ -47,7 +48,7 @@ public interface ValueExpression extends Expression {
 
         @NotNull
         @Override
-        public default Type type() { return Type.ATTRIBUTE; }
+        public default ArithmeticType type() { return ArithmeticType.ATTRIBUTE; }
 
     }
     
@@ -55,7 +56,7 @@ public interface ValueExpression extends Expression {
         
         @NotNull
         @Override
-        public default Type type() { return Type.GROUP; }
+        public default ArithmeticType type() { return ArithmeticType.GROUP; }
 
         @NotNull
         public List<Expression> getGroupedAttributes();
