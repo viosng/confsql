@@ -96,7 +96,7 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
         XMLQuery xmlQuery = new XMLQuery();
         xmlQuery.id = query.id();
         xmlQuery.queryType = query.type();
-        xmlQuery.parameters = query.getParameters().stream().map(p -> new XMLParameter(p.getName(),
+        xmlQuery.parameters = query.getParameters().stream().map(p -> new XMLParameter(p.id(),
                 p.getValue() instanceof Query 
                         ? convertToXML((Query)p.getValue()) 
                         : XMLExpressionConverter.getInstance().convertToXML((Expression)p.getValue())))

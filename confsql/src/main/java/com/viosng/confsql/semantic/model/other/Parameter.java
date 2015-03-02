@@ -9,22 +9,24 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.12.2014
  * Time: 2:08
  */
-public class Parameter {
+public class Parameter implements ModelElement{
+    
     @NotNull
-    private final String name;
+    private final String id;
     
     @NotNull
     private final ModelElement value;
 
-    public Parameter(@NotNull String name, @NotNull ModelElement value) {
-        if (name.length() == 0) throw new IllegalArgumentException("Empty parameter sourceName");
-        this.name = name;
+    public Parameter(@NotNull String id, @NotNull ModelElement value) {
+        if (id.length() == 0) throw new IllegalArgumentException("Empty parameter sourceName");
+        this.id = id;
         this.value = value;
     }
 
     @NotNull
-    public String getName() {
-        return name;
+    @Override
+    public String id() {
+        return id;
     }
 
     @NotNull
@@ -38,12 +40,12 @@ public class Parameter {
         if (o == null || getClass() != o.getClass()) return false;
 
         Parameter parameter = (Parameter) o;
-        return name.equals(parameter.name) && value.equals(parameter.value);
+        return id.equals(parameter.id) && value.equals(parameter.value);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
+        int result = id.hashCode();
         result = 31 * result + value.hashCode();
         return result;
     }
@@ -51,7 +53,7 @@ public class Parameter {
     @Override
     public String toString() {
         return "Parameter{" +
-                "sourceName='" + name + '\'' +
+                "sourceName='" + id + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }

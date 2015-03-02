@@ -1,7 +1,7 @@
 <query id = "..." type = "JOIN"> 
     <parameters>
-        <parameter name="type" value="fuzzy"/>
-        <parameter name="precision" value="5"/>
+        <parameter id="type" value="fuzzy"/>
+        <parameter id="precision" value="5"/>
     </parameters> 
     <arguments> 
         <query id="leftQuery">...</query> 
