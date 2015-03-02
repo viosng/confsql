@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.other;
 
+import com.viosng.confsql.semantic.model.ModelElement;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,9 +11,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Parameter {
     @NotNull
-    private String name, value;
+    private final String name;
+    
+    @NotNull
+    private final ModelElement value;
 
-    public Parameter(@NotNull String name, @NotNull String value) {
+    public Parameter(@NotNull String name, @NotNull ModelElement value) {
         if (name.length() == 0) throw new IllegalArgumentException("Empty parameter sourceName");
         this.name = name;
         this.value = value;
@@ -24,7 +28,7 @@ public class Parameter {
     }
 
     @NotNull
-    public String getValue() {
+    public ModelElement getValue() {
         return value;
     }
 

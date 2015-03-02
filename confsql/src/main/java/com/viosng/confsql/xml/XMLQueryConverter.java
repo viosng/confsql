@@ -36,9 +36,11 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
     @XStreamAlias("parameter")
     public static class XMLParameter implements XMLConverter.XMLModelElement {
         @XStreamAsAttribute
-        public String name, value;
+        public String name;
+        
+        public XMLModelElement value;
 
-        public XMLParameter(String name, String value) {
+        public XMLParameter(String name, XMLModelElement value) {
             this.name = name;
             this.value = value;
         }
@@ -87,13 +89,17 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
 
     private static EnumSet<QueryType> typesWithSchema = EnumSet.of(QueryType.FILTER, QueryType.AGGREGATION, QueryType.NEST, QueryType.GROUP_JOIN);
     
+    
     @NotNull
     @Override
     public XMLQuery convertToXML(@NotNull Query query) {
         XMLQuery xmlQuery = new XMLQuery();
         xmlQuery.id = query.id();
         xmlQuery.queryType = query.type();
-        xmlQuery.parameters = query.getParameters().stream().map(p -> new XMLParameter(p.getName(), p.getValue()))
+        xmlQuery.parameters = query.getParameters().stream().map(p -> new XMLParameter(p.getName(),
+                p.getValue() instanceof Query 
+                        ? convertToXML((Query)p.getValue()) 
+                        : XMLExpressionConverter.getInstance().convertToXML((Expression)p.getValue())))
                 .toArray(XMLParameter[]::new);
         xmlQuery.arguments = Stream.concat(
                 query.getSubQueries().stream().map(this::convertToXML),
@@ -108,7 +114,11 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
 
     private static List<Parameter> convertParameters(XMLParameter[] xmlParameters) {
         return Arrays.asList(Arrays.asList(xmlParameters).stream()
-                .map(x -> new Parameter(x.name, x.value)).toArray(Parameter[]::new));
+                .map(x -> new Parameter(x.name,
+                        x.value instanceof XMLQuery
+                                ? XMLQueryConverter.getInstance().convertFromXML((XMLQuery) x.value)
+                                : XMLExpressionConverter.getInstance().convertFromXML((XMLExpressionConverter.XMLExpression)x.value)))
+                .toArray(Parameter[]::new));
     }
 
     private static List<Expression> convertExpressions(Stream<XMLExpressionConverter.XMLExpression> xmlExpressions) {

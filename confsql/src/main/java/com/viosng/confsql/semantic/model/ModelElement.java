@@ -14,6 +14,8 @@ public interface ModelElement {
     public final static String UNDEFINED_ID = "";
     
     @NotNull
-    public String id();
+    public default String id() {
+        return UNDEFINED_ID;
+    }
     
 }

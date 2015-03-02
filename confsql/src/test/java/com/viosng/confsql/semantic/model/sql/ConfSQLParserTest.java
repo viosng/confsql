@@ -260,7 +260,7 @@ public class ConfSQLParserTest {
     @Test
     public void testJoinedTablePrimary() throws Exception {
         SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "alias", Arrays.asList("a", "b", "c"));
-        List<SQLParameter> parameterList = 
+        List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
         SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
                 new SQLField("a"), new SQLField("b"));

@@ -63,7 +63,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitFromClause(ConfSQLParser.FromClauseContext ctx) {
-        List<SQLParameter> parameterList = ctx.paranthesizedParamList() != null 
+        List<SQLParameter> parameterList = ctx.paranthesizedParamList() != null
                 ? ((SQLParameterList)visit(ctx.paranthesizedParamList())).getParameterList()
                 : Collections.<SQLParameter>emptyList();
         List<SQLTableReference>  tableReferenceList = ((SQLExpressionList)visit(ctx.tableReferenceList()))

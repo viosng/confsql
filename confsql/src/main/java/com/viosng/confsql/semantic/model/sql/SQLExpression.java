@@ -1,5 +1,7 @@
 package com.viosng.confsql.semantic.model.sql;
 
+import com.viosng.confsql.semantic.model.ModelElement;
+
 /**
  * Created with IntelliJ IDEA.
  * User: vio
@@ -7,4 +9,8 @@ package com.viosng.confsql.semantic.model.sql;
  * Time: 13:04
  */
 public interface SQLExpression {
+    
+    default ModelElement convert() {
+        return new ModelElement() {};
+    } 
 }

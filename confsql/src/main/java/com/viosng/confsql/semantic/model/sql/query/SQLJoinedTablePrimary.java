@@ -25,7 +25,7 @@ public class SQLJoinedTablePrimary implements SQLExpression {
     
     private final SQLExpression onCondition;
 
-    public SQLJoinedTablePrimary(@NotNull String joinType, @NotNull List<SQLParameter> parameterList, 
+    public SQLJoinedTablePrimary(@NotNull String joinType, @NotNull List<SQLParameter> parameterList,
                                  @NotNull SQLTablePrimary tablePrimary, SQLExpression onCondition) {
         this.joinType = joinType.toLowerCase();
         this.parameterList = parameterList;

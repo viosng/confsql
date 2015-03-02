@@ -32,9 +32,9 @@ import static org.mockito.Mockito.when;
 public class QueryContextTest {
 
     private static final List<Parameter> PARAMETERS = Arrays.asList(
-            new Parameter("constA", "valA"),
-            new Parameter("constB", "valB"),
-            new Parameter("constC", "valC")
+            new Parameter("constA", ValueExpressionFactory.constant("valA")),
+            new Parameter("constB", ValueExpressionFactory.constant("valB")),
+            new Parameter("constC", ValueExpressionFactory.constant("valC"))
     );
 
     private Query.Primary createPrimary() {

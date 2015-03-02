@@ -26,7 +26,8 @@ public class QueryBuilderTest {
     private QueryBuilder queryBuilder;
     private Query subQuery1, subQuery2;
     private final String ID = "query";
-    private List<Parameter> parameters = Arrays.asList(new Parameter("a", "b"), new Parameter("c", "d"));
+    private List<Parameter> parameters = Arrays.asList(new Parameter("a", ValueExpressionFactory.constant("b")), 
+            new Parameter("c", ValueExpressionFactory.constant("d")));
     
     private static List<Expression> schemaAttributes(String object, List<String> attributes) {
         return attributes.stream().map(a -> ValueExpressionFactory.attribute(object, a))

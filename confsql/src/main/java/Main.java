@@ -52,7 +52,8 @@ public class Main {
                         .id("prim").create(Query.QueryType.PRIMARY))
                 .argumentExpressions(BinaryPredicateExpressionFactory.greater(ValueExpressionFactory.attribute("prim", "c"),
                         ValueExpressionFactory.constant("30")))
-                .parameters(new Parameter("precision", "10"), new Parameter("size", "100"))
+                .parameters(new Parameter("precision", ValueExpressionFactory.constant("10")), new Parameter("size", 
+                        ValueExpressionFactory.constant("100")))
                 .id("filt")
                 .queryType(Query.QueryType.FILTER)
                 .create();
