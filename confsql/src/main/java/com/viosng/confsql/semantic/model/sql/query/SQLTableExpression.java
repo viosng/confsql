@@ -1,6 +1,8 @@
 package com.viosng.confsql.semantic.model.sql.query;
 
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

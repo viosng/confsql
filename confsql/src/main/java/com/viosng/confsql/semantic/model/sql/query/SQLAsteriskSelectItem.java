@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 02.03.2015
  * Time: 3:21
  */
-public class SQLAsteriskSelectItem implements SQLExpression {
+public class SQLAsteriskSelectItem implements SQLExpression { //todo if it can be used as  unnest?
     
     @Nullable
     private final String objectName;

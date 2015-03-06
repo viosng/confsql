@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.sql.query;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,6 +42,13 @@ public class SQLTablePrimary implements SQLExpression {
     @NotNull
     public List<String> getColumnList() {
         return columnList;
+    }
+
+    @Override
+    public Expression convert() {
+        Expression exp = source.convert();
+        exp.setId(alias);
+        return exp;
     }
 
     @Override

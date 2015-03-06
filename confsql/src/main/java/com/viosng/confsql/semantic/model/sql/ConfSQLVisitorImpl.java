@@ -3,6 +3,9 @@ package com.viosng.confsql.semantic.model.sql;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import com.viosng.confsql.semantic.model.sql.query.*;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLTableReference;
 
 import java.util.Arrays;
 import java.util.Collections;

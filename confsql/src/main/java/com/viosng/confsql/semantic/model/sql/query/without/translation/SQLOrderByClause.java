@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.sql.query;
+package com.viosng.confsql.semantic.model.sql.query.without.translation;
 
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
