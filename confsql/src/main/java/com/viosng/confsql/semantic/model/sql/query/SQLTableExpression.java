@@ -1,10 +1,20 @@
 package com.viosng.confsql.semantic.model.sql.query;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
+import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,6 +75,65 @@ public class SQLTableExpression implements SQLExpression{
     @Nullable
     public SQLOrderByClause getOrderByClause() {
         return orderByClause;
+    }
+
+    private List<Parameter> mergeExpressionsAndParameters(List<SQLExpression> sqlExpressions, List<SQLParameter> sqlParameters,
+                                                          String expressionPrefix) {
+        List<Parameter> parameters = new ArrayList<>();
+        for (int i = 0; i < sqlExpressions.size(); i++) {
+            parameters.add(new Parameter(expressionPrefix+ i, sqlExpressions.get(i).convert()));
+        }
+
+        parameters.addAll(sqlParameters.stream().map(p -> (Parameter)p.convert()).collect(Collectors.toList()));
+
+        return parameters;
+    }
+
+    @Override
+    public Expression convert() {
+        Query current = (Query) fromClause.convert();
+        if (whereClause != null) {
+            current = new QueryBuilder()
+                    .queryType(Query.QueryType.FILTER)
+                    .subQueries(current)
+                    .parameters(new Parameter("filterExpression", whereClause.convert()))
+                    .create();
+        }
+        if (groupByClause != null) {
+            current = new QueryBuilder()
+                    .queryType(Query.QueryType.AGGREGATION)
+                    .subQueries(current)
+                    .parameters(mergeExpressionsAndParameters(groupByClause.getExpressionList(),
+                            groupByClause.getParameterList(), "groupByArg"))
+                    .create();
+        }
+        if (havingClause != null) {
+            current = new QueryBuilder()
+                    .queryType(Query.QueryType.FILTER)
+                    .subQueries(current)
+                    .parameters(new Parameter("filterExpression", havingClause.convert()))
+                    .create();
+        }
+        if (orderByClause != null) {
+            List<Parameter> parameters = mergeExpressionsAndParameters(orderByClause.getExpressionList(),
+                    orderByClause.getParamList(), "orderByArg");
+            parameters.add(new Parameter("type", ValueExpressionFactory.constant("order")));
+            parameters.add(new Parameter("orderType", ValueExpressionFactory.constant(orderByClause.getOrderType())));
+            current = new QueryBuilder()
+                    .queryType(Query.QueryType.FILTER)
+                    .subQueries(current)
+                    .parameters(parameters)
+                    .create();
+        }
+        if (limitClause != null) {
+            current = new QueryBuilder()
+                    .queryType(Query.QueryType.FILTER)
+                    .subQueries(current)
+                    .parameters(new Parameter("type", ValueExpressionFactory.constant("limit")),
+                            new Parameter("limitValue", limitClause.convert()))
+                    .create();
+        }
+        return current;
     }
 
     @Override
