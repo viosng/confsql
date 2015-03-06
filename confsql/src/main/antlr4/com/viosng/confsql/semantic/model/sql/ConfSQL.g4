@@ -8,7 +8,7 @@ stat : query EOF;
 ===============================================================================
 */
 
-query : ('select'|'SELECT') selectList tableExpression?;
+query : ('select'|'SELECT') paranthesizedParamList? selectList tableExpression?;
 
 selectList : selectItem (COMMA selectItem)* ;
 selectItem

@@ -63,6 +63,7 @@ public interface Query extends Expression {
     public Notification verify();
     
     static enum QueryType {
+        FICTIVE,
         PRIMARY,
         FILTER,
         FUSION,

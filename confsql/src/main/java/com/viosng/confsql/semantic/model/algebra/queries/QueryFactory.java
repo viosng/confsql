@@ -4,6 +4,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,59 @@ public class QueryFactory {
         return new ArrayList<>(attributeStream.map(HashSet<AttributeExpression>::new)
                 .<HashSet<AttributeExpression>>collect(HashSet<AttributeExpression>::new,
                         HashSet<AttributeExpression>::addAll, HashSet<AttributeExpression>::addAll));
+    }
+
+    @NotNull
+    public static Query fictive() {
+        return new Query() {
+            @NotNull
+            @Override
+            public QueryType queryType() {
+                return QueryType.FICTIVE;
+            }
+
+            @NotNull
+            @Override
+            public List<Parameter> getParameters() {
+                throw new UnsupportedOperationException();
+            }
+
+            @NotNull
+            @Override
+            public List<AttributeExpression> getQueryObjectAttributes() {
+                throw new UnsupportedOperationException();
+            }
+
+            @NotNull
+            @Override
+            public List<Expression> getRequiredSchemaAttributes() {
+                throw new UnsupportedOperationException();
+            }
+
+            @NotNull
+            @Override
+            public List<Query> getSubQueries() {
+                throw new UnsupportedOperationException();
+            }
+
+            @NotNull
+            @Override
+            public List<Expression> getArgumentExpressions() {
+                throw new UnsupportedOperationException();
+            }
+
+            @NotNull
+            @Override
+            public Context getContext() {
+                throw new UnsupportedOperationException();
+            }
+
+            @NotNull
+            @Override
+            public Notification verify() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
     private static class PrimaryQuery extends DefaultQuery implements Query.Primary {

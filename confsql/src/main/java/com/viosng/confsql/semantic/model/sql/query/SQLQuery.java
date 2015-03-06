@@ -1,10 +1,17 @@
 package com.viosng.confsql.semantic.model.sql.query;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
+import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,16 +20,22 @@ import java.util.List;
  * Time: 3:35
  */
 public class SQLQuery implements SQLExpression {
-    
+
+    @NotNull
+    private final List<SQLParameter> parameterList;
+
     @NotNull
     private final List<SQLSelectItem> selectItemList;
     
     @Nullable
     private final SQLTableExpression tableExpression;
 
-    public SQLQuery(@NotNull List<SQLSelectItem> selectItemList, @Nullable SQLTableExpression tableExpression) {
+    public SQLQuery(@NotNull List<SQLSelectItem> selectItemList,
+                    @Nullable SQLTableExpression tableExpression,
+                    @NotNull List<SQLParameter> parameterList) {
         this.selectItemList = selectItemList;
         this.tableExpression = tableExpression;
+        this.parameterList = parameterList;
     }
 
     @NotNull
@@ -33,6 +46,16 @@ public class SQLQuery implements SQLExpression {
     @Nullable
     public SQLTableExpression getTableExpression() {
         return tableExpression;
+    }
+
+    @Override
+    public Expression convert() {
+        Query subQuery = tableExpression != null ? (Query) tableExpression.convert() : QueryFactory.fictive();
+        return new QueryBuilder()
+                .parameters(parameterList.stream().map(p -> (Parameter)p.convert()).collect(Collectors.toList()))
+                .subQueries(subQuery)
+                .requiredSchemaAttributes(selectItemList.stream().map(SQLExpression::convert).collect(Collectors.toList()))
+                .create();
     }
 
     @Override

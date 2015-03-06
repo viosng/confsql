@@ -27,10 +27,14 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
 
     @Override
     public SQLExpression visitQuery(ConfSQLParser.QueryContext ctx) {
+        List<SQLParameter> parameterList = ctx.paranthesizedParamList() != null
+                ? ((SQLParameterList)visit(ctx.paranthesizedParamList())).getParameterList()
+                : Collections.<SQLParameter>emptyList();
         return new SQLQuery(
                 ((SQLExpressionList) visit(ctx.selectList())).getExpressionList().stream()
                         .map(e -> (SQLSelectItem) e).collect(Collectors.toList()),
-                ctx.tableExpression() != null ? (SQLTableExpression) visit(ctx.tableExpression()) : null);
+                ctx.tableExpression() != null ? (SQLTableExpression) visit(ctx.tableExpression()) : null,
+                parameterList);
     }
 
     @Override
