@@ -1,6 +1,6 @@
 package com.viosng.confsql.semantic.model.sql.expr.impl;
 
-import com.viosng.confsql.semantic.model.ModelElement;
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +34,7 @@ public class SQLParameter implements SQLExpression {
     }
 
     @Override
-    public ModelElement convert() {
+    public Expression convert() {
         return new Parameter(name, value.convert());
     }
 

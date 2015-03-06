@@ -1,12 +1,12 @@
 import com.thoughtworks.xstream.XStream;
-import com.viosng.confsql.semantic.model.algebra.Query;
-import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryArithmeticExpressionFactory;
-import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.IfExpressionFactory;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.algebra.expressions.unary.UnaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryArithmeticExpressionFactory;
+import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.IfExpressionFactory;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.*;
 import com.viosng.confsql.xml.XMLConverter;
@@ -28,7 +28,7 @@ public class Main {
     
     public static void testXML() {
         XStream xstream = new XStream();
-        XMLConverter<XMLExpressionConverter.XMLExpression, Expression> converter = XMLExpressionConverter.getInstance();
+        XMLConverter<XMLExpressionConverter.XMLExpressionImpl, Expression> converter = XMLExpressionConverter.getInstance();
         converter.configure(xstream);
 
         Expression expression = BinaryArithmeticExpressionFactory.plus(ValueExpressionFactory.constant("a"),
@@ -37,15 +37,15 @@ public class Main {
                                         ValueExpressionFactory.constant("true"), ValueExpressionFactory.constant("false")),
                                 ValueExpressionFactory.constant("d"))));
 
-        XMLExpressionConverter.XMLExpression xmlExpression = XMLExpressionConverter.getInstance().convertToXML(expression);
-        String xml = xstream.toXML(xmlExpression);
+        XMLExpressionConverter.XMLExpressionImpl xmlExpressionImpl = XMLExpressionConverter.getInstance().convertToXML(expression);
+        String xml = xstream.toXML(xmlExpressionImpl);
         System.out.println(xml);
-        System.out.println(xmlExpression.equals(xstream.fromXML(xml)));
+        System.out.println(xmlExpressionImpl.equals(xstream.fromXML(xml)));
         System.out.println(xstream.fromXML(xml));
-        System.out.println(xmlExpression);
-        System.out.println(expression.equals(converter.convertFromXML(xmlExpression)));
+        System.out.println(xmlExpressionImpl);
+        System.out.println(expression.equals(converter.convertFromXML(xmlExpressionImpl)));
         System.out.println(expression);
-        System.out.println(converter.convertFromXML(xmlExpression));
+        System.out.println(converter.convertFromXML(xmlExpressionImpl));
 
         Query q = new QueryBuilder()
                 .subQueries(new QueryBuilder().argumentExpressions(ValueExpressionFactory.constant("a", "b"))

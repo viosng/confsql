@@ -1,6 +1,6 @@
-package com.viosng.confsql.semantic.model.algebra.expressions.unary;
+package com.viosng.confsql.semantic.model.algebraold.expressions.unary;
 
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.12.2014
  * Time: 10:59
  */
-class DefaultUnaryExpression implements UnaryExpression{
+public class DefaultUnaryExpression implements UnaryExpression{
     @NotNull
     private final String id;
     @NotNull
@@ -20,8 +20,14 @@ class DefaultUnaryExpression implements UnaryExpression{
     @NotNull
     private final ArithmeticType type;
 
-    protected DefaultUnaryExpression(@NotNull String id, @NotNull ArithmeticType type, @NotNull Expression arg) {
+    public DefaultUnaryExpression(@NotNull String id, @NotNull ArithmeticType type, @NotNull Expression arg) {
         this.id = id;
+        this.arg = arg;
+        this.type = type;
+    }
+
+    public DefaultUnaryExpression(@NotNull ArithmeticType type, @NotNull Expression arg) {
+        this.id = UNDEFINED_ID;
         this.arg = arg;
         this.type = type;
     }

@@ -1,5 +1,7 @@
 package com.viosng.confsql.semantic.model.sql.expr.impl;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +39,11 @@ public class SQLBinaryExpression implements SQLExpression {
     @NotNull
     public SQLExpression getRight() {
         return right;
+    }
+
+    @Override
+    public Expression convert() {
+        return new ExpressionImpl(operator, left.convert(), right.convert());
     }
 
     @Override

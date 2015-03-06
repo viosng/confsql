@@ -1,7 +1,7 @@
 package com.viosng.confsql.semantic.model.sql.expr.impl;
 
-import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +25,7 @@ public class SQLConstant implements SQLExpression {
     }
 
     @Override
-    public ModelElement convert() {
+    public Expression convert() {
         return ValueExpressionFactory.constant(value);
     }
 

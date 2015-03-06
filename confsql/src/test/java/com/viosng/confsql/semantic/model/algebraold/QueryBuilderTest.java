@@ -1,8 +1,11 @@
-package com.viosng.confsql.semantic.model.algebra;
+package com.viosng.confsql.semantic.model.algebraold;
 
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.junit.Before;
 import org.junit.Test;

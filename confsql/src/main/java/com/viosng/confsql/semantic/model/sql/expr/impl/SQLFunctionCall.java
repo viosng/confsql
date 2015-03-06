@@ -1,9 +1,14 @@
 package com.viosng.confsql.semantic.model.sql.expr.impl;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,6 +46,14 @@ public class SQLFunctionCall implements SQLExpression {
     @NotNull
     public List<SQLParameter> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public Expression convert() {
+        ExpressionImpl functionCall = new ExpressionImpl(ArithmeticType.FUNCTION_CALL, arguments.stream()
+                .map(SQLExpression::convert).collect(Collectors.toList()));
+        functionCall.setParameters(parameters.stream().map(p -> (Parameter)p.convert()).collect(Collectors.toList()));
+        return functionCall;
     }
 
     @Override

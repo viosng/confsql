@@ -1,8 +1,7 @@
-package com.viosng.confsql.semantic.model.algebra.expressions.other;
+package com.viosng.confsql.semantic.model.algebraold.expressions.other;
 
-import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.PredicateExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
@@ -83,7 +82,7 @@ public class IfExpressionFactory {
     public static  IfExpression create(@NotNull PredicateExpression predicate,
                                        @NotNull Expression expressionOnTrue,
                                        @NotNull Expression expressionOnFalse) {
-        return new IfExpressionImpl(ModelElement.UNDEFINED_ID, predicate, expressionOnTrue, expressionOnFalse);
+        return new IfExpressionImpl(Expression.UNDEFINED_ID, predicate, expressionOnTrue, expressionOnFalse);
     }
     
     public static  IfExpression create(@NotNull PredicateExpression predicate,

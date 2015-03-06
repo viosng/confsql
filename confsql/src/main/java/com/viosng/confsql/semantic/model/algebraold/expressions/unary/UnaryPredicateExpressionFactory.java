@@ -1,7 +1,7 @@
-package com.viosng.confsql.semantic.model.algebra.expressions.unary;
+package com.viosng.confsql.semantic.model.algebraold.expressions.unary;
 
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.PredicateExpression;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.PredicateExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;

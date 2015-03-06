@@ -1,6 +1,6 @@
-package com.viosng.confsql.semantic.model.algebra.expressions.binary;
+package com.viosng.confsql.semantic.model.algebraold.expressions.binary;
 
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import org.jetbrains.annotations.NotNull;
 
 /**

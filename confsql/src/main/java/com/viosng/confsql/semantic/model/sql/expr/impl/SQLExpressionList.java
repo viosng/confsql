@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.sql.expr.impl;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,6 +26,11 @@ public class SQLExpressionList implements SQLExpression {
         return expressionList;
     }
 
+    @Override
+    public Expression convert() {
+        throw new UnsupportedOperationException();
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

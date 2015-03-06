@@ -1,9 +1,8 @@
-package com.viosng.confsql.semantic.model.algebra;
+package com.viosng.confsql.semantic.model.algebra.queries;
 
-import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
@@ -13,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression.AttributeExpression;
+import static com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression.AttributeExpression;
 
 /**
  * Created with IntelliJ IDEA.
@@ -173,7 +172,7 @@ public class QueryFactory {
                     schemaAttribute instanceof ValueExpression.GroupExpression) {
                 ValueExpression.GroupExpression groupExpression = (ValueExpression.GroupExpression)schemaAttribute;
                 newSchemaAttributes.addAll(groupExpression.getGroupedAttributes().stream()
-                        .filter(a -> !a.id().equals(ModelElement.UNDEFINED_ID))
+                        .filter(a -> !a.id().equals(Expression.UNDEFINED_ID))
                         .map(a -> ValueExpressionFactory.attribute(queryId, a.id()))
                         .collect(Collectors.toList()));
             } else {

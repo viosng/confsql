@@ -112,7 +112,7 @@ expr : BIT_NEG expr                                                             
      | expr ('OR'|'or') expr                                                                     #or
      | ('CAST'|'cast') expr ('as'|'AS') StringLiteral                                            #cast
      | ('CASE'|'case') expr? caseWhenClause+ caseElseClause? ('END'|'end')                       #case
-     | query                                                                                     #subQueryExpr
+     | LEFT_PAREN query RIGHT_PAREN                                                              #subQueryExpr
      | (NumberLiteral | String)                                                                  #constant
      | Field                                                                                     #fieldExpr
      | StringLiteral (LEFT_PAREN exprsAndParams RIGHT_PAREN)?                                    #columnOrFunctionCall

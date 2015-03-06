@@ -1,10 +1,9 @@
-package com.viosng.confsql.semantic.model.algebra;
+package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.google.common.collect.Lists;
-import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +45,7 @@ public abstract class DefaultQuery implements Query{
         this.parameters = parameters;
         this.requiredSchemaAttributes = requiredSchemaAttributes;
         this.queryObjectAttributes = requiredSchemaAttributes.stream()
-                .filter(a -> !a.id().equals(ModelElement.UNDEFINED_ID))
+                .filter(a -> !a.id().equals(Expression.UNDEFINED_ID))
                 .map(a -> a.type() == ArithmeticType.GROUP
                         ? ValueExpressionFactory.group(id, a.id(), ((ValueExpression.GroupExpression) a).getGroupedAttributes())
                         : ValueExpressionFactory.attribute(id, a.id()))
@@ -143,7 +142,7 @@ public abstract class DefaultQuery implements Query{
 
         DefaultQuery that = (DefaultQuery) o;
 
-        return this.type() == that.type() 
+        return this.queryType() == that.queryType()
                 && argumentExpressions.equals(that.argumentExpressions) 
                 && id.equals(that.id) 
                 && parameters.equals(that.parameters)

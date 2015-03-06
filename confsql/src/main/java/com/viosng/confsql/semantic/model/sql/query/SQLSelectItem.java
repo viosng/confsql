@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.sql.query;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLField;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,13 @@ public class SQLSelectItem implements SQLExpression {
     @Nullable
     public SQLField getAs() {
         return as;
+    }
+
+    @Override
+    public Expression convert() {
+        Expression exp = item.convert();
+        if (as != null) exp.setId(as.getName());
+        return exp;
     }
 
     @Override

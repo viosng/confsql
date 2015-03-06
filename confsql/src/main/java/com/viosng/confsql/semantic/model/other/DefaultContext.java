@@ -1,7 +1,7 @@
 package com.viosng.confsql.semantic.model.other;
 
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.Query;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

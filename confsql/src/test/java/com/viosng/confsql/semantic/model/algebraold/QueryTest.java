@@ -1,9 +1,11 @@
-package com.viosng.confsql.semantic.model.algebra;
+package com.viosng.confsql.semantic.model.algebraold;
 
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryPredicateExpressionFactory;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -65,7 +67,7 @@ public class QueryTest {
     public void testInterface(final Object... testData) {
         Query q = (Query) testData[0];
         assertEquals(testData[1], q.id());
-        assertEquals(testData[2], q.type());
+        assertEquals(testData[2], q.queryType());
         assertEquals(PARAMETERS, q.getParameters());
     }
 

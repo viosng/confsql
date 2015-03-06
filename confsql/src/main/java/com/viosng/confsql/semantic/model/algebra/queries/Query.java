@@ -1,8 +1,8 @@
-package com.viosng.confsql.semantic.model.algebra;
+package com.viosng.confsql.semantic.model.algebra.queries;
 
-import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
@@ -16,10 +16,27 @@ import java.util.List;
  * Date: 21.12.2014
  * Time: 2:04
  */
-public interface Query extends ModelElement {
+public interface Query extends Expression {
 
     @NotNull
-    public QueryType type();
+    @Override
+    default ArithmeticType type() {
+        return ArithmeticType.QUERY;
+    }
+
+    @Override
+    default Expression findExpressionByType(ArithmeticType arithmeticType){
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    default Notification verify(@NotNull Context context){
+        return new Notification();
+    }
+
+    @NotNull
+    public QueryType queryType();
     
     @NotNull
     public List<Parameter> getParameters();
@@ -78,48 +95,48 @@ public interface Query extends ModelElement {
     interface Primary extends Query {
         @NotNull
         @Override
-        default QueryType type() {return QueryType.PRIMARY;}
+        default QueryType queryType() {return QueryType.PRIMARY;}
     }
     
     interface Filter extends UnaryQuery {
         @NotNull
         @Override
-        default QueryType type() {return QueryType.FILTER;}
+        default QueryType queryType() {return QueryType.FILTER;}
     }
 
     interface Fusion extends Query{
         @NotNull
         @Override
-        default QueryType type() {return QueryType.FUSION;}
+        default QueryType queryType() {return QueryType.FUSION;}
     }
 
     interface Join extends BinaryQuery {
         @NotNull
         @Override
-        default QueryType type() {return QueryType.JOIN;}
+        default QueryType queryType() {return QueryType.JOIN;}
     }
     
     interface Aggregation extends UnaryQuery {
         @NotNull
         @Override
-        default QueryType type() {return QueryType.AGGREGATION;}
+        default QueryType queryType() {return QueryType.AGGREGATION;}
     }
 
     interface Nest extends UnaryQuery {
         @NotNull
         @Override
-        default QueryType type() {return QueryType.NEST;}
+        default QueryType queryType() {return QueryType.NEST;}
     }
 
     interface UnNest extends UnaryQuery {
         @NotNull
         @Override
-        default QueryType type() {return QueryType.UNNEST;}
+        default QueryType queryType() {return QueryType.UNNEST;}
     }
 
     interface GroupJoin extends BinaryQuery {
         @NotNull
         @Override
-        default QueryType type() {return QueryType.GROUP_JOIN;}
+        default QueryType queryType() {return QueryType.GROUP_JOIN;}
     }
 }

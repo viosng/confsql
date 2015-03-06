@@ -1,7 +1,7 @@
 package com.viosng.confsql.xml;
 
 import com.thoughtworks.xstream.XStream;
-import com.viosng.confsql.semantic.model.ModelElement;
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,9 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 25.12.2014
  * Time: 10:36
  */
-public interface XMLConverter <T extends XMLConverter.XMLModelElement, E extends ModelElement>{
-    
-    public static interface XMLModelElement{}
+public interface XMLConverter <T extends XMLExpression, E extends Expression>{
     
     @NotNull
     public T convertToXML(@NotNull E modelElement);

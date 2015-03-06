@@ -1,6 +1,6 @@
-package com.viosng.confsql.semantic.model.algebra.expressions.binary;
+package com.viosng.confsql.semantic.model.algebraold.expressions.binary;
 
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
@@ -14,7 +14,7 @@ import java.util.Arrays;
  * Date: 21.12.2014
  * Time: 10:59
  */
-class DefaultBinaryExpression implements BinaryExpression{
+public class DefaultBinaryExpression implements BinaryExpression{
     @NotNull
     private final String id;
     @NotNull
@@ -22,14 +22,14 @@ class DefaultBinaryExpression implements BinaryExpression{
     @NotNull
     protected final Expression left, right;
 
-    protected DefaultBinaryExpression(@NotNull String id, @NotNull ArithmeticType type, @NotNull Expression left, @NotNull Expression right) {
+    public DefaultBinaryExpression(@NotNull String id, @NotNull ArithmeticType type, @NotNull Expression left, @NotNull Expression right) {
         this.id = id;
         this.type = type;
         this.left = left;
         this.right = right;
     }
 
-    protected DefaultBinaryExpression(@NotNull ArithmeticType type, @NotNull Expression left, @NotNull Expression right) {
+    public DefaultBinaryExpression(@NotNull ArithmeticType type, @NotNull Expression left, @NotNull Expression right) {
         this(Expression.UNDEFINED_ID, type, left, right);
     }
 

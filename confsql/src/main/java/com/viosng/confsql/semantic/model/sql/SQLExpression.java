@@ -1,6 +1,6 @@
 package com.viosng.confsql.semantic.model.sql;
 
-import com.viosng.confsql.semantic.model.ModelElement;
+import com.viosng.confsql.semantic.model.algebra.Expression;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +10,7 @@ import com.viosng.confsql.semantic.model.ModelElement;
  */
 public interface SQLExpression {
     
-    default ModelElement convert() {
-        return new ModelElement() {};
+    default Expression convert() {
+        throw new UnsupportedOperationException();
     } 
 }

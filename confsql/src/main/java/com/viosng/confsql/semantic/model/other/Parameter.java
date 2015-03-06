@@ -1,6 +1,6 @@
 package com.viosng.confsql.semantic.model.other;
 
-import com.viosng.confsql.semantic.model.ModelElement;
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.12.2014
  * Time: 2:08
  */
-public class Parameter implements ModelElement{
+public class Parameter implements Expression {
     
     @NotNull
     private final String id;
     
     @NotNull
-    private final ModelElement value;
+    private final Expression value;
 
-    public Parameter(@NotNull String id, @NotNull ModelElement value) {
+    public Parameter(@NotNull String id, @NotNull Expression value) {
         if (id.length() == 0) throw new IllegalArgumentException("Empty parameter sourceName");
         this.id = id;
         this.value = value;
@@ -30,7 +30,24 @@ public class Parameter implements ModelElement{
     }
 
     @NotNull
-    public ModelElement getValue() {
+    @Override
+    public ArithmeticType type() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Expression findExpressionByType(ArithmeticType arithmeticType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    public Notification verify(@NotNull Context context) {
+        return new Notification();
+    }
+
+    @NotNull
+    public Expression getValue() {
         return value;
     }
 

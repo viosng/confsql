@@ -1,8 +1,7 @@
-package com.viosng.confsql.semantic.model.algebra;
+package com.viosng.confsql.semantic.model.algebra.queries;
 
-import com.viosng.confsql.semantic.model.ModelElement;
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
-import com.viosng.confsql.semantic.model.algebra.expressions.other.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +18,7 @@ import java.util.List;
  */
 public class QueryBuilder {
     @NotNull
-    private String id = ModelElement.UNDEFINED_ID;
+    private String id = Expression.UNDEFINED_ID;
 
     @Nullable
     private Query.QueryType queryType;

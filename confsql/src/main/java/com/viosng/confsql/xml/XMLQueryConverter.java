@@ -10,10 +10,10 @@ package com.viosng.confsql.xml;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.viosng.confsql.semantic.model.algebra.expressions.Expression;
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.other.Parameter;
-import com.viosng.confsql.semantic.model.algebra.Query;
-import com.viosng.confsql.semantic.model.algebra.QueryBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.viosng.confsql.semantic.model.algebra.Query.QueryType;
+import static com.viosng.confsql.semantic.model.algebra.queries.Query.QueryType;
 
 public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuery, Query>{
 
@@ -34,20 +34,20 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
     public static XMLQueryConverter getInstance() { return XMLQueryConverterHolder.INSTANCE; }
 
     @XStreamAlias("parameter")
-    public static class XMLParameter implements XMLConverter.XMLModelElement {
+    public static class XMLParameter implements XMLExpression {
         @XStreamAsAttribute
         public String name;
         
-        public XMLModelElement value;
+        public XMLExpression value;
 
-        public XMLParameter(String name, XMLModelElement value) {
+        public XMLParameter(String name, XMLExpression value) {
             this.name = name;
             this.value = value;
         }
     }
 
     @XStreamAlias("query")
-    public static class XMLQuery implements XMLConverter.XMLModelElement {
+    public static class XMLQuery implements XMLExpression{
         @XStreamAsAttribute
         public String id = "";
 
@@ -56,9 +56,9 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
 
         public XMLParameter[] parameters = new XMLParameter[0];
 
-        public XMLExpressionConverter.XMLExpression[] schema = new XMLExpressionConverter.XMLExpression[0];
+        public XMLExpressionConverter.XMLExpressionImpl[] schema = new XMLExpressionConverter.XMLExpressionImpl[0];
         
-        public XMLModelElement[] arguments = new XMLModelElement[0];
+        public XMLExpression[] arguments = new XMLExpression[0];
 
         @Override
         public boolean equals(Object o) {
@@ -95,19 +95,19 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
     public XMLQuery convertToXML(@NotNull Query query) {
         XMLQuery xmlQuery = new XMLQuery();
         xmlQuery.id = query.id();
-        xmlQuery.queryType = query.type();
+        xmlQuery.queryType = query.queryType();
         xmlQuery.parameters = query.getParameters().stream().map(p -> new XMLParameter(p.id(),
                 p.getValue() instanceof Query 
                         ? convertToXML((Query)p.getValue()) 
-                        : XMLExpressionConverter.getInstance().convertToXML((Expression)p.getValue())))
+                        : XMLExpressionConverter.getInstance().convertToXML(p.getValue())))
                 .toArray(XMLParameter[]::new);
         xmlQuery.arguments = Stream.concat(
                 query.getSubQueries().stream().map(this::convertToXML),
                 query.getArgumentExpressions().stream().map(XMLExpressionConverter.getInstance()::convertToXML))
-                .toArray(XMLModelElement[]::new);
-        if (typesWithSchema.contains(query.type())) {
+                .toArray(XMLExpression[]::new);
+        if (typesWithSchema.contains(query.queryType())) {
             xmlQuery.schema = query.getRequiredSchemaAttributes().stream().map(XMLExpressionConverter.getInstance()::convertToXML)
-                    .toArray(XMLExpressionConverter.XMLExpression[]::new);
+                    .toArray(XMLExpressionConverter.XMLExpressionImpl[]::new);
         }
         return xmlQuery;
     }
@@ -117,15 +117,15 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
                 .map(x -> new Parameter(x.name,
                         x.value instanceof XMLQuery
                                 ? XMLQueryConverter.getInstance().convertFromXML((XMLQuery) x.value)
-                                : XMLExpressionConverter.getInstance().convertFromXML((XMLExpressionConverter.XMLExpression)x.value)))
+                                : XMLExpressionConverter.getInstance().convertFromXML((XMLExpressionConverter.XMLExpressionImpl)x.value)))
                 .toArray(Parameter[]::new));
     }
 
-    private static List<Expression> convertExpressions(Stream<XMLExpressionConverter.XMLExpression> xmlExpressions) {
+    private static List<Expression> convertExpressions(Stream<XMLExpressionConverter.XMLExpressionImpl> xmlExpressions) {
         return Arrays.asList(xmlExpressions.map(XMLExpressionConverter.getInstance()::convertFromXML).toArray(Expression[]::new));
     }
     
-    private static <T extends XMLModelElement> Stream<T> extractElementsWithType(XMLModelElement[] elements, Class<T> tClass) {
+    private static <T extends XMLExpression> Stream<T> extractElementsWithType(XMLExpression[] elements, Class<T> tClass) {
         return Arrays.stream(elements).filter(tClass::isInstance).map(tClass::cast);
     }
     
@@ -135,7 +135,7 @@ public class XMLQueryConverter implements XMLConverter<XMLQueryConverter.XMLQuer
         return new QueryBuilder()
                 .id(xml.id)
                 .queryType(xml.queryType)
-                .argumentExpressions(convertExpressions(extractElementsWithType(xml.arguments, XMLExpressionConverter.XMLExpression.class)))
+                .argumentExpressions(convertExpressions(extractElementsWithType(xml.arguments, XMLExpressionConverter.XMLExpressionImpl.class)))
                 .parameters(convertParameters(xml.parameters))
                 .requiredSchemaAttributes(convertExpressions(Arrays.stream(xml.schema)))
                 .subQueries(extractElementsWithType(xml.arguments, XMLQuery.class).map(this::convertFromXML).toArray(Query[]::new))
