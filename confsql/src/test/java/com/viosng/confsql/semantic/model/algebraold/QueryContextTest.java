@@ -13,10 +13,7 @@ import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -151,13 +148,14 @@ public class QueryContextTest {
                 requiredSchemaAttributes);
         assertFalse(aggregation.verify().isOk());
         
-        requiredSchemaAttributes.add(ValueExpressionFactory.functionCall("sum", Arrays.asList(ValueExpressionFactory.constant("1"))));
+        requiredSchemaAttributes.add(ValueExpressionFactory.functionCall("sum", Arrays.asList(ValueExpressionFactory.constant("1")),
+                Collections.emptyList()));
         aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList(), emptyList(), requiredSchemaAttributes);
         assertFalse(aggregation.verify().toString(), aggregation.verify().isOk());
 
         requiredSchemaAttributes.add(ValueExpressionFactory.functionCall("sum",
                 Arrays.asList(ValueExpressionFactory.group("subQuery", "ages",
-                        Arrays.asList(ValueExpressionFactory.attribute("subQuery", "age"))))));
+                        Arrays.asList(ValueExpressionFactory.attribute("subQuery", "age")))), Collections.emptyList()));
         aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList(), emptyList(), requiredSchemaAttributes);
         assertTrue(aggregation.verify().toString(), aggregation.verify().isOk());
     }
@@ -225,7 +223,8 @@ public class QueryContextTest {
         List<Expression> requiredSchema = Lists.newArrayList(
                 ValueExpressionFactory.functionCall("sum",
                         Arrays.asList(ValueExpressionFactory.group("groupJoin", "ages",
-                                Arrays.asList(ValueExpressionFactory.attribute("f1", "a")))))
+                                Arrays.asList(ValueExpressionFactory.attribute("f1", "a")))),
+                        Collections.emptyList())
         );
         groupJoin = QueryFactory.groupJoin("groupJoin", queries.get(0), queries.get(1), arguments, emptyList(), requiredSchema);
         assertTrue(groupJoin.verify().toString(), groupJoin.verify().isOk());

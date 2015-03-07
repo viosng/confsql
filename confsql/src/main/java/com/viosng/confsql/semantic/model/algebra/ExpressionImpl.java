@@ -5,6 +5,7 @@ import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,12 +41,8 @@ public class ExpressionImpl implements Expression {
         this.arguments = Arrays.asList(arguments);
     }
 
-    public void setId(@NotNull String id) {
-        this.id = id;
-    }
-
-    public void setParameters(@NotNull List<Parameter> parameters) {
-        this.parameters = parameters;
+    public void setId(@Nullable String id) {
+        this.id = id == null ? this.id : id;
     }
 
     @NotNull

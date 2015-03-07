@@ -5,6 +5,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -135,23 +136,35 @@ public class ValueExpressionFactory {
     private static class FunctionCallExpression extends AbstractValueExpression implements ValueExpression.FunctionCallExpression {
         @NotNull
         private final List<Expression> arguments;
+
+        @NotNull
+        private final List<Parameter> parameters;
         
         private Notification notification;
 
-        private FunctionCallExpression(@NotNull String id, @NotNull String value, @NotNull List<Expression> arguments) {
+        private FunctionCallExpression(@NotNull String id, @NotNull String value, @NotNull List<Expression> arguments,
+                                       @NotNull List<Parameter> parameters) {
             super(id, value);
             this.arguments = new ArrayList<>(arguments);
+            this.parameters = parameters;
         }
 
-        private FunctionCallExpression(@NotNull String value, @NotNull List<Expression> arguments) {
+        private FunctionCallExpression(@NotNull String value, @NotNull List<Expression> arguments,
+                                       @NotNull List<Parameter> parameters) {
             super(value);
             this.arguments = new ArrayList<>(arguments);
+            this.parameters = parameters;
         }
 
         @NotNull
         @Override
         public List<Expression> getArguments() {
             return arguments;
+        }
+
+        @NotNull
+        public List<Parameter> getParameters() {
+            return parameters;
         }
 
         @NotNull
@@ -172,7 +185,7 @@ public class ValueExpressionFactory {
 
         @Override
         public String toString() {
-            return value + "(" + Joiner.on(", ").join(arguments) + ")";
+            return value + "(" + Joiner.on(", ").join(arguments) + "; " + Joiner.on(", ").join(parameters) +  ")";
         }
     }
 
@@ -217,9 +230,10 @@ public class ValueExpressionFactory {
         return new ConstantExpression(value);
     }
 
-    public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value, 
-                                                                      @NotNull List<Expression> expressions) {
-        return new FunctionCallExpression(value, expressions);
+    public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value,
+                                                                      @NotNull List<Expression> expressions,
+                                                                      @NotNull List<Parameter> parameters) {
+        return new FunctionCallExpression(value, expressions, parameters);
     }
     
     public static ValueExpression.AttributeExpression attribute(@NotNull String objectReference, @NotNull String value) {
@@ -237,9 +251,10 @@ public class ValueExpressionFactory {
     }
 
     public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value, 
-                                                                      @NotNull List<Expression> expressions, 
+                                                                      @NotNull List<Expression> expressions,
+                                                                      @NotNull List<Parameter> parameters,
                                                                       @NotNull String id) {
-        return new FunctionCallExpression(id, value, expressions);
+        return new FunctionCallExpression(id, value, expressions, parameters);
     }
 
     public static ValueExpression.AttributeExpression attribute(@NotNull String objectReference, 

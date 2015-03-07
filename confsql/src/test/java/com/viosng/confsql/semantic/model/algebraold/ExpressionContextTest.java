@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -61,7 +62,7 @@ public class ExpressionContextTest {
         assertFalse(predicate.verify(mock(Context.class)).isOk());
         predicate = BinaryPredicateExpressionFactory.and(ValueExpressionFactory.constant("True"),
                 ValueExpressionFactory.functionCall("function", Arrays.asList(ValueExpressionFactory.constant("c"), 
-                        ValueExpressionFactory.constant("d"))));
+                        ValueExpressionFactory.constant("d")), Collections.emptyList()));
         assertTrue(predicate.verify(mock(Context.class)).isOk());
     }
 

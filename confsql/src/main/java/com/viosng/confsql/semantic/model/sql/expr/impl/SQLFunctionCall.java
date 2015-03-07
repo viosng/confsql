@@ -1,8 +1,7 @@
 package com.viosng.confsql.semantic.model.sql.expr.impl;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
-import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
@@ -50,10 +49,10 @@ public class SQLFunctionCall implements SQLExpression {
 
     @Override
     public Expression convert() {
-        ExpressionImpl functionCall = new ExpressionImpl(ArithmeticType.FUNCTION_CALL, arguments.stream()
-                .map(SQLExpression::convert).collect(Collectors.toList()));
-        functionCall.setParameters(parameters.stream().map(p -> (Parameter)p.convert()).collect(Collectors.toList()));
-        return functionCall;
+        return ValueExpressionFactory.functionCall(
+                name,
+                arguments.stream().map(SQLExpression::convert).collect(Collectors.toList()),
+                parameters.stream().map(p -> (Parameter)p.convert()).collect(Collectors.toList()));
     }
 
     @Override

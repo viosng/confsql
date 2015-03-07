@@ -63,7 +63,8 @@ public class ExpressionTest {
                 {UnaryPredicateExpressionFactory.not(predicateMock()), "not", ArithmeticType.NOT},
                 
                 {ValueExpressionFactory.constant("constant"), "constant", ArithmeticType.CONSTANT},
-                {ValueExpressionFactory.functionCall("function", Collections.emptyList()), "function", ArithmeticType.FUNCTION_CALL},
+                {ValueExpressionFactory.functionCall("function", Collections.emptyList(), Collections.emptyList()),
+                        "function", ArithmeticType.FUNCTION_CALL},
                 {ValueExpressionFactory.attribute("object", "attribute"), "object.attribute", ArithmeticType.ATTRIBUTE},
                 {ValueExpressionFactory.group("object", "group", Collections.emptyList()), "object.group", ArithmeticType.GROUP},
         };

@@ -17,6 +17,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,7 +36,7 @@ public class Main {
                 ValueExpressionFactory.functionCall("b",
                         Arrays.asList(IfExpressionFactory.create(UnaryPredicateExpressionFactory.not(ValueExpressionFactory.constant("nnn")),
                                         ValueExpressionFactory.constant("true"), ValueExpressionFactory.constant("false")),
-                                ValueExpressionFactory.constant("d"))));
+                                ValueExpressionFactory.constant("d")), Collections.emptyList()));
 
         XMLExpressionConverter.XMLExpressionImpl xmlExpressionImpl = XMLExpressionConverter.getInstance().convertToXML(expression);
         String xml = xstream.toXML(xmlExpressionImpl);

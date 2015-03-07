@@ -18,6 +18,7 @@ import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryArith
 import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryExpression;
 import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -147,7 +148,8 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
         switch (xmlElement.type) {
             case FUNCTION_CALL: return ValueExpressionFactory.functionCall(
                     xmlElement.value, Arrays.asList(Arrays.stream(xmlElement.arguments)
-                            .map(e -> convertWithCheck(e, Expression.class)).toArray(Expression[]::new)), xmlElement.id);
+                            .map(e -> convertWithCheck(e, Expression.class)).toArray(Expression[]::new)),
+                    Collections.<Parameter>emptyList(), xmlElement.id);
 
             case CONSTANT: return ValueExpressionFactory.constant(xmlElement.value, xmlElement.id);
 
