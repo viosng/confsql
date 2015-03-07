@@ -5,7 +5,7 @@ import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import com.viosng.confsql.semantic.model.sql.query.*;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
-import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLTableReference;
+import com.viosng.confsql.semantic.model.sql.query.SQLTableReference;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.Pair;

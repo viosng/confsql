@@ -1,10 +1,16 @@
 package com.viosng.confsql.semantic.model.sql.query;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
+import com.viosng.confsql.semantic.model.sql.expr.impl.SQLField;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,7 +52,23 @@ public class SQLTablePrimary implements SQLExpression {
 
     @Override
     public Expression convert() {
-        Expression exp = source.convert();
+        Expression exp;
+        if (source instanceof SQLField) {
+            SQLField table = (SQLField) source;
+            Query primary = new QueryBuilder()
+                    .queryType(Query.QueryType.PRIMARY)
+                    .parameters(new Parameter("sourceName", ValueExpressionFactory.constant(table.getName())))
+                    .create();
+            exp = new QueryBuilder()
+                    .queryType(Query.QueryType.FILTER)
+                    .requiredSchemaAttributes(columnList.stream().map(c ->
+                            ValueExpressionFactory.attribute(table.getName(), c)).collect(Collectors.toList()))
+                    .subQueries(primary)
+                    .create();
+
+        } else {
+            exp = source.convert();
+        }
         exp.setId(alias);
         return exp;
     }

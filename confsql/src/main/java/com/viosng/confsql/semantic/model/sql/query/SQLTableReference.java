@@ -1,8 +1,6 @@
-package com.viosng.confsql.semantic.model.sql.query.without.translation;
+package com.viosng.confsql.semantic.model.sql.query;
 
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
-import com.viosng.confsql.semantic.model.sql.query.SQLJoinedTablePrimary;
-import com.viosng.confsql.semantic.model.sql.query.SQLTablePrimary;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
