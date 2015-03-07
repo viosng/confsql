@@ -4,12 +4,14 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,11 +53,13 @@ public class SQLQuery implements SQLExpression {
     @Override
     public Expression convert() {
         Query subQuery = tableExpression != null ? (Query) tableExpression.convert() : QueryFactory.fictive();
+        List<Expression> schemaAttributes = selectItemList.stream().map(SQLExpression::convert).collect(Collectors.toList());
         return new QueryBuilder()
                 .queryType(Query.QueryType.FILTER)
                 .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
                 .subQueries(subQuery)
-                .requiredSchemaAttributes(selectItemList.stream().map(SQLExpression::convert).collect(Collectors.toList()))
+                .requiredSchemaAttributes(schemaAttributes.size() == 1
+                        && schemaAttributes.get(0).type() == ArithmeticType.GROUP ? Collections.emptyList() : schemaAttributes)
                 .create();
     }
 

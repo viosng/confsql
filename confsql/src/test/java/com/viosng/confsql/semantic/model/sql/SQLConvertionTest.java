@@ -5,6 +5,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
 import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
@@ -283,6 +284,25 @@ public class SQLConvertionTest {
         assertEquals(limit, visitor.visit(getParser(
                 "from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c " +
                         "having 3=4 order(\"c\"=\"d\") by a, b desc limit 10").tableExpression()).convert());
+    }
+
+    @Test
+    public void testQuery() throws Exception {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .queryType(Query.QueryType.FILTER)
+                .subQueries(QueryFactory.fictive())
+                .requiredSchemaAttributes(ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.constant("3"));
+        assertEquals(queryBuilder.create(), visitor.visit(getParser("select a, 3").query()).convert());
+
+        Query primary = new QueryBuilder()
+                .queryType(Query.QueryType.PRIMARY)
+                .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .create();
+        queryBuilder.subQueries(primary);
+        assertEquals(queryBuilder.create(), visitor.visit(getParser("select a, 3 from source").query()).convert());
+
+        queryBuilder.requiredSchemaAttributes(Collections.<Expression>emptyList());
+        assertEquals(queryBuilder.create(), visitor.visit(getParser("select * from source").query()).convert());
     }
 
     @Test

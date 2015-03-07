@@ -63,7 +63,7 @@ public abstract class DefaultQuery implements Query{
 
     @Override
     public void setId(@Nullable String id) {
-        this.id = id;
+        if (id != null) this.id = id;
     }
 
     @NotNull

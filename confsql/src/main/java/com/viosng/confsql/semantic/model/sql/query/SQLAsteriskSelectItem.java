@@ -1,7 +1,11 @@
 package com.viosng.confsql.semantic.model.sql.query;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 02.03.2015
  * Time: 3:21
  */
-public class SQLAsteriskSelectItem implements SQLExpression { //todo if it can be used as  unnest?
+public class SQLAsteriskSelectItem implements SQLExpression {
     
     @Nullable
     private final String objectName;
@@ -21,6 +25,11 @@ public class SQLAsteriskSelectItem implements SQLExpression { //todo if it can b
     @Nullable
     public String getObjectName() {
         return objectName;
+    }
+
+    @Override
+    public Expression convert() {
+        return ValueExpressionFactory.group(objectName != null ? objectName : "", "", Collections.emptyList());
     }
 
     @Override

@@ -32,57 +32,87 @@ public class QueryFactory {
                         HashSet<AttributeExpression>::addAll, HashSet<AttributeExpression>::addAll));
     }
 
+    private static class FictiveQuery implements Query {
+
+        private FictiveQuery(){}
+
+        @NotNull
+        public static FictiveQuery getInstance() {
+            return Holder.INSTANCE;
+        }
+
+        private static class Holder {
+            @NotNull
+            private static final FictiveQuery INSTANCE = new FictiveQuery();
+        }
+
+        @NotNull
+        @Override
+        public QueryType queryType() {
+            return QueryType.FICTIVE;
+        }
+
+        @NotNull
+        @Override
+        public List<Parameter> getParameters() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public List<AttributeExpression> getQueryObjectAttributes() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public List<Expression> getRequiredSchemaAttributes() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public List<Query> getSubQueries() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public List<Expression> getArgumentExpressions() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public Context getContext() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public Notification verify() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String toString() {
+            return "FictiveQuery";
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return this == o;
+        }
+
+        @Override
+        public int hashCode() {
+            return FictiveQuery.class.hashCode();
+        }
+    }
+
     @NotNull
     public static Query fictive() {
-        return new Query() {
-            @NotNull
-            @Override
-            public QueryType queryType() {
-                return QueryType.FICTIVE;
-            }
-
-            @NotNull
-            @Override
-            public List<Parameter> getParameters() {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public List<AttributeExpression> getQueryObjectAttributes() {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public List<Expression> getRequiredSchemaAttributes() {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public List<Query> getSubQueries() {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public List<Expression> getArgumentExpressions() {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public Context getContext() {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public Notification verify() {
-                throw new UnsupportedOperationException();
-            }
-        };
+        return FictiveQuery.getInstance();
     }
 
     private static class PrimaryQuery extends DefaultQuery implements Query.Primary {
