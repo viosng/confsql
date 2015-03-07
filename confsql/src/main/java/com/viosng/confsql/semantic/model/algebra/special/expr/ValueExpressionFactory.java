@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.algebraold.expressions.other;
+package com.viosng.confsql.semantic.model.algebra.special.expr;
 
 import com.google.common.base.Joiner;
 import com.viosng.confsql.semantic.model.algebra.Expression;
@@ -36,7 +36,7 @@ public class ValueExpressionFactory {
         }
 
         protected AbstractValueExpression(@NotNull String value) {
-            this(Expression.UNDEFINED_ID, value);
+            this(UNDEFINED_ID, value);
         }
 
         @NotNull

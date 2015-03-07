@@ -5,6 +5,7 @@ import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import com.viosng.confsql.semantic.model.sql.query.*;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLJoinedTablePrimary;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByArg;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
 import com.viosng.confsql.semantic.model.sql.query.SQLTableReference;
 
@@ -163,8 +164,12 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
                 ctx.paranthesizedParamList() != null 
                         ? ((SQLParameterList) visit(ctx.paranthesizedParamList())).getParameterList() 
                         : Collections.<SQLParameter>emptyList(),
-                ((SQLExpressionList) visit(ctx.exprList())).getExpressionList(),
-                ctx.OrderType() != null ? ctx.OrderType().getText() : "asc");
+                ctx.orderByArg().stream().map(o -> (SQLOrderByArg)visit(o)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public SQLExpression visitOrderByArg(ConfSQLParser.OrderByArgContext ctx) {
+        return new SQLOrderByArg(visit(ctx.expr()), ctx.OrderType() != null ? ctx.OrderType().getText() : "asc");
     }
 
     @Override

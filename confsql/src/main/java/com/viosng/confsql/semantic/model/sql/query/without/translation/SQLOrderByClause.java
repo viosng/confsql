@@ -17,15 +17,11 @@ public class SQLOrderByClause implements SQLExpression{
     private final List<SQLParameter> paramList;
     
     @NotNull
-    private final List<SQLExpression> expressionList;
-    
-    @NotNull
-    private final String orderType;
+    private final List<SQLOrderByArg> orderByArgs;
 
-    public SQLOrderByClause(@NotNull List<SQLParameter> paramList, @NotNull List<SQLExpression> expressionList, @NotNull String orderType) {
+    public SQLOrderByClause(@NotNull List<SQLParameter> paramList, @NotNull List<SQLOrderByArg> orderByArgs) {
         this.paramList = paramList;
-        this.expressionList = expressionList;
-        this.orderType = orderType.toUpperCase();
+        this.orderByArgs = orderByArgs;
     }
 
     @NotNull
@@ -34,13 +30,8 @@ public class SQLOrderByClause implements SQLExpression{
     }
 
     @NotNull
-    public List<SQLExpression> getExpressionList() {
-        return expressionList;
-    }
-
-    @NotNull
-    public String getOrderType() {
-        return orderType;
+    public List<SQLOrderByArg> getOrderByArgs() {
+        return orderByArgs;
     }
 
     @Override
@@ -50,14 +41,13 @@ public class SQLOrderByClause implements SQLExpression{
 
         SQLOrderByClause that = (SQLOrderByClause) o;
 
-        return expressionList.equals(that.expressionList) && orderType.equals(that.orderType) && paramList.equals(that.paramList);
+        return orderByArgs.equals(that.orderByArgs) && paramList.equals(that.paramList);
     }
 
     @Override
     public int hashCode() {
         int result = paramList.hashCode();
-        result = 31 * result + expressionList.hashCode();
-        result = 31 * result + orderType.hashCode();
+        result = 31 * result + orderByArgs.hashCode();
         return result;
     }
 
@@ -65,8 +55,7 @@ public class SQLOrderByClause implements SQLExpression{
     public String toString() {
         return "SQLOrderByClause{" +
                 "paramList=" + paramList +
-                ", expressionList=" + expressionList +
-                ", orderType='" + orderType + '\'' +
+                ", orderByArgs=" + orderByArgs +
                 '}';
     }
 }

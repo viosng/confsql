@@ -2,8 +2,8 @@ package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

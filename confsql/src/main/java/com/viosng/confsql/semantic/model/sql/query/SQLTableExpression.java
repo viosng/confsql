@@ -3,7 +3,7 @@ package com.viosng.confsql.semantic.model.sql.query;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
-import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
@@ -77,7 +77,7 @@ public class SQLTableExpression implements SQLExpression{
         return orderByClause;
     }
 
-    private List<Parameter> mergeExpressionsAndParameters(List<SQLExpression> sqlExpressions, List<SQLParameter> sqlParameters,
+    private List<Parameter> mergeExpressionsAndParameters(List<? extends SQLExpression> sqlExpressions, List<SQLParameter> sqlParameters,
                                                           String expressionPrefix) {
         List<Parameter> parameters = new ArrayList<>();
         for (int i = 0; i < sqlExpressions.size(); i++) {
@@ -115,10 +115,9 @@ public class SQLTableExpression implements SQLExpression{
                     .create();
         }
         if (orderByClause != null) {
-            List<Parameter> parameters = mergeExpressionsAndParameters(orderByClause.getExpressionList(),
+            List<Parameter> parameters = mergeExpressionsAndParameters(orderByClause.getOrderByArgs(),
                     orderByClause.getParamList(), "orderByArg");
             parameters.add(new Parameter("type", ValueExpressionFactory.constant("order")));
-            parameters.add(new Parameter("orderType", ValueExpressionFactory.constant(orderByClause.getOrderType())));
             current = new QueryBuilder()
                     .queryType(Query.QueryType.FILTER)
                     .subQueries(current)

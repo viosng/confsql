@@ -10,10 +10,10 @@ import com.viosng.confsql.semantic.model.algebraold.expressions.PredicateExpress
 import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryExpression;
 import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.algebraold.expressions.other.IfExpression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.other.IfExpressionFactory;
-import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.special.expr.IfExpression;
+import com.viosng.confsql.semantic.model.algebra.special.expr.IfExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
+import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryArithmeticExpressionFactory;
 import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryExpression;
 import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryPredicateExpressionFactory;

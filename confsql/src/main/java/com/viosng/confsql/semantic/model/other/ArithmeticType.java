@@ -39,6 +39,7 @@ public enum ArithmeticType {
     GROUP("group"),
     IF("if"),
     QUERY("query"),
+    ORDER("order"),
     UNDEFINED()
     ;
 

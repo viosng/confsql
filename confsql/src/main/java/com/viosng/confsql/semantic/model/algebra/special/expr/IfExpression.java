@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.algebraold.expressions.other;
+package com.viosng.confsql.semantic.model.algebra.special.expr;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebraold.expressions.PredicateExpression;

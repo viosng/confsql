@@ -82,7 +82,8 @@ havingClause : ('having'|'HAVING') expr;
 ===============================================================================
 */
 
-orderByClause : ('order'|'ORDER') paranthesizedParamList? ('by'|'BY') exprList OrderType?;
+orderByClause : ('order'|'ORDER') paranthesizedParamList? ('by'|'BY') orderByArg (COMMA orderByArg)*;
+orderByArg : expr OrderType?;
 OrderType : 'ASC' | 'asc' | 'desc' | 'DESC';
 
 /*
