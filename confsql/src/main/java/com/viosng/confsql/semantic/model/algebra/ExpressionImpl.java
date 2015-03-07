@@ -76,4 +76,33 @@ public class ExpressionImpl implements Expression {
     public String id() {
         return id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExpressionImpl)) return false;
+
+        ExpressionImpl that = (ExpressionImpl) o;
+
+        return arguments.equals(that.arguments) && id.equals(that.id) && parameters.equals(that.parameters) && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + type.hashCode();
+        result = 31 * result + arguments.hashCode();
+        result = 31 * result + parameters.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ExpressionImpl{" +
+                "id='" + id + '\'' +
+                ", type=" + type +
+                ", arguments=" + arguments +
+                ", parameters=" + parameters +
+                '}';
+    }
 }
