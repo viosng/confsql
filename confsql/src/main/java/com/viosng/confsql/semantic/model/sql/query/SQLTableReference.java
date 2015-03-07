@@ -6,6 +6,7 @@ import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLJoinedTablePrimary;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

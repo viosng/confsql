@@ -55,17 +55,18 @@ public class SQLTablePrimary implements SQLExpression {
         Expression exp;
         if (source instanceof SQLField) {
             SQLField table = (SQLField) source;
-            Query primary = new QueryBuilder()
+            exp = new QueryBuilder()
                     .queryType(Query.QueryType.PRIMARY)
                     .parameters(new Parameter("sourceName", ValueExpressionFactory.constant(table.getName())))
                     .create();
-            exp = new QueryBuilder()
-                    .queryType(Query.QueryType.FILTER)
-                    .requiredSchemaAttributes(columnList.stream().map(c ->
-                            ValueExpressionFactory.attribute(table.getName(), c)).collect(Collectors.toList()))
-                    .subQueries(primary)
-                    .create();
-
+            if (!columnList.isEmpty()) {
+                exp = new QueryBuilder()
+                        .queryType(Query.QueryType.FILTER)
+                        .requiredSchemaAttributes(columnList.stream().map(c ->
+                                ValueExpressionFactory.attribute(table.getName(), c)).collect(Collectors.toList()))
+                        .subQueries((Query)exp)
+                        .create();
+            }
         } else {
             exp = source.convert();
         }

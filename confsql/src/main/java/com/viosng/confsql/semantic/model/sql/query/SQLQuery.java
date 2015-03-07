@@ -52,7 +52,8 @@ public class SQLQuery implements SQLExpression {
     public Expression convert() {
         Query subQuery = tableExpression != null ? (Query) tableExpression.convert() : QueryFactory.fictive();
         return new QueryBuilder()
-                .parameters(parameterList.stream().map(p -> (Parameter)p.convert()).collect(Collectors.toList()))
+                .queryType(Query.QueryType.FILTER)
+                .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
                 .subQueries(subQuery)
                 .requiredSchemaAttributes(selectItemList.stream().map(SQLExpression::convert).collect(Collectors.toList()))
                 .create();

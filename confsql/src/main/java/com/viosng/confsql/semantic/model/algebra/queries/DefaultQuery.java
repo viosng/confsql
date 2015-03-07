@@ -6,6 +6,7 @@ import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpre
 import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public abstract class DefaultQuery implements Query{
     @NotNull
-    private final String id;
+    private String id;
     
     @NotNull
     private final List<Parameter> parameters;
@@ -58,6 +59,11 @@ public abstract class DefaultQuery implements Query{
     @Override
     public String id() {
         return id;
+    }
+
+    @Override
+    public void setId(@Nullable String id) {
+        this.id = id;
     }
 
     @NotNull

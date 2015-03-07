@@ -42,6 +42,9 @@ public class SQLFromClause implements SQLExpression {
 
     @Override
     public Expression convert() {
+        if (tableReferenceList.size() == 1 && parameterList.isEmpty()) {
+            return tableReferenceList.get(0).convert();
+        }
         return new QueryBuilder()
                 .queryType(tableReferenceList.size() > 1 ? Query.QueryType.JOIN : Query.QueryType.FILTER)
                 .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
