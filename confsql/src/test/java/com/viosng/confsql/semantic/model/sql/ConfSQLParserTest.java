@@ -377,7 +377,7 @@ public class ConfSQLParserTest {
                 new SQLSelectItem(new SQLField("a.a.a"), new SQLField("b"))
         );
         
-        SQLQuery query = new SQLQuery(selectItemList, tableExpression);
+        SQLQuery query = new SQLQuery(selectItemList, tableExpression, Collections.<SQLParameter>emptyList());
 
         assertEquals(query, visitor.visit(getParser(
                         "select obj.* as obj1, *, 3, a.a.a as b " +
