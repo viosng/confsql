@@ -182,6 +182,48 @@ public class SQLConvertionTest {
     }
 
     @Test
+    public void testFrom() throws Exception {
+        Query primary = new QueryBuilder()
+                .queryType(Query.QueryType.PRIMARY)
+                .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .create();
+
+        Query query = new QueryBuilder()
+                .queryType(Query.QueryType.JOIN)
+                .parameters(
+                        new Parameter("joinType", ValueExpressionFactory.constant("fuzzy")),
+                        new Parameter("onCondition", new ExpressionImpl(ArithmeticType.EQUAL,
+                                ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
+                        new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
+                .subQueries(primary, primary)
+                .create();
+
+        Query query1 = new QueryBuilder()
+                .queryType(Query.QueryType.JOIN)
+                .parameters(
+                        new Parameter("joinType", ValueExpressionFactory.constant("right")),
+                        new Parameter("onCondition", new ExpressionImpl(ArithmeticType.LT,
+                                ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
+                        new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
+                .subQueries(query, primary)
+                .create();
+
+        QueryBuilder from = new QueryBuilder()
+                .queryType(Query.QueryType.JOIN)
+                .subQueries(primary, query, query1);
+
+        assertEquals(from.create(), visitor.visit(getParser(
+                "from source, source fuzzy join(a=d.e) source on a=b, " +
+                        "source fuzzy join(a=d.e) source on a=b right join(a=d.e) source on a<b").fromClause()).convert());
+
+        from.parameters(new Parameter("a", ValueExpressionFactory.constant("1")), new Parameter("b", ValueExpressionFactory.constant("2")));
+
+        assertEquals(from.create(), visitor.visit(getParser(
+                "from(a=1,b=2) source, source fuzzy join(a=d.e) source on a=b, " +
+                        "source fuzzy join(a=d.e) source on a=b right join(a=d.e) source on a<b").fromClause()).convert());
+    }
+
+    @Test
     public void testFull() throws Exception {
         Query exp = (Query) visitor.visit(getParser("select a from b,c").stat()).convert();
         System.out.println(xstream.toXML(XMLQueryConverter.getInstance().convertToXML(exp)));
