@@ -5,6 +5,7 @@ import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import com.viosng.confsql.semantic.model.sql.query.*;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLJoinedTablePrimary;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByArg;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
 import com.viosng.confsql.semantic.model.sql.query.SQLTableReference;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -213,17 +214,15 @@ public class ConfSQLParserTest {
     public void testOrderByClause() throws Exception {
         SQLOrderByClause orderByClause = new SQLOrderByClause(
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4"))),
-                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")),
-                "DESC"
-        );
-        assertEquals(orderByClause, visitor.visit(getParser("order(a=3,b=4) by a, b, c desc").orderByClause()));
+                Arrays.asList(new SQLOrderByArg(new SQLField("a"), "asc"), new SQLOrderByArg(new SQLField("b"), "desc"),
+                        new SQLOrderByArg(new SQLField("c"), "desc")));
+        assertEquals(orderByClause, visitor.visit(getParser("order(a=3,b=4) by a asc, b desc, c desc").orderByClause()));
 
         orderByClause = new SQLOrderByClause(
                 Collections.<SQLParameter>emptyList(),
-                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")),
-                "ASC"
-        );
-        assertEquals(orderByClause, visitor.visit(getParser("order by a, b, c").orderByClause()));
+                Arrays.asList(new SQLOrderByArg(new SQLField("a"), "asc"), new SQLOrderByArg(new SQLField("b"), "desc"),
+                        new SQLOrderByArg(new SQLField("c"), "asc")));
+        assertEquals(orderByClause, visitor.visit(getParser("order by a asc, b desc, c").orderByClause()));
     }
 
     @Test
@@ -256,7 +255,7 @@ public class ConfSQLParserTest {
         SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "alias", Arrays.asList("a", "b", "c"));
         assertEquals(tablePrimary, visitor.visit(getParser("source as alias (a, b, c)").tablePrimary()));
 
-        tablePrimary = new SQLTablePrimary(new SQLField("source"), "source",
+        tablePrimary = new SQLTablePrimary(new SQLField("source"), "",
                 Collections.<String>emptyList());
         assertEquals(tablePrimary, visitor.visit(getParser("source").tablePrimary()));
     }
@@ -286,7 +285,7 @@ public class ConfSQLParserTest {
 
     @Test
     public void testTableReference() throws Exception {
-        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "", Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
         SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
@@ -305,7 +304,7 @@ public class ConfSQLParserTest {
 
     @Test
     public void testFromClause() throws Exception {
-        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "", Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
         SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
@@ -332,7 +331,7 @@ public class ConfSQLParserTest {
     @Test
     public void testStat() throws Exception {
         
-        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "source", Collections.<String>emptyList());
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "", Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
         SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
@@ -362,9 +361,8 @@ public class ConfSQLParserTest {
 
         SQLOrderByClause orderByClause = new SQLOrderByClause(
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4"))),
-                Arrays.asList(new SQLField("a"), new SQLField("b"), new SQLField("c")),
-                "DESC"
-        );
+                Arrays.asList(new SQLOrderByArg(new SQLField("a"), "asc"), new SQLOrderByArg(new SQLField("b"), "desc"),
+                        new SQLOrderByArg(new SQLField("c"), "desc")));
 
         SQLExpression limitClause = new SQLConstant("3");
         
@@ -389,7 +387,7 @@ public class ConfSQLParserTest {
                         "where 3" +
                         "group(a=3,b=4) by a, b, c " + 
                         "having 3 " +
-                        "order(a=3,b=4) by a, b, c desc " +
+                        "order(a=3,b=4) by a asc, b desc, c desc " +
                         "limit 3").stat()));
     }
 }

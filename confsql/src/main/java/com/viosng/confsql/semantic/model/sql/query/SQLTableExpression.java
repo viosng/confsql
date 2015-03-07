@@ -34,7 +34,7 @@ public class SQLTableExpression implements SQLExpression{
     private final SQLGroupByClause groupByClause;
     
     @Nullable
-    private final SQLOrderByClause orderByClause; // todo make orderType and params(?) for every column
+    private final SQLOrderByClause orderByClause;
 
     public SQLTableExpression(@NotNull SQLFromClause fromClause, @Nullable SQLExpression whereClause, 
                               @Nullable SQLGroupByClause groupByClause, @Nullable SQLExpression havingClause, 
