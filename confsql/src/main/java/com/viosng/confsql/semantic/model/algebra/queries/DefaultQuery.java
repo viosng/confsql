@@ -154,7 +154,6 @@ public abstract class DefaultQuery implements Query{
                 && parameters.equals(that.parameters)
                 && requiredSchemaAttributes.equals(that.requiredSchemaAttributes) 
                 && subQueries.equals(that.subQueries);
-
     }
 
     @Override

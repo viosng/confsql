@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebraold.expressions.other.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Parameter;
@@ -108,8 +109,43 @@ public class SQLConvertionTest {
     }
 
     @Test
+    public void testSelectItem() throws Exception {
+        assertEquals(ValueExpressionFactory.constant("3", "c"),
+                visitor.visit(getParser("3 as c").selectItem()).convert());
+
+        ExpressionImpl expression = new ExpressionImpl(ArithmeticType.PLUS, ValueExpressionFactory.constant("3"),
+                ValueExpressionFactory.constant("4"));
+        expression.setId("alias");
+        assertEquals(expression, visitor.visit(getParser("3 + 4 as alias").selectItem()).convert());
+
+        assertEquals(
+                ValueExpressionFactory.attribute("", "source", "alias"),
+                visitor.visit(getParser("source as alias").selectItem()).convert());
+    }
+
+    @Test
+    public void testTablePrimary() throws Exception {
+        Query primary = new QueryBuilder()
+                .queryType(Query.QueryType.PRIMARY)
+                .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .id("alias")
+                .create();
+        assertEquals(primary, visitor.visit(getParser("source as alias").tablePrimary()).convert());
+
+        Query filter = new QueryBuilder()
+                .queryType(Query.QueryType.FILTER)
+                .subQueries(primary)
+                .requiredSchemaAttributes(ValueExpressionFactory.attribute("", "a"))
+                .id("alias")
+                .create();
+        assertEquals(filter, visitor.visit(getParser("(select a from source as alias) as alias").tablePrimary()).convert());
+    }
+
+
+
+    @Test
     public void testFull() throws Exception {
-        Query exp = (Query) visitor.visit(getParser("select a from b,c fuzzy join e on r=q").stat()).convert();
+        Query exp = (Query) visitor.visit(getParser("select a from b,c").stat()).convert();
         System.out.println(xstream.toXML(XMLQueryConverter.getInstance().convertToXML(exp)));
     }
 }

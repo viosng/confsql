@@ -7,6 +7,7 @@ import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,12 @@ public class ValueExpressionFactory {
     private ValueExpressionFactory(){}
 
     private static abstract class AbstractValueExpression implements ValueExpression {
-        
+
         @NotNull
-        protected final String id, value;
+        private String id;
+
+        @NotNull
+        protected final String value;
 
         protected AbstractValueExpression(@NotNull String id, @NotNull String value) {
             this.id = id;
@@ -51,6 +55,13 @@ public class ValueExpressionFactory {
         @Override
         public Notification verify(@NotNull Context context) {
             return new Notification();
+        }
+
+        @Override
+        public void setId(@Nullable String id) {
+            if (id != null) {
+                this.id = id;
+            }
         }
 
         @Override
@@ -133,7 +144,7 @@ public class ValueExpressionFactory {
         }
     }
 
-    private static class FunctionCallExpression extends AbstractValueExpression implements ValueExpression.FunctionCallExpression {
+    private static class FunctionCallExpressionImpl extends AbstractValueExpression implements ValueExpression.FunctionCallExpression {
         @NotNull
         private final List<Expression> arguments;
 
@@ -142,15 +153,15 @@ public class ValueExpressionFactory {
         
         private Notification notification;
 
-        private FunctionCallExpression(@NotNull String id, @NotNull String value, @NotNull List<Expression> arguments,
-                                       @NotNull List<Parameter> parameters) {
+        private FunctionCallExpressionImpl(@NotNull String id, @NotNull String value, @NotNull List<Expression> arguments,
+                                           @NotNull List<Parameter> parameters) {
             super(id, value);
             this.arguments = new ArrayList<>(arguments);
             this.parameters = parameters;
         }
 
-        private FunctionCallExpression(@NotNull String value, @NotNull List<Expression> arguments,
-                                       @NotNull List<Parameter> parameters) {
+        private FunctionCallExpressionImpl(@NotNull String value, @NotNull List<Expression> arguments,
+                                           @NotNull List<Parameter> parameters) {
             super(value);
             this.arguments = new ArrayList<>(arguments);
             this.parameters = parameters;
@@ -181,6 +192,26 @@ public class ValueExpressionFactory {
         public Expression findExpressionByType(ArithmeticType arithmeticType) {
             if (arithmeticType == this.type()) return this;
             else return arguments.stream().map(a -> a.findExpressionByType(arithmeticType)).filter(a -> a != null).findFirst().orElse(null);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof FunctionCallExpressionImpl)) return false;
+            if (!super.equals(o)) return false;
+
+            FunctionCallExpressionImpl that = (FunctionCallExpressionImpl) o;
+
+            return arguments.equals(that.arguments) && parameters.equals(that.parameters);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = super.hashCode();
+            result = 31 * result + arguments.hashCode();
+            result = 31 * result + parameters.hashCode();
+            result = 31 * result + (notification != null ? notification.hashCode() : 0);
+            return result;
         }
 
         @Override
@@ -233,7 +264,7 @@ public class ValueExpressionFactory {
     public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value,
                                                                       @NotNull List<Expression> expressions,
                                                                       @NotNull List<Parameter> parameters) {
-        return new FunctionCallExpression(value, expressions, parameters);
+        return new FunctionCallExpressionImpl(value, expressions, parameters);
     }
     
     public static ValueExpression.AttributeExpression attribute(@NotNull String objectReference, @NotNull String value) {
@@ -254,7 +285,7 @@ public class ValueExpressionFactory {
                                                                       @NotNull List<Expression> expressions,
                                                                       @NotNull List<Parameter> parameters,
                                                                       @NotNull String id) {
-        return new FunctionCallExpression(id, value, expressions, parameters);
+        return new FunctionCallExpressionImpl(id, value, expressions, parameters);
     }
 
     public static ValueExpression.AttributeExpression attribute(@NotNull String objectReference, 
