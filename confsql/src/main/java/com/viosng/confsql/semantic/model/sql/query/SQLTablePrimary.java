@@ -82,11 +82,7 @@ public class SQLTablePrimary implements SQLExpression {
 
         SQLTablePrimary that = (SQLTablePrimary) o;
 
-        if (!alias.equals(that.alias)) return false;
-        if (!columnList.equals(that.columnList)) return false;
-        if (!source.equals(that.source)) return false;
-
-        return true;
+        return alias.equals(that.alias) && columnList.equals(that.columnList) && source.equals(that.source);
     }
 
     @Override

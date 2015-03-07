@@ -3,12 +3,10 @@ package com.viosng.confsql.semantic.model.algebra;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
-import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,9 +25,6 @@ public class ExpressionImpl implements Expression {
 
     @NotNull
     private final List<Expression> arguments;
-
-    @NotNull
-    private List<Parameter> parameters = Collections.emptyList();
 
     public ExpressionImpl(@NotNull ArithmeticType type, @NotNull List<Expression> arguments) {
         this.type = type;
@@ -81,7 +76,7 @@ public class ExpressionImpl implements Expression {
 
         ExpressionImpl that = (ExpressionImpl) o;
 
-        return arguments.equals(that.arguments) && id.equals(that.id) && parameters.equals(that.parameters) && type == that.type;
+        return arguments.equals(that.arguments) && id.equals(that.id) && type == that.type;
     }
 
     @Override
@@ -89,7 +84,6 @@ public class ExpressionImpl implements Expression {
         int result = id.hashCode();
         result = 31 * result + type.hashCode();
         result = 31 * result + arguments.hashCode();
-        result = 31 * result + parameters.hashCode();
         return result;
     }
 
@@ -99,7 +93,6 @@ public class ExpressionImpl implements Expression {
                 "id='" + id + '\'' +
                 ", type=" + type +
                 ", arguments=" + arguments +
-                ", parameters=" + parameters +
                 '}';
     }
 }
