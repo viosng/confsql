@@ -1,11 +1,16 @@
 package com.viosng.confsql.semantic.model.sql.query;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLTableReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,6 +39,15 @@ public class SQLFromClause implements SQLExpression {
     @NotNull
     public List<SQLTableReference> getTableReferenceList() {
         return tableReferenceList;
+    }
+
+    @Override
+    public Expression convert() {
+        return new QueryBuilder()
+                .queryType(tableReferenceList.size() > 1 ? Query.QueryType.JOIN : Query.QueryType.FILTER)
+                .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
+                .subQueries(tableReferenceList.stream().map(t -> (Query) t.convert()).collect(Collectors.toList()))
+                .create();
     }
 
     @Override

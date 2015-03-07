@@ -137,7 +137,7 @@ public class QueryBuilder {
     }
     
     private void checkSubQueriesCount(int size) {
-        if (subQueries.size() != size) {
+        if (subQueries.size() < size) {
             throw new IllegalArgumentException("Wrong number of sub queries, should be " + size);
         }
         if (subQueries.stream().filter(s -> s == null).toArray().length > 0) {
