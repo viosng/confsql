@@ -5,6 +5,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
+import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Parameter;
@@ -221,6 +222,67 @@ public class SQLConvertionTest {
         assertEquals(from.create(), visitor.visit(getParser(
                 "from(a=1,b=2) source, source fuzzy join(a=d.e) source on a=b, " +
                         "source fuzzy join(a=d.e) source on a=b right join(a=d.e) source on a<b").fromClause()).convert());
+    }
+
+    @Test
+    public void testTableExpression() throws Exception {
+        Query primary = new QueryBuilder()
+                .queryType(Query.QueryType.PRIMARY)
+                .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .create();
+        assertEquals(primary, visitor.visit(getParser("from source").tableExpression()).convert());
+
+        Query where = new QueryBuilder()
+                .queryType(Query.QueryType.FILTER)
+                .parameters(new Parameter("filterExpression", new ExpressionImpl(ArithmeticType.EQUAL,
+                        ValueExpressionFactory.constant("3"), ValueExpressionFactory.constant("4"))))
+                .subQueries(primary)
+                .create();
+        assertEquals(where, visitor.visit(getParser("from source where 3=4").tableExpression()).convert());
+
+        Query groupBy = new QueryBuilder()
+                .queryType(Query.QueryType.AGGREGATION)
+                .subQueries(where)
+                .parameters(
+                        new Parameter("groupByArg0", ValueExpressionFactory.attribute("", "a")),
+                        new Parameter("groupByArg1", ValueExpressionFactory.attribute("", "b")),
+                        new Parameter("groupByArg2", ValueExpressionFactory.attribute("", "c")),
+                        new Parameter("algorithm", ValueExpressionFactory.constant("\"NearestNeighbours\"")))
+                .create();
+        assertEquals(groupBy, visitor.visit(getParser(
+                "from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c").tableExpression()).convert());
+
+        Query having = new QueryBuilder()
+                .queryType(Query.QueryType.FILTER)
+                .parameters(new Parameter("filterExpression", new ExpressionImpl(ArithmeticType.EQUAL,
+                        ValueExpressionFactory.constant("3"), ValueExpressionFactory.constant("4"))))
+                .subQueries(groupBy)
+                .create();
+        assertEquals(having, visitor.visit(getParser(
+                "from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c having 3=4").tableExpression()).convert());
+
+        Query orderBy = new QueryBuilder()
+                .queryType(Query.QueryType.FILTER)
+                .subQueries(having)
+                .parameters(
+                        new Parameter("orderByArg0", new OrderByArgExpression(ValueExpressionFactory.attribute("", "a"), "asc")),
+                        new Parameter("orderByArg1", new OrderByArgExpression(ValueExpressionFactory.attribute("", "b"), "desc")),
+                        new Parameter("c", ValueExpressionFactory.constant("\"d\"")),
+                        new Parameter("type", ValueExpressionFactory.constant("order")))
+                .create();
+        assertEquals(orderBy, visitor.visit(getParser(
+                "from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c " +
+                        "having 3=4 order(\"c\"=\"d\") by a, b desc").tableExpression()).convert());
+
+        Query limit = new QueryBuilder()
+                .queryType(Query.QueryType.FILTER)
+                .parameters(new Parameter("type", ValueExpressionFactory.constant("limit")),
+                        new Parameter("limitValue", ValueExpressionFactory.constant("10")))
+                .subQueries(orderBy)
+                .create();
+        assertEquals(limit, visitor.visit(getParser(
+                "from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c " +
+                        "having 3=4 order(\"c\"=\"d\") by a, b desc limit 10").tableExpression()).convert());
     }
 
     @Test
