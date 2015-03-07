@@ -141,7 +141,45 @@ public class SQLConvertionTest {
         assertEquals(filter, visitor.visit(getParser("(select a from source as alias) as alias").tablePrimary()).convert());
     }
 
+    @Test
+    public void testTableReference() throws Exception {
+        Query primary = new QueryBuilder()
+                .queryType(Query.QueryType.PRIMARY)
+                .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .create();
+        assertEquals(primary, visitor.visit(getParser("source").tableReference()).convert());
 
+        Query query = new QueryBuilder()
+                .queryType(Query.QueryType.JOIN)
+                .parameters(
+                        new Parameter("joinType", ValueExpressionFactory.constant("fuzzy")),
+                        new Parameter("onCondition", new ExpressionImpl(ArithmeticType.EQUAL,
+                                ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
+                        new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
+                .subQueries(primary, primary)
+                .create();
+        assertEquals(query, visitor.visit(getParser("source fuzzy join(a=d.e) source on a=b").tableReference()).convert());
+
+        query = new QueryBuilder()
+                .queryType(Query.QueryType.JOIN)
+                .parameters(
+                        new Parameter("joinType", ValueExpressionFactory.constant("right")),
+                        new Parameter("onCondition", new ExpressionImpl(ArithmeticType.LT,
+                                ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
+                        new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
+                .subQueries(query, primary)
+                .create();
+        assertEquals(query, visitor.visit(getParser(
+                "source fuzzy join(a=d.e) source on a=b right join(a=d.e) source on a<b").tableReference()).convert());
+
+        query = new QueryBuilder()
+                .queryType(Query.QueryType.JOIN)
+                .parameters(new Parameter("joinType", ValueExpressionFactory.constant("inner")))
+                .subQueries(query, primary)
+                .create();
+        assertEquals(query, visitor.visit(getParser(
+                "source fuzzy join(a=d.e) source on a=b right join(a=d.e) source on a<b join source").tableReference()).convert());
+    }
 
     @Test
     public void testFull() throws Exception {

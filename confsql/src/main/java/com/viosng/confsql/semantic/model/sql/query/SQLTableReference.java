@@ -48,12 +48,15 @@ public class SQLTableReference implements SQLExpression {
         if (joinedTablePrimaryList.isEmpty()) {
             return tablePrimary.convert();
         }
-        return joinedTablePrimaryList.stream().reduce((Query) tablePrimary.convert(), new BiFunction<Query, SQLJoinedTablePrimary, Query>() {
+        return joinedTablePrimaryList.stream().reduce((Query) tablePrimary.convert(),
+                new BiFunction<Query, SQLJoinedTablePrimary, Query>() {
             @Override
             public Query apply(Query query, SQLJoinedTablePrimary sqlJoinedTablePrimary) {
                 List<Parameter> parameters = new ArrayList<>();
-                parameters.add(new Parameter("onCondition", sqlJoinedTablePrimary.getOnCondition().convert()));
                 parameters.add(new Parameter("joinType", ValueExpressionFactory.constant(sqlJoinedTablePrimary.getJoinType())));
+                if(sqlJoinedTablePrimary.getOnCondition() != null) {
+                    parameters.add(new Parameter("onCondition", sqlJoinedTablePrimary.getOnCondition().convert()));
+                }
                 parameters.addAll(sqlJoinedTablePrimary.getParameterList().stream().map(p ->
                         (Parameter)p.convert()).collect(Collectors.toList()));
                 return new QueryBuilder()

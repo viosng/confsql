@@ -8,6 +8,7 @@ import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLField;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,9 +30,9 @@ public class SQLTablePrimary implements SQLExpression {
     @NotNull
     private final List<String> columnList;
 
-    public SQLTablePrimary(@NotNull SQLExpression source, @NotNull String alias, @NotNull List<String> columnList) {
+    public SQLTablePrimary(@NotNull SQLExpression source, @Nullable String alias, @NotNull List<String> columnList) {
         this.source = source;
-        this.alias = alias;
+        this.alias = alias != null ? alias : Expression.UNDEFINED_ID;
         this.columnList = columnList;
     }
 

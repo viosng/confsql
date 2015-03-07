@@ -4,6 +4,7 @@ import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
 import com.viosng.confsql.semantic.model.sql.query.SQLTablePrimary;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -23,11 +24,12 @@ public class SQLJoinedTablePrimary implements SQLExpression {
     
     @NotNull
     private final SQLTablePrimary tablePrimary;
-    
+
+    @Nullable
     private final SQLExpression onCondition;
 
     public SQLJoinedTablePrimary(@NotNull String joinType, @NotNull List<SQLParameter> parameterList,
-                                 @NotNull SQLTablePrimary tablePrimary, SQLExpression onCondition) {
+                                 @NotNull SQLTablePrimary tablePrimary, @Nullable SQLExpression onCondition) {
         this.joinType = joinType.toLowerCase();
         this.parameterList = parameterList;
         this.tablePrimary = tablePrimary;
@@ -49,6 +51,7 @@ public class SQLJoinedTablePrimary implements SQLExpression {
         return tablePrimary;
     }
 
+    @Nullable
     public SQLExpression getOnCondition() {
         return onCondition;
     }

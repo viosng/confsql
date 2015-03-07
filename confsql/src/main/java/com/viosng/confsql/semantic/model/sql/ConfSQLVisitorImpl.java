@@ -104,7 +104,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     @Override
     public SQLExpression visitFromSource(ConfSQLParser.FromSourceContext ctx) {
         SQLField tableName =  (SQLField) visit(ctx.tableOrQueryName());
-        String alias = ctx.asClause() != null ? ((SQLField)visit(ctx.asClause())).getName() : tableName.getName();
+        String alias = ctx.asClause() != null ? ((SQLField)visit(ctx.asClause())).getName() : null;
         return new SQLTablePrimary(tableName, alias, getColumnList(ctx.paranthesizedColumnNameList()));
     }
 
