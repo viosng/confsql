@@ -14,56 +14,53 @@ import java.util.stream.Collectors;
 /**
  * Created with IntelliJ IDEA.
  * User: vio
- * Date: 01.03.2015
- * Time: 22:11
+ * Date: 09.03.2015
+ * Time: 2:13
  */
-public class SQLFromClause implements SQLExpression {
-    
+public class SQLFusionQuery implements SQLExpression {
+
     @NotNull
     private final List<SQLParameter> parameterList;
 
     @NotNull
-    private final List<SQLTableReference> tableReferenceList;
+    private final List<SQLExpression> queryList;
 
-    public SQLFromClause(@NotNull List<SQLParameter> parameterList, @NotNull List<SQLTableReference> tableReferenceList) {
+    public SQLFusionQuery(@NotNull List<SQLParameter> parameterList, @NotNull List<SQLExpression> queryList) {
         this.parameterList = parameterList;
-        this.tableReferenceList = tableReferenceList;
+        this.queryList = queryList;
     }
 
     @Override
     public Expression convert() {
-        if (tableReferenceList.size() == 1 && parameterList.isEmpty()) {
-            return tableReferenceList.get(0).convert();
-        }
         return new QueryBuilder()
-                .queryType(tableReferenceList.size() > 1 ? Query.QueryType.JOIN : Query.QueryType.FILTER)
+                .queryType(Query.QueryType.FUSION)
                 .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
-                .subQueries(tableReferenceList.stream().map(t -> (Query) t.convert()).collect(Collectors.toList()))
+                .subQueries(queryList.stream().map(q -> (Query)q.convert()).collect(Collectors.toList()))
                 .create();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SQLFromClause)) return false;
+        if (!(o instanceof SQLFusionQuery)) return false;
 
-        SQLFromClause that = (SQLFromClause) o;
+        SQLFusionQuery that = (SQLFusionQuery) o;
 
-        return parameterList.equals(that.parameterList) && tableReferenceList.equals(that.tableReferenceList);
+        return parameterList.equals(that.parameterList) && queryList.equals(that.queryList);
     }
 
     @Override
     public int hashCode() {
         int result = parameterList.hashCode();
-        result = 31 * result + tableReferenceList.hashCode();
+        result = 31 * result + queryList.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "SQLFromClause{" +
+        return "SQLFusionQuery{" +
                 "parameterList=" + parameterList +
-                ", tableReferenceList=" + tableReferenceList +
+                ", queryList=" + queryList +
                 '}';
     }
 }

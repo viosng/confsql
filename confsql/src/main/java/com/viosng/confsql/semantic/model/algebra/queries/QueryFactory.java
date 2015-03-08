@@ -155,8 +155,9 @@ public class QueryFactory {
         public FusionQuery(@NotNull String id,
                            @NotNull List<Parameter> parameters,
                            @NotNull List<Query> subQueries) {
-            super(id, parameters, combineSchemaAttributes(subQueries.stream().map(Query::getQueryObjectAttributes)),
-                    subQueries, Collections.emptyList());
+            /*super(id, parameters, combineSchemaAttributes(subQueries.stream().map(Query::getQueryObjectAttributes)),
+                    subQueries, Collections.emptyList());*/
+            super(id, parameters, Collections.<Expression>emptyList(), subQueries, Collections.emptyList());
         }
     }
 

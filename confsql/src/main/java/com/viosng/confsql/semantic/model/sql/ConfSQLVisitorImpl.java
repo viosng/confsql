@@ -28,7 +28,20 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     }
 
     @Override
-    public SQLExpression visitQuery(ConfSQLParser.QueryContext ctx) {
+    public SQLExpression visitFusion(ConfSQLParser.FusionContext ctx) {
+        List<SQLParameter> parameterList = ctx.paranthesizedParamList() != null
+                ? ((SQLParameterList)visit(ctx.paranthesizedParamList())).getParameterList()
+                : Collections.<SQLParameter>emptyList();
+        return new SQLFusionQuery(parameterList, ctx.query().stream().map(this::visit).collect(Collectors.toList()));
+    }
+
+    @Override
+    public SQLExpression visitQueryParens(ConfSQLParser.QueryParensContext ctx) {
+        return visit(ctx.query());
+    }
+
+    @Override
+    public SQLExpression visitSelect(ConfSQLParser.SelectContext ctx) {
         List<SQLParameter> parameterList = ctx.paranthesizedParamList() != null
                 ? ((SQLParameterList)visit(ctx.paranthesizedParamList())).getParameterList()
                 : Collections.<SQLParameter>emptyList();

@@ -24,16 +24,6 @@ public class SQLSelectItem implements SQLExpression {
         this.as = as;
     }
 
-    @NotNull
-    public SQLExpression getItem() {
-        return item;
-    }
-
-    @Nullable
-    public SQLField getAs() {
-        return as;
-    }
-
     @Override
     public Expression convert() {
         Expression exp = item.convert();

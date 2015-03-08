@@ -47,37 +47,8 @@ public class SQLTableExpression implements SQLExpression{
         this.orderByClause = orderByClause;
     }
 
-    @NotNull
-    public SQLFromClause getFromClause() {
-        return fromClause;
-    }
-
-    @Nullable
-    public SQLExpression getWhereClause() {
-        return whereClause;
-    }
-
-    @Nullable
-    public SQLExpression getHavingClause() {
-        return havingClause;
-    }
-
-    @Nullable
-    public SQLExpression getLimitClause() {
-        return limitClause;
-    }
-
-    @Nullable
-    public SQLGroupByClause getGroupByClause() {
-        return groupByClause;
-    }
-
-    @Nullable
-    public SQLOrderByClause getOrderByClause() {
-        return orderByClause;
-    }
-
-    private List<Parameter> mergeExpressionsAndParameters(List<? extends SQLExpression> sqlExpressions, List<SQLParameter> sqlParameters,
+    private List<Parameter> mergeExpressionsAndParameters(List<? extends SQLExpression> sqlExpressions,
+                                                          List<SQLParameter> sqlParameters,
                                                           String expressionPrefix) {
         List<Parameter> parameters = new ArrayList<>();
         for (int i = 0; i < sqlExpressions.size(); i++) {

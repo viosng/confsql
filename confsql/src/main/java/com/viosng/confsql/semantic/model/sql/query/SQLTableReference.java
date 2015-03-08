@@ -33,16 +33,6 @@ public class SQLTableReference implements SQLExpression {
         this.tablePrimary = tablePrimary;
     }
 
-    @NotNull
-    public SQLTablePrimary getTablePrimary() {
-        return tablePrimary;
-    }
-
-    @NotNull
-    public List<SQLJoinedTablePrimary> getJoinedTablePrimaryList() {
-        return joinedTablePrimaryList;
-    }
-
     @Override
     public Expression convert() {
         if (joinedTablePrimaryList.isEmpty()) {

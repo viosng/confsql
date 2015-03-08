@@ -8,7 +8,10 @@ stat : query EOF;
 ===============================================================================
 */
 
-query : ('select'|'SELECT') paranthesizedParamList? selectList tableExpression?;
+query : ('FUSION'|'fusion') paranthesizedParamList? query ( ('WITH'|'with') query)+ ('END'|'end')   #fusion
+      | LEFT_PAREN query RIGHT_PAREN                                                                #queryParens
+      | ('select'|'SELECT') paranthesizedParamList? selectList tableExpression?                     #select
+      ;
 
 selectList : selectItem (COMMA selectItem)* ;
 selectItem

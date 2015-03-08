@@ -34,10 +34,10 @@ public class XMLConvertionTest {
 
     @Test
     public void testFull() throws Exception {
-        String query = "select a, f(1,2;u=e,q=3) from b " +
+        String query = "fusion select 1 with (select a, f(1,2;u=e,q=3) from b " +
                 "inner join(a=e) c on q.w > \"sdfsd\"" +
                 "left join d " +
-                "fuzzy join(alg=\"alg1\") (select a) as r";
+                "fuzzy join(alg=\"alg1\") (select a) as r) end";
         Expression exp = visitor.visit(getParser(query).stat()).convert();
         XMLExpressionConverter.XMLExpression xmlQuery = XMLExpressionConverter.convertToXML(exp);
 

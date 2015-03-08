@@ -40,16 +40,6 @@ public class SQLQuery implements SQLExpression {
         this.parameterList = parameterList;
     }
 
-    @NotNull
-    public List<SQLSelectItem> getSelectItemList() {
-        return selectItemList;
-    }
-
-    @Nullable
-    public SQLTableExpression getTableExpression() {
-        return tableExpression;
-    }
-
     @Override
     public Expression convert() {
         Query subQuery = tableExpression != null ? (Query) tableExpression.convert() : QueryFactory.fictive();
