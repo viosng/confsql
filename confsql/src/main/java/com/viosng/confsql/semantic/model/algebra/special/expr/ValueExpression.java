@@ -1,8 +1,6 @@
 package com.viosng.confsql.semantic.model.algebra.special.expr;
 
-import com.viosng.confsql.semantic.model.algebraold.expressions.ArithmeticExpression;
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.PredicateExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
@@ -25,13 +23,13 @@ public interface ValueExpression extends Expression {
         return arithmeticType == type() ? this : null;
     }
     
-    public interface ConstantExpression extends ValueExpression, ArithmeticExpression, PredicateExpression {
+    public interface ConstantExpression extends ValueExpression{
         @NotNull
         @Override
         public default ArithmeticType type() { return ArithmeticType.CONSTANT; }
     }
     
-    public interface FunctionCallExpression extends ValueExpression, ArithmeticExpression, PredicateExpression {
+    public interface FunctionCallExpression extends ValueExpression{
 
         @NotNull
         @Override
@@ -42,7 +40,7 @@ public interface ValueExpression extends Expression {
         
     }
     
-    public interface AttributeExpression extends ValueExpression, ArithmeticExpression, PredicateExpression {
+    public interface AttributeExpression extends ValueExpression{
         
         @NotNull
         public String getObjectReference();

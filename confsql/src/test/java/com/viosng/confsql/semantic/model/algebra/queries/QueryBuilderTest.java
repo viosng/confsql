@@ -1,8 +1,5 @@
-package com.viosng.confsql.semantic.model.algebraold;
+package com.viosng.confsql.semantic.model.algebra.queries;
 
-import com.viosng.confsql.semantic.model.algebra.queries.Query;
-import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
-import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;

@@ -31,6 +31,12 @@ public class ExpressionImpl implements Expression {
         this.arguments = arguments;
     }
 
+    public ExpressionImpl(@NotNull ArithmeticType type, @NotNull List<Expression> arguments, @NotNull String id) {
+        this.id = id;
+        this.type = type;
+        this.arguments = arguments;
+    }
+
     public ExpressionImpl(@NotNull ArithmeticType type, Expression... arguments) {
         this.type = type;
         this.arguments = Arrays.asList(arguments);
