@@ -258,7 +258,7 @@ public class ValueExpressionFactory {
     }
     
     public static ValueExpression.ConstantExpression constant(@NotNull String value) {
-        return new ConstantExpression(value);
+        return new ConstantExpression(!value.isEmpty() && value.charAt(0) == '\"' ? value.substring(1, value.length() - 1) : value);
     }
 
     public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value,

@@ -9,6 +9,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.FileWriter;
+
 /**
  * Created with IntelliJ IDEA.
  * User: vio
@@ -32,9 +34,18 @@ public class XMLConvertionTest {
 
     @Test
     public void testFull() throws Exception {
-        Expression exp = visitor.visit(getParser("select a from b").stat()).convert();
+        String query = "select a, f(1,2;u=e,q=3) from b " +
+                "inner join(a=e) c on q.w > \"sdfsd\"" +
+                "left join d " +
+                "fuzzy join(alg=\"alg1\") (select a) as r";
+        Expression exp = visitor.visit(getParser(query).stat()).convert();
         XMLExpressionConverter.XMLExpression xmlQuery = XMLExpressionConverter.convertToXML(exp);
-        System.out.println(xStream.toXML(xmlQuery));
 
+        FileWriter out = new FileWriter("xmlOutput.xml");
+        String xmlQueryString = xStream.toXML(xmlQuery);
+        out.write(xmlQueryString);
+        out.close();
+        System.out.println(query);
+        System.out.println(xmlQueryString);
     }
 }

@@ -36,26 +36,28 @@ public class XMLExpressionConverter {
         @XStreamAsAttribute
         public String name;
 
-        public XMLExpression value;
+        @XStreamImplicit
+        public XMLExpression[] value;
 
         public XMLParameter(String name, XMLExpression value) {
             this.name = name;
-            this.value = value;
+            this.value = new XMLExpression[]{value};
         }
     }
 
     @XStreamAlias("expression")
     private static class XMLExpressionImpl implements XMLExpression {
         @XStreamAsAttribute
-        public String id, objectReference, value, orderType;
+        public String id;
 
         @XStreamAsAttribute
         public ArithmeticType type;
 
-        @XStreamImplicit
+        @XStreamAsAttribute
+        public String objectReference, value, orderType;
+
         public List<XMLExpression> arguments;
 
-        @XStreamImplicit
         public List<XMLParameter> parameters;
 
         @Override
@@ -109,7 +111,7 @@ public class XMLExpressionConverter {
             return new XMLParameter(parameter.id(), convertToXML(parameter.getValue()));
         }
         XMLExpressionImpl xmlExpression = new XMLExpressionImpl();
-        xmlExpression.id = exp.id();
+        xmlExpression.id = exp.id().equals(Expression.UNDEFINED_ID) ? null : exp.id();
         xmlExpression.type = exp.type();
         if (exp instanceof ExpressionImpl) {
             ExpressionImpl expression = (ExpressionImpl) exp;
@@ -128,8 +130,12 @@ public class XMLExpressionConverter {
             case FUNCTION_CALL:
                 xmlExpression.arguments = exp.getArguments().stream().map(
                         XMLExpressionConverter::convertToXML).collect(Collectors.toList());
+                if (xmlExpression.arguments.isEmpty()) xmlExpression.arguments = null;
+
                 xmlExpression.parameters = ((ValueExpression.FunctionCallExpression)exp).getParameters()
                         .stream().map(p -> (XMLParameter) convertToXML(p)).collect(Collectors.toList());
+                if (xmlExpression.parameters.isEmpty()) xmlExpression.parameters = null;
+                break;
             case ORDER:
                 xmlExpression.arguments = Arrays.asList(convertToXML(((OrderByArgExpression)exp).getArgument()));
                 xmlExpression.orderType = ((OrderByArgExpression)exp).getOrderType();
@@ -145,7 +151,7 @@ public class XMLExpressionConverter {
         public String id = "";
 
         @XStreamAsAttribute
-        public Query.QueryType queryType;
+        public Query.QueryType type;
 
         public List<XMLParameter> parameters;
 
@@ -164,7 +170,7 @@ public class XMLExpressionConverter {
             if (id != null ? !id.equals(xmlQuery.id) : xmlQuery.id != null) return false;
             if (parameters != null ? !parameters.equals(xmlQuery.parameters) : xmlQuery.parameters != null)
                 return false;
-            if (queryType != xmlQuery.queryType) return false;
+            if (type != xmlQuery.type) return false;
             if (schema != null ? !schema.equals(xmlQuery.schema) : xmlQuery.schema != null) return false;
 
             return true;
@@ -173,7 +179,7 @@ public class XMLExpressionConverter {
         @Override
         public int hashCode() {
             int result = id != null ? id.hashCode() : 0;
-            result = 31 * result + (queryType != null ? queryType.hashCode() : 0);
+            result = 31 * result + (type != null ? type.hashCode() : 0);
             result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
             result = 31 * result + (schema != null ? schema.hashCode() : 0);
             result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
@@ -186,7 +192,7 @@ public class XMLExpressionConverter {
         toString() {
             return "XMLQuery{" +
                     "id='" + id + '\'' +
-                    ", queryType=" + queryType +
+                    ", type=" + type +
                     ", parameters=" + parameters +
                     ", schema=" + schema +
                     ", arguments=" + arguments +
@@ -194,16 +200,15 @@ public class XMLExpressionConverter {
         }
     }
 
-    @NotNull
     private static XMLQuery convertQuery(@NotNull Query query) {
         XMLQuery xmlQuery = new XMLQuery();
-        xmlQuery.id = query.id();
-        xmlQuery.queryType = query.queryType();
+        xmlQuery.id = query.id().equals(Expression.UNDEFINED_ID) ? null : query.id();
+        xmlQuery.type = query.queryType();
         if (!query.getParameters().isEmpty()) {
             xmlQuery.parameters = query.getParameters().stream().map(p ->
                     (XMLParameter) convertToXML(p)).collect(Collectors.toList());
         }
-        if (!query.getSubQueries().isEmpty()) {
+        if (!query.getSubQueries().isEmpty() && query.getSubQueries().get(0).queryType() != Query.QueryType.FICTIVE) {
             xmlQuery.arguments = query.getSubQueries().stream().map(
                     XMLExpressionConverter::convertQuery).collect(Collectors.toList());
         }
