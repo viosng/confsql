@@ -40,6 +40,7 @@ public enum ArithmeticType {
     IF("if"),
     QUERY("query"),
     ORDER("order"),
+    PARAMETER("parameter"),
     UNDEFINED()
     ;
 

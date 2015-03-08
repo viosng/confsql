@@ -4,6 +4,7 @@ import com.viosng.confsql.semantic.model.algebraold.expressions.ArithmeticExpres
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebraold.expressions.PredicateExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -35,9 +36,9 @@ public interface ValueExpression extends Expression {
         @NotNull
         @Override
         public default ArithmeticType type() { return ArithmeticType.FUNCTION_CALL; }
-        
+
         @NotNull
-        public List<Expression> getArguments();
+        public List<Parameter> getParameters();
         
     }
     

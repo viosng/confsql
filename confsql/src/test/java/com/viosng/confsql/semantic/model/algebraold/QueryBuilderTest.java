@@ -72,8 +72,6 @@ public class QueryBuilderTest {
     public void testFilterCreation() throws Exception {
         queryBuilder.queryType(Query.QueryType.FILTER);
         assertCreationException();
-        queryBuilder.subQueries(subQuery1, subQuery2);
-        assertCreationException();
         queryBuilder.subQueries(subQuery1);
         List<Expression> schemaAttributes = schemaAttributes("f1", Arrays.asList("a", "b"));
         queryBuilder.requiredSchemaAttributes(schemaAttributes);
@@ -102,8 +100,6 @@ public class QueryBuilderTest {
     public void testAggregationCreation() throws Exception {
         queryBuilder.queryType(Query.QueryType.AGGREGATION);
         assertCreationException();
-        queryBuilder.subQueries(subQuery1, subQuery2);
-        assertCreationException();
         queryBuilder.subQueries(subQuery1);
         List<Expression> schemaAttributes = schemaAttributes("f1", Arrays.asList("a", "b"));
         queryBuilder.requiredSchemaAttributes(schemaAttributes);
@@ -113,8 +109,6 @@ public class QueryBuilderTest {
     @Test
     public void testNestCreation() throws Exception {
         queryBuilder.queryType(Query.QueryType.NEST);
-        assertCreationException();
-        queryBuilder.subQueries(subQuery1, subQuery2);
         assertCreationException();
         queryBuilder.subQueries(subQuery1);
         List<Expression> schemaAttributes = schemaAttributes("f1", Arrays.asList("a", "b"));

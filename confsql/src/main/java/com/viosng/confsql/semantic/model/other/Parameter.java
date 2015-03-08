@@ -32,7 +32,7 @@ public class Parameter implements Expression {
     @NotNull
     @Override
     public ArithmeticType type() {
-        throw new UnsupportedOperationException();
+        return ArithmeticType.PARAMETER;
     }
 
     @Override

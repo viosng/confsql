@@ -5,54 +5,58 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.ArithmeticExpression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.PredicateExpression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryArithmeticExpressionFactory;
-import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryExpression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.binary.BinaryPredicateExpressionFactory;
-import com.viosng.confsql.semantic.model.algebra.special.expr.IfExpression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.IfExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
+import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryArithmeticExpressionFactory;
-import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryExpression;
-import com.viosng.confsql.semantic.model.algebraold.expressions.unary.UnaryPredicateExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
  * User: vio
- * Date: 24.12.2014
- * Time: 18:20
+ * Date: 08.03.2015
+ * Time: 13:19
  */
-public class XMLExpressionConverter implements XMLConverter<XMLExpressionConverter.XMLExpressionImpl, Expression> {
+public class XMLExpressionConverter {
 
-    private XMLExpressionConverter(){}
-    
-    private static class XMLExpressionConverterHolder {
-        private static final XMLExpressionConverter INSTANCE = new XMLExpressionConverter();
+    private XMLExpressionConverter() {
     }
-    
-    public static  XMLExpressionConverter getInstance() { return XMLExpressionConverterHolder.INSTANCE; }
+
+    public interface XMLExpression {
+    }
+
+    @XStreamAlias("parameter")
+    private static class XMLParameter implements XMLExpression {
+        @XStreamAsAttribute
+        public String name;
+
+        public XMLExpression value;
+
+        public XMLParameter(String name, XMLExpression value) {
+            this.name = name;
+            this.value = value;
+        }
+    }
 
     @XStreamAlias("expression")
-    public static class XMLExpressionImpl implements XMLExpression {
+    private static class XMLExpressionImpl implements XMLExpression {
         @XStreamAsAttribute
-        public String id, objectReference, value;
+        public String id, objectReference, value, orderType;
 
         @XStreamAsAttribute
         public ArithmeticType type;
-        
+
         @XStreamImplicit
-        public XMLExpressionImpl[] arguments;
+        public List<XMLExpression> arguments;
+
+        @XStreamImplicit
+        public List<XMLParameter> parameters;
 
         @Override
         public boolean equals(Object o) {
@@ -61,173 +65,164 @@ public class XMLExpressionConverter implements XMLConverter<XMLExpressionConvert
 
             XMLExpressionImpl that = (XMLExpressionImpl) o;
 
-            return Arrays.equals(arguments, that.arguments) &&
-                    !(objectReference != null ? !objectReference.equals(that.objectReference) : that.objectReference != null) && 
-                    !(type != null ? !type.equals(that.type) : that.type != null) && 
-                    !(value != null ? !value.equals(that.value) : that.value != null);
+            if (arguments != null ? !arguments.equals(that.arguments) : that.arguments != null) return false;
+            if (id != null ? !id.equals(that.id) : that.id != null) return false;
+            if (objectReference != null ? !objectReference.equals(that.objectReference) : that.objectReference != null)
+                return false;
+            if (orderType != null ? !orderType.equals(that.orderType) : that.orderType != null) return false;
+            if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
+            if (type != that.type) return false;
+            if (value != null ? !value.equals(that.value) : that.value != null) return false;
 
+            return true;
         }
 
         @Override
         public int hashCode() {
-            int result = type != null ? type.hashCode() : 0;
+            int result = id != null ? id.hashCode() : 0;
             result = 31 * result + (objectReference != null ? objectReference.hashCode() : 0);
             result = 31 * result + (value != null ? value.hashCode() : 0);
-            result = 31 * result + (arguments != null ? Arrays.hashCode(arguments) : 0);
+            result = 31 * result + (orderType != null ? orderType.hashCode() : 0);
+            result = 31 * result + (type != null ? type.hashCode() : 0);
+            result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
+            result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
             return result;
         }
 
         @Override
         public String toString() {
-            return "XMLExpression{" +
-                    "type='" + type + '\'' +
+            return "XMLExpressionImpl{" +
+                    "id='" + id + '\'' +
                     ", objectReference='" + objectReference + '\'' +
                     ", value='" + value + '\'' +
-                    ", arguments=" + Arrays.toString(arguments) +
+                    ", orderType='" + orderType + '\'' +
+                    ", type=" + type +
+                    ", arguments=" + arguments +
+                    ", parameters=" + parameters +
+                    '}';
+        }
+    }
+
+    private static XMLExpression convertExpressions(@NotNull Expression exp) {
+        if (exp.type() == ArithmeticType.PARAMETER) {
+            Parameter parameter = (Parameter) exp;
+            return new XMLParameter(parameter.id(), convertToXML(parameter.getValue()));
+        }
+        XMLExpressionImpl xmlExpression = new XMLExpressionImpl();
+        xmlExpression.id = exp.id();
+        xmlExpression.type = exp.type();
+        if (exp instanceof ExpressionImpl) {
+            ExpressionImpl expression = (ExpressionImpl) exp;
+            xmlExpression.arguments = expression.getArguments().stream().map(
+                    XMLExpressionConverter::convertToXML).collect(Collectors.toList());
+            return xmlExpression;
+        }
+        switch (exp.type()) {
+            case CONSTANT:
+                xmlExpression.value = ((ValueExpression.ConstantExpression)exp).getValue();
+                break;
+            case ATTRIBUTE:
+                xmlExpression.objectReference = ((ValueExpression.AttributeExpression)exp).getObjectReference();
+                xmlExpression.value = ((ValueExpression.AttributeExpression)exp).getValue();
+                break;
+            case FUNCTION_CALL:
+                xmlExpression.arguments = exp.getArguments().stream().map(
+                        XMLExpressionConverter::convertToXML).collect(Collectors.toList());
+                xmlExpression.parameters = ((ValueExpression.FunctionCallExpression)exp).getParameters()
+                        .stream().map(p -> (XMLParameter) convertToXML(p)).collect(Collectors.toList());
+            case ORDER:
+                xmlExpression.arguments = Arrays.asList(convertToXML(((OrderByArgExpression)exp).getArgument()));
+                xmlExpression.orderType = ((OrderByArgExpression)exp).getOrderType();
+                break;
+            default: return null;
+        }
+        return xmlExpression;
+    }
+
+    @XStreamAlias("query")
+    private static class XMLQuery implements XMLExpression {
+        @XStreamAsAttribute
+        public String id = "";
+
+        @XStreamAsAttribute
+        public Query.QueryType queryType;
+
+        public List<XMLParameter> parameters;
+
+        public List<XMLExpression> schema;
+
+        public List<XMLQuery> arguments;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof XMLQuery)) return false;
+
+            XMLQuery xmlQuery = (XMLQuery) o;
+
+            if (arguments != null ? !arguments.equals(xmlQuery.arguments) : xmlQuery.arguments != null) return false;
+            if (id != null ? !id.equals(xmlQuery.id) : xmlQuery.id != null) return false;
+            if (parameters != null ? !parameters.equals(xmlQuery.parameters) : xmlQuery.parameters != null)
+                return false;
+            if (queryType != xmlQuery.queryType) return false;
+            if (schema != null ? !schema.equals(xmlQuery.schema) : xmlQuery.schema != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id != null ? id.hashCode() : 0;
+            result = 31 * result + (queryType != null ? queryType.hashCode() : 0);
+            result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
+            result = 31 * result + (schema != null ? schema.hashCode() : 0);
+            result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String
+
+        toString() {
+            return "XMLQuery{" +
+                    "id='" + id + '\'' +
+                    ", queryType=" + queryType +
+                    ", parameters=" + parameters +
+                    ", schema=" + schema +
+                    ", arguments=" + arguments +
                     '}';
         }
     }
 
     @NotNull
-    @SuppressWarnings("unchecked")
-    public XMLExpressionImpl convertToXML(@NotNull Expression modelElement) {
-        XMLExpressionImpl xmlExpressionImpl = new XMLExpressionImpl();
-        xmlExpressionImpl.id = modelElement.id();
-        xmlExpressionImpl.type = modelElement.type();
-        switch(modelElement.type()) {
-            case ATTRIBUTE:
-            case GROUP:
-                ValueExpression.AttributeExpression attributeExpression = (ValueExpression.AttributeExpression) modelElement;
-                xmlExpressionImpl.value = attributeExpression.getValue();
-                xmlExpressionImpl.objectReference = attributeExpression.getObjectReference();
-                break;
-            case FUNCTION_CALL:
-                ValueExpression.FunctionCallExpression functionCallExpression = (ValueExpression.FunctionCallExpression) modelElement;
-                xmlExpressionImpl.arguments =
-                        functionCallExpression.getArguments().stream().map(this::convertToXML).toArray(XMLExpressionImpl[]::new);
-            case CONSTANT:
-                xmlExpressionImpl.value = ((ValueExpression) modelElement).getValue();
-                break;
-            case NOT:
-            case MINUS:
-                if (modelElement instanceof UnaryExpression) {
-                    UnaryExpression unaryExpression = (UnaryExpression) modelElement;
-                    xmlExpressionImpl.arguments = new XMLExpressionImpl[]{
-                            convertToXML(unaryExpression.getArg())
-                    };
-                    break;
-                }
-            case IF:
-                IfExpression ifExpression = (IfExpression) modelElement;
-                xmlExpressionImpl.arguments = new XMLExpressionImpl[] {
-                        convertToXML(ifExpression.getPredicate()),
-                        convertToXML(ifExpression.getExpressionOnTrue()),
-                        convertToXML(ifExpression.getExpressionOnFalse())
-                };
-                break;
-            default:
-                if (!(modelElement instanceof BinaryExpression)) throw new IllegalArgumentException("Unsupported expression type - " + 
-                        modelElement.type());
-                BinaryExpression binaryExpression = (BinaryExpression) modelElement;
-                xmlExpressionImpl.arguments = new XMLExpressionImpl[]{
-                        convertToXML(binaryExpression.getLeftArg()),
-                        convertToXML(binaryExpression.getRightArg())
-                };
-                break;
+    private static XMLQuery convertQuery(@NotNull Query query) {
+        XMLQuery xmlQuery = new XMLQuery();
+        xmlQuery.id = query.id();
+        xmlQuery.queryType = query.queryType();
+        if (!query.getParameters().isEmpty()) {
+            xmlQuery.parameters = query.getParameters().stream().map(p ->
+                    (XMLParameter) convertToXML(p)).collect(Collectors.toList());
         }
-        return xmlExpressionImpl;
+        if (!query.getSubQueries().isEmpty()) {
+            xmlQuery.arguments = query.getSubQueries().stream().map(
+                    XMLExpressionConverter::convertQuery).collect(Collectors.toList());
+        }
+        if (!query.getRequiredSchemaAttributes().isEmpty()) {
+            xmlQuery.schema = query.getRequiredSchemaAttributes().stream().map(XMLExpressionConverter::convertToXML)
+                    .collect(Collectors.toList());
+        }
+        return xmlQuery;
     }
 
     @NotNull
-    @Override
-    public Expression convertFromXML(@NotNull XMLExpressionImpl xmlElement) {
-        Expression expression = processArithmeticExpressionArguments(xmlElement);
-        if (expression != null) return expression;
-        expression = processPredicateExpressionArguments(xmlElement);
-        if (expression != null) return expression;
-        switch (xmlElement.type) {
-            case FUNCTION_CALL: return ValueExpressionFactory.functionCall(
-                    xmlElement.value, Arrays.asList(Arrays.stream(xmlElement.arguments)
-                            .map(e -> convertWithCheck(e, Expression.class)).toArray(Expression[]::new)),
-                    Collections.<Parameter>emptyList(), xmlElement.id);
-
-            case CONSTANT: return ValueExpressionFactory.constant(xmlElement.value, xmlElement.id);
-
-            case ATTRIBUTE: return ValueExpressionFactory.attribute(xmlElement.objectReference, xmlElement.value, xmlElement.id);
-
-            case GROUP: return ValueExpressionFactory.group(xmlElement.objectReference, xmlElement.value, Collections.emptyList(), 
-                    xmlElement.id);
-            
-            case IF: return IfExpressionFactory.create(convertWithCheck(xmlElement.arguments[0], PredicateExpression.class),
-                    convertWithCheck(xmlElement.arguments[1], Expression.class),
-                    convertWithCheck(xmlElement.arguments[2], Expression.class));
-            
-            default: throw new IllegalArgumentException("Unsupported expression type:" + xmlElement.type);
-        }
-    }
-    
-    private static EnumSet<ArithmeticType> allowedArithmeticArithmeticTypes = EnumSet.of(ArithmeticType.PLUS, ArithmeticType.MINUS, 
-            ArithmeticType.MULTIPLY, ArithmeticType.DIVIDE, ArithmeticType.POWER, ArithmeticType.GT, ArithmeticType.GE, 
-            ArithmeticType.LT, ArithmeticType.LE, ArithmeticType.EQUAL);
-    
-    private Expression processArithmeticExpressionArguments(@NotNull XMLExpressionImpl xmlExpressionImpl) {
-        if (!allowedArithmeticArithmeticTypes.contains(xmlExpressionImpl.type)) return null;
-        ArithmeticExpression[] exps = Arrays.stream(xmlExpressionImpl.arguments)
-                .map(e -> convertWithCheck(e, ArithmeticExpression.class)).toArray(ArithmeticExpression[]::new);
-        switch (xmlExpressionImpl.type) {
-            case PLUS: return BinaryArithmeticExpressionFactory.plus(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case MINUS: return exps.length == 2 
-                    ? BinaryArithmeticExpressionFactory.minus(exps[0], exps[1], xmlExpressionImpl.id)
-                    : UnaryArithmeticExpressionFactory.minus(exps[0], xmlExpressionImpl.id);
-
-            case MULTIPLY: return BinaryArithmeticExpressionFactory.multiplication(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case DIVIDE: return BinaryArithmeticExpressionFactory.division(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case POWER: return BinaryArithmeticExpressionFactory.power(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case GT: return BinaryPredicateExpressionFactory.greater(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case GE: return BinaryPredicateExpressionFactory.greaterOrEqual(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case LT: return BinaryPredicateExpressionFactory.less(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case LE: return BinaryPredicateExpressionFactory.lessOrEqual(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case EQUAL: return BinaryPredicateExpressionFactory.equal(exps[0], exps[1], xmlExpressionImpl.id);
-            
-            default: return null;
-        }
+    @SuppressWarnings("unchecked")
+    public static XMLExpression convertToXML(@NotNull Expression expression) {
+        XMLExpression xmlExpression = convertExpressions(expression);
+        if (xmlExpression != null) return xmlExpression;
+        return convertQuery((Query)expression);
     }
 
-    private static EnumSet<ArithmeticType> allowedPredicateArithmeticTypes = EnumSet.of(ArithmeticType.AND, ArithmeticType.OR, ArithmeticType.NOT);
-
-    private Expression processPredicateExpressionArguments(@NotNull XMLExpressionImpl xmlExpressionImpl) {
-        if (!allowedPredicateArithmeticTypes.contains(xmlExpressionImpl.type)) return null;
-        PredicateExpression[] exps = Arrays.asList(xmlExpressionImpl.arguments).stream()
-                .map(e -> convertWithCheck(e, ArithmeticExpression.class)).toArray(PredicateExpression[]::new);
-        switch (xmlExpressionImpl.type) {
-            case AND: return BinaryPredicateExpressionFactory.and(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case OR: return BinaryPredicateExpressionFactory.or(exps[0], exps[1], xmlExpressionImpl.id);
-
-            case NOT: return UnaryPredicateExpressionFactory.not(exps[0], xmlExpressionImpl.id);
-
-            default: return null;
-        }
-    }
-    
-    private <T extends Expression> T convertWithCheck (@NotNull XMLExpressionImpl xmlExpressionImpl, Class<T> tClass) {
-        try {
-            return tClass.cast(convertFromXML(xmlExpressionImpl));
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Wrong expression argument class type, need : " + tClass.toString());
-        }
-    }
-
-    @Override
-    public void configure( @NotNull XStream xStream) {
-        xStream.processAnnotations(XMLExpressionImpl.class);
+    public static void configureXStream(@NotNull XStream xStream) {
+        xStream.processAnnotations(new Class[]{XMLQuery.class, XMLParameter.class, XMLExpressionImpl.class});
     }
 }
