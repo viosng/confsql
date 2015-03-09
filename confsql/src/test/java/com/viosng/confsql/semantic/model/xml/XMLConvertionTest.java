@@ -37,7 +37,7 @@ public class XMLConvertionTest {
         String query = "fusion select 1 with (select a, f(1,2;u=e,q=3) from b " +
                 "inner join(a=e) c on q.w > \"sdfsd\"" +
                 "left join d " +
-                "fuzzy join(alg=\"alg1\") (select a) as r) end";
+                "fuzzy join(alg=\"alg1\") (select a) as r group(a=p) by f,g,h order by f desc limit 10) end";
         Expression exp = visitor.visit(getParser(query).stat()).convert();
         XMLExpressionConverter.XMLExpression xmlQuery = XMLExpressionConverter.convertToXML(exp);
 

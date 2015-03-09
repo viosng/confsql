@@ -1,4 +1,3 @@
-fusion schema
 nest/unnest
 group_join?
 scope check

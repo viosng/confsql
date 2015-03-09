@@ -137,7 +137,8 @@ public class XMLExpressionConverter {
                 if (xmlExpression.parameters.isEmpty()) xmlExpression.parameters = null;
                 break;
             case ORDER:
-                xmlExpression.arguments = Arrays.asList(convertToXML(((OrderByArgExpression)exp).getArgument()));
+                xmlExpression.arguments = Arrays.asList((((OrderByArgExpression) exp).getArgument())).stream().map(
+                        XMLExpressionConverter::convertToXML).collect(Collectors.toList());
                 xmlExpression.orderType = ((OrderByArgExpression)exp).getOrderType();
                 break;
             default: return null;
