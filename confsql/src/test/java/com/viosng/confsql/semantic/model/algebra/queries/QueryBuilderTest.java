@@ -1,7 +1,6 @@
 package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.junit.Before;
@@ -111,25 +110,6 @@ public class QueryBuilderTest {
         List<Expression> schemaAttributes = schemaAttributes("f1", Arrays.asList("a", "b"));
         queryBuilder.requiredSchemaAttributes(schemaAttributes);
         assertEquals(QueryFactory.nest(ID, subQuery1, parameters, schemaAttributes), queryBuilder.create());
-    }
-
-    @Test
-    public void testUnNestCreation() throws Exception {
-        queryBuilder.queryType(Query.QueryType.UNNEST);
-        assertCreationException();
-        queryBuilder.subQueries(subQuery1, subQuery2);
-        assertCreationException();
-        queryBuilder.subQueries(subQuery1);
-        assertCreationException();
-        queryBuilder.argumentExpressions(ValueExpressionFactory.constant("a"), ValueExpressionFactory.constant("b"));
-        assertCreationException();
-        queryBuilder.argumentExpressions(ValueExpressionFactory.constant("a"));
-        assertCreationException();
-        queryBuilder.argumentExpressions(ValueExpressionFactory.attribute("a", "b"), ValueExpressionFactory.attribute("c", "d"));
-        assertCreationException();
-        ValueExpression.AttributeExpression attribute = ValueExpressionFactory.attribute("a", "b");
-        queryBuilder.argumentExpressions(attribute);
-        assertEquals(QueryFactory.unNest(ID, subQuery1, attribute, parameters), queryBuilder.create());
     }
 
     @Test

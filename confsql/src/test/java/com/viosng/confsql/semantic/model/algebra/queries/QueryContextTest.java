@@ -184,30 +184,6 @@ public class QueryContextTest {
     }
 
     @Test
-    public void testUnNest() throws Exception {
-        Query subQuery = mock(Query.class);
-        when(subQuery.id()).thenReturn("subQuery");
-        when(subQuery.verify()).thenReturn(new Notification());
-        Map<String, String> attributeMap = ImmutableMap.of(
-                "age1", "subQuery",
-                "age", "subQuery", 
-                "age2", "subQuery"
-        );
-        when(subQuery.getRequiredSchemaAttributes()).thenReturn(Arrays.asList(
-                        ValueExpressionFactory.group("subQuery", "ages", attributeMap.entrySet().stream()
-                                .map(a -> ValueExpressionFactory.attribute(a.getValue(), a.getKey()))
-                                .collect(Collectors.toList()))));
-        
-        Query.UnNest unNest = QueryFactory.unNest("unnest", subQuery, ValueExpressionFactory.attribute("subQuery", "ages"), 
-                PARAMETERS);
-        Context context = unNest.getContext();
-        attributeMap.entrySet().stream().forEach(a -> assertTrue(String.format("Object \"%s\" hasn't attribute \"%s\"",
-                a.getValue(), a.getKey()), context.hasAttribute(a.getValue(), a.getKey())));
-        assertFalse(context.hasReference("subQuery1"));
-        assertFalse(context.hasAttribute("subQuery1", "age3"));
-    }
-
-    @Test
     public void testGroupJoin() throws Exception {
         Map<String, List<String>> testData = ImmutableMap.of(
                 "f1", Arrays.asList("a", "b"),

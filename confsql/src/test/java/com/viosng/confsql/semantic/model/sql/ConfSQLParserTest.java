@@ -255,7 +255,7 @@ public class ConfSQLParserTest {
         SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "alias", Arrays.asList("a", "b", "c"));
         assertEquals(tablePrimary, visitor.visit(getParser("source as alias (a, b, c)").tablePrimary()));
 
-        tablePrimary = new SQLTablePrimary(new SQLField("source"), "",
+        tablePrimary = new SQLTablePrimary(new SQLField("source"), null,
                 Collections.<String>emptyList());
         assertEquals(tablePrimary, visitor.visit(getParser("source").tablePrimary()));
     }
@@ -285,7 +285,7 @@ public class ConfSQLParserTest {
 
     @Test
     public void testTableReference() throws Exception {
-        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "", Collections.<String>emptyList());
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), null, Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
         SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
@@ -304,7 +304,7 @@ public class ConfSQLParserTest {
 
     @Test
     public void testFromClause() throws Exception {
-        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "", Collections.<String>emptyList());
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), null, Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
         SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,
@@ -331,7 +331,7 @@ public class ConfSQLParserTest {
     @Test
     public void testStat() throws Exception {
         
-        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), "", Collections.<String>emptyList());
+        SQLTablePrimary tablePrimary = new SQLTablePrimary(new SQLField("source"), null, Collections.<String>emptyList());
         List<SQLParameter> parameterList =
                 Arrays.asList(new SQLParameter("a", new SQLConstant("3")), new SQLParameter("b", new SQLConstant("4")));
         SQLBinaryExpression binaryExpression = new SQLBinaryExpression(ArithmeticType.EQUAL,

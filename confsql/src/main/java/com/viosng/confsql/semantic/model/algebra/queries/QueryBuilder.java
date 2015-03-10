@@ -100,7 +100,12 @@ public class QueryBuilder {
         if (queryType == null) throw new IllegalArgumentException("QueryType reference is null");
         switch (queryType) {
             case PRIMARY:
-                return QueryFactory.primary(id, argumentExpressions, parameters);
+                String queryId = id;
+                if (queryId.equals(Expression.UNDEFINED_ID)) {
+                    queryId = ((ValueExpression.ConstantExpression)parameters.stream().filter(p -> p.id().equals("sourceName"))
+                            .findAny().get().getValue()).getValue();
+                }
+                return QueryFactory.primary(queryId, argumentExpressions, parameters);
             case FILTER:
                 checkSubQueriesCount(1);
                 return QueryFactory.filter(id, subQueries.get(0), argumentExpressions, parameters, schemaAttributes);
@@ -120,14 +125,7 @@ public class QueryBuilder {
                 return QueryFactory.nest(id, subQueries.get(0), parameters, schemaAttributes);
             case UNNEST:
                 checkSubQueriesCount(1);
-                if (argumentExpressions.size() != 1 || 
-                        argumentExpressions.get(0) == null || 
-                        !(argumentExpressions.get(0) instanceof ValueExpression.AttributeExpression)) {
-                    throw new IllegalArgumentException("Unnest argument expression list should contain only one not null " +
-                            "element with AttributeExpression type");
-                }
-                return QueryFactory.unNest(id, subQueries.get(0), 
-                        (ValueExpression.AttributeExpression)argumentExpressions.get(0), parameters);
+                return QueryFactory.unNest(id, subQueries.get(0), parameters);
             case GROUP_JOIN:
                 checkSubQueriesCount(2);
                 return QueryFactory.groupJoin(id, subQueries.get(0), subQueries.get(1), argumentExpressions, parameters, 

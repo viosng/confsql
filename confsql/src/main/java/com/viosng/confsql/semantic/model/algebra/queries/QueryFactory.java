@@ -270,19 +270,17 @@ public class QueryFactory {
     private static class UnNestQuery extends DefaultQuery implements Query.UnNest {
         private UnNestQuery(@NotNull String id,
                             @NotNull List<Parameter> parameters,
-                            @NotNull Query base,
-                            @NotNull AttributeExpression attribute) {
-            super(id, parameters, Collections.emptyList(), Arrays.asList(base), Arrays.asList(attribute));
-            this.queryObjectAttributes = unNestSchemaGroup(id, attribute.id(), base.getQueryObjectAttributes());
+                            @NotNull Query base) {
+            super(id, parameters, Collections.emptyList(), Arrays.asList(base), Collections.<Expression>emptyList());
+            //this.queryObjectAttributes = unNestSchemaGroup(id, attribute.id(), base.getQueryObjectAttributes());
         }
     }
 
     @NotNull
     public static Query.UnNest unNest(@NotNull String id,
                                       @NotNull Query base,
-                                      @NotNull AttributeExpression attribute,
                                       @NotNull List<Parameter> parameters) {
-        return new UnNestQuery(id, parameters, base, attribute);
+        return new UnNestQuery(id, parameters, base);
     }
 
     private static class GroupJoinQuery extends DefaultQuery implements Query.GroupJoin {

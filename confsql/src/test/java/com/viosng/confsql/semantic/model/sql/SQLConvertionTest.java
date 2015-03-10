@@ -134,19 +134,18 @@ public class SQLConvertionTest {
         Query primary = new QueryBuilder()
                 .queryType(Query.QueryType.PRIMARY)
                 .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .id("source")
                 .create();
         assertEquals(primary, visitor.visit(getParser("source").tableReference()).convert());
 
         Query query = new QueryBuilder()
-                .queryType(Query.QueryType.JOIN)
+                .queryType(Query.QueryType.UNNEST)
                 .parameters(
-                        new Parameter("joinType", ValueExpressionFactory.constant("fuzzy")),
-                        new Parameter("onCondition", new ExpressionImpl(ArithmeticType.EQUAL,
-                                ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
+                        new Parameter("unNestObject", ValueExpressionFactory.attribute("source", "a")),
                         new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
                 .subQueries(primary, primary)
                 .create();
-        assertEquals(query, visitor.visit(getParser("source fuzzy join(a=d.e) source on a=b").tableReference()).convert());
+        assertEquals(query, visitor.visit(getParser("source join(a=d.e) source.a").tableReference()).convert());
 
         query = new QueryBuilder()
                 .queryType(Query.QueryType.JOIN)
@@ -156,17 +155,19 @@ public class SQLConvertionTest {
                                 ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
                         new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
                 .subQueries(query, primary)
+                .id("source")
                 .create();
         assertEquals(query, visitor.visit(getParser(
-                "source fuzzy join(a=d.e) source on a=b right join(a=d.e) source on a<b").tableReference()).convert());
+                "source join(a=d.e) source.a right join(a=d.e) source on a<b").tableReference()).convert());
 
         query = new QueryBuilder()
                 .queryType(Query.QueryType.JOIN)
                 .parameters(new Parameter("joinType", ValueExpressionFactory.constant("inner")))
                 .subQueries(query, primary)
+                .id("source")
                 .create();
         assertEquals(query, visitor.visit(getParser(
-                "source fuzzy join(a=d.e) source on a=b right join(a=d.e) source on a<b join source").tableReference()).convert());
+                "source join(a=d.e) source.a right join(a=d.e) source on a<b join source").tableReference()).convert());
     }
 
     @Test
@@ -174,6 +175,7 @@ public class SQLConvertionTest {
         Query primary = new QueryBuilder()
                 .queryType(Query.QueryType.PRIMARY)
                 .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .id("source")
                 .create();
 
         Query query = new QueryBuilder()
@@ -184,6 +186,7 @@ public class SQLConvertionTest {
                                 ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
                         new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
                 .subQueries(primary, primary)
+                .id("source")
                 .create();
 
         Query query1 = new QueryBuilder()
@@ -216,6 +219,7 @@ public class SQLConvertionTest {
         Query primary = new QueryBuilder()
                 .queryType(Query.QueryType.PRIMARY)
                 .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .id("source")
                 .create();
         assertEquals(primary, visitor.visit(getParser("from source").tableExpression()).convert());
 
@@ -283,6 +287,7 @@ public class SQLConvertionTest {
         Query primary = new QueryBuilder()
                 .queryType(Query.QueryType.PRIMARY)
                 .parameters(new Parameter("sourceName", ValueExpressionFactory.constant("source")))
+                .id("source")
                 .create();
         queryBuilder.subQueries(primary);
         assertEquals(queryBuilder.create(), visitor.visit(getParser("select a, 3 from source").query()).convert());

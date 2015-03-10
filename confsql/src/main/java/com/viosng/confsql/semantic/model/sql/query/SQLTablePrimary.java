@@ -24,16 +24,26 @@ public class SQLTablePrimary implements SQLExpression {
     @NotNull
     private final SQLExpression source;
     
-    @NotNull
+    @Nullable
     private final String alias;
+
+    @NotNull
+    private final String queryId;
     
     @NotNull
     private final List<String> columnList;
 
     public SQLTablePrimary(@NotNull SQLExpression source, @Nullable String alias, @NotNull List<String> columnList) {
         this.source = source;
-        this.alias = alias != null ? alias : Expression.UNDEFINED_ID;
+        this.alias = alias;
         this.columnList = columnList;
+        if (alias != null) {
+            this.queryId = alias;
+        } else if (source instanceof SQLField) {
+            this.queryId = ((SQLField)source).getName();
+        } else {
+            throw new IllegalArgumentException("Null table primary id");
+        }
     }
 
     @NotNull
@@ -41,7 +51,7 @@ public class SQLTablePrimary implements SQLExpression {
         return source;
     }
 
-    @NotNull
+    @Nullable
     public String getAlias() {
         return alias;
     }
@@ -49,6 +59,11 @@ public class SQLTablePrimary implements SQLExpression {
     @NotNull
     public List<String> getColumnList() {
         return columnList;
+    }
+
+    @NotNull
+    public String getQueryId() {
+        return queryId;
     }
 
     @Override
@@ -59,6 +74,7 @@ public class SQLTablePrimary implements SQLExpression {
             exp = new QueryBuilder()
                     .queryType(Query.QueryType.PRIMARY)
                     .parameters(new Parameter("sourceName", ValueExpressionFactory.constant(table.getName())))
+                    .id(table.getName())
                     .create();
             if (!columnList.isEmpty()) {
                 exp = new QueryBuilder()
@@ -66,6 +82,7 @@ public class SQLTablePrimary implements SQLExpression {
                         .requiredSchemaAttributes(columnList.stream().map(c ->
                                 ValueExpressionFactory.attribute(table.getName(), c)).collect(Collectors.toList()))
                         .subQueries((Query)exp)
+                        .id(exp.id())
                         .create();
             }
         } else {
@@ -82,13 +99,14 @@ public class SQLTablePrimary implements SQLExpression {
 
         SQLTablePrimary that = (SQLTablePrimary) o;
 
-        return alias.equals(that.alias) && columnList.equals(that.columnList) && source.equals(that.source);
+        return !(alias != null ? !alias.equals(that.alias) : that.alias != null) && columnList.equals(that.columnList)
+                && source.equals(that.source);
     }
 
     @Override
     public int hashCode() {
         int result = source.hashCode();
-        result = 31 * result + alias.hashCode();
+        result = 31 * result + (alias != null ? alias.hashCode() : 0);
         result = 31 * result + columnList.hashCode();
         return result;
     }

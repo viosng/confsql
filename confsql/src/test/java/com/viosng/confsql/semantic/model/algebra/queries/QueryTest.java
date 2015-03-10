@@ -52,7 +52,6 @@ public class QueryTest {
                 { QueryFactory.join("jn", PARAMETERS, Q_MOCK, Q_MOCK, emptyList()), "jn", Query.QueryType.JOIN },
                 { QueryFactory.aggregation("ag", Q_MOCK, emptyList(), PARAMETERS, emptyList()), "ag", Query.QueryType.AGGREGATION },
                 { QueryFactory.nest("ne", Q_MOCK, PARAMETERS, emptyList()), "ne", Query.QueryType.NEST },
-                { QueryFactory.unNest("un", Q_MOCK, attributeExpression, PARAMETERS), "un", Query.QueryType.UNNEST},
                 { QueryFactory.groupJoin("gj", Q_MOCK, Q_MOCK, emptyList(), PARAMETERS, emptyList()), "gj", Query.QueryType.GROUP_JOIN },
         };
     }

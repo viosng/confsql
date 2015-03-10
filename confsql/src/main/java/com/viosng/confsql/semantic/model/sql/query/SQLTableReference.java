@@ -6,6 +6,7 @@ import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
+import com.viosng.confsql.semantic.model.sql.expr.impl.SQLField;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLJoinedTablePrimary;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +43,20 @@ public class SQLTableReference implements SQLExpression {
                 new BiFunction<Query, SQLJoinedTablePrimary, Query>() {
             @Override
             public Query apply(Query query, SQLJoinedTablePrimary sqlJoinedTablePrimary) {
+                if (sqlJoinedTablePrimary.getTablePrimary().getSource() instanceof SQLField) {
+                    SQLField tableName = (SQLField) sqlJoinedTablePrimary.getTablePrimary().getSource();
+                    if (tableName.getName().startsWith(query.id() + ".")) {
+                        List<Parameter> parameters = new ArrayList<>();
+                        parameters.add(new Parameter("unNestObject", tableName.convert()));
+                        parameters.addAll(sqlJoinedTablePrimary.getParameterList().stream().map(p ->
+                                (Parameter)p.convert()).collect(Collectors.toList()));
+                        return new QueryBuilder()
+                                .queryType(Query.QueryType.UNNEST)
+                                .parameters(parameters)
+                                .subQueries(query)
+                                .create();
+                    }
+                }
                 List<Parameter> parameters = new ArrayList<>();
                 parameters.add(new Parameter("joinType", ValueExpressionFactory.constant(sqlJoinedTablePrimary.getJoinType())));
                 if(sqlJoinedTablePrimary.getOnCondition() != null) {
@@ -53,6 +68,7 @@ public class SQLTableReference implements SQLExpression {
                         .queryType(Query.QueryType.JOIN)
                         .parameters(parameters)
                         .subQueries(query, (Query)sqlJoinedTablePrimary.getTablePrimary().convert())
+                        .id(sqlJoinedTablePrimary.getTablePrimary().getQueryId())
                         .create();
             }
         }, (query, query2) -> null);
