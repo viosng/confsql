@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.xml;
 
+import com.google.common.base.Joiner;
 import com.thoughtworks.xstream.XStream;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.sql.*;
@@ -10,6 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,7 +42,9 @@ public class XMLConvertionTest {
                 "inner join(a=e) c on q.w > \"sdfsd\"" +
                 "left join d " +
                 "fuzzy join(alg=\"alg1\") (select a) as r join r.a group(a=p) by f,g,h order by f desc limit 10) end";*/
-        String query = "select * from r join b join b.a";
+        //String query = "select a, nest(b)";
+        String query = Joiner.on("").join(Files.readAllLines(Paths.get("src/test/java/com/viosng/confsql/semantic/model/xml/query.sql"), StandardCharsets.UTF_8));
+        System.out.println(query);
         Expression exp = visitor.visit(getParser(query).stat()).convert();
         XMLExpressionConverter.XMLExpression xmlQuery = XMLExpressionConverter.convertToXML(exp);
 

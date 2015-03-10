@@ -1,0 +1,1 @@
+SELECT a, nest(b, c, d) FROM C JOIN(sdas="asdas") C.NESTED FUZZY JOIN E GROUP by b, c, d LIMIT 10

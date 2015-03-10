@@ -128,6 +128,7 @@ public class XMLExpressionConverter {
                 xmlExpression.value = ((ValueExpression.AttributeExpression)exp).getValue();
                 break;
             case FUNCTION_CALL:
+                xmlExpression.value = ((ValueExpression.FunctionCallExpression)exp).getValue();
                 xmlExpression.arguments = exp.getArguments().stream().map(
                         XMLExpressionConverter::convertToXML).collect(Collectors.toList());
                 if (xmlExpression.arguments.isEmpty()) xmlExpression.arguments = null;
