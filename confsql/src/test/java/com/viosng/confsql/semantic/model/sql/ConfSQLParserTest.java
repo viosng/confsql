@@ -5,9 +5,10 @@ import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import com.viosng.confsql.semantic.model.sql.query.*;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLJoinedTablePrimary;
-import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByArg;
+import com.viosng.confsql.semantic.model.sql.query.SQLOrderByArg;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
 import com.viosng.confsql.semantic.model.sql.query.SQLTableReference;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLTableExpression;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.Pair;
@@ -366,7 +367,7 @@ public class ConfSQLParserTest {
 
         SQLExpression limitClause = new SQLConstant("3");
         
-        SQLTableExpression tableExpression = new SQLTableExpression(fromClause, whereClause, groupByClause, havingClause, 
+        SQLTableExpression tableExpression = new SQLTableExpression(fromClause, whereClause, groupByClause, havingClause,
                 orderByClause, limitClause);
         
         List<SQLSelectItem> selectItemList = Arrays.asList(

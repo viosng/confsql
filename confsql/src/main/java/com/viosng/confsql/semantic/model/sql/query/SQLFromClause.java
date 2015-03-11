@@ -31,6 +31,7 @@ public class SQLFromClause implements SQLExpression {
     }
 
     @Override
+    @NotNull
     public Expression convert() {
         if (tableReferenceList.size() == 1 && parameterList.isEmpty()) {
             return tableReferenceList.get(0).convert();

@@ -1,4 +1,4 @@
-package com.viosng.confsql.semantic.model.sql.query.without.translation;
+package com.viosng.confsql.semantic.model.sql.query;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
@@ -35,6 +35,7 @@ public class SQLOrderByArg implements SQLExpression {
     }
 
     @Override
+    @NotNull
     public Expression convert() {
         return new OrderByArgExpression(argument.convert(), orderType);
     }

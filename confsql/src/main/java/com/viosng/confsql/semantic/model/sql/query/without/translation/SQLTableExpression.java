@@ -1,14 +1,9 @@
-package com.viosng.confsql.semantic.model.sql.query;
+package com.viosng.confsql.semantic.model.sql.query.without.translation;
 
-import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebra.queries.Query;
-import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
-import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
-import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
+import com.viosng.confsql.semantic.model.sql.query.SQLFromClause;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,50 +55,34 @@ public class SQLTableExpression implements SQLExpression{
         return parameters;
     }
 
-    @Override
-    public Expression convert() {
-        Query current = (Query) fromClause.convert();
-        if (whereClause != null) {
-            current = new QueryBuilder()
-                    .queryType(Query.QueryType.FILTER)
-                    .subQueries(current)
-                    .parameters(new Parameter("filterExpression", whereClause.convert()))
-                    .create();
-        }
-        if (groupByClause != null) {
-            current = new QueryBuilder()
-                    .queryType(Query.QueryType.AGGREGATION)
-                    .subQueries(current)
-                    .parameters(mergeExpressionsAndParameters(groupByClause.getExpressionList(),
-                            groupByClause.getParameterList(), "groupByArg"))
-                    .create();
-        }
-        if (havingClause != null) {
-            current = new QueryBuilder()
-                    .queryType(Query.QueryType.FILTER)
-                    .subQueries(current)
-                    .parameters(new Parameter("filterExpression", havingClause.convert()))
-                    .create();
-        }
-        if (orderByClause != null) {
-            List<Parameter> parameters = mergeExpressionsAndParameters(orderByClause.getOrderByArgs(),
-                    orderByClause.getParamList(), "orderByArg");
-            parameters.add(new Parameter("type", ValueExpressionFactory.constant("order")));
-            current = new QueryBuilder()
-                    .queryType(Query.QueryType.FILTER)
-                    .subQueries(current)
-                    .parameters(parameters)
-                    .create();
-        }
-        if (limitClause != null) {
-            current = new QueryBuilder()
-                    .queryType(Query.QueryType.FILTER)
-                    .subQueries(current)
-                    .parameters(new Parameter("type", ValueExpressionFactory.constant("limit")),
-                            new Parameter("limitValue", limitClause.convert()))
-                    .create();
-        }
-        return current;
+    @NotNull
+    public SQLFromClause getFromClause() {
+        return fromClause;
+    }
+
+    @Nullable
+    public SQLExpression getWhereClause() {
+        return whereClause;
+    }
+
+    @Nullable
+    public SQLExpression getHavingClause() {
+        return havingClause;
+    }
+
+    @Nullable
+    public SQLExpression getLimitClause() {
+        return limitClause;
+    }
+
+    @Nullable
+    public SQLGroupByClause getGroupByClause() {
+        return groupByClause;
+    }
+
+    @Nullable
+    public SQLOrderByClause getOrderByClause() {
+        return orderByClause;
     }
 
     @Override

@@ -35,6 +35,7 @@ public class SQLTableReference implements SQLExpression {
     }
 
     @Override
+    @NotNull
     public Expression convert() {
         if (joinedTablePrimaryList.isEmpty()) {
             return tablePrimary.convert();

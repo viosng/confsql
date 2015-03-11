@@ -1,1 +1,5 @@
-SELECT a, nest(b, c, d) FROM C JOIN(sdas="asdas") C.NESTED FUZZY JOIN E GROUP by b, c, d LIMIT 10
+select Severity, max(StatusDate) as c from xdoctor4centera.dist_rap
+ group by Severity
+ having c < 10000
+ order by D
+ LIMIT f(4)

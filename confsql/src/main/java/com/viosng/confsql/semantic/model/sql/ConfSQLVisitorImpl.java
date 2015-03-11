@@ -5,9 +5,10 @@ import com.viosng.confsql.semantic.model.sql.expr.impl.*;
 import com.viosng.confsql.semantic.model.sql.query.*;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLGroupByClause;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLJoinedTablePrimary;
-import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByArg;
+import com.viosng.confsql.semantic.model.sql.query.SQLOrderByArg;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLOrderByClause;
 import com.viosng.confsql.semantic.model.sql.query.SQLTableReference;
+import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLTableExpression;
 
 import java.util.Arrays;
 import java.util.Collections;

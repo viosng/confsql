@@ -3,6 +3,7 @@ package com.viosng.confsql.semantic.model.sql.query;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -28,6 +29,7 @@ public class SQLAsteriskSelectItem implements SQLExpression {
     }
 
     @Override
+    @NotNull
     public Expression convert() {
         return ValueExpressionFactory.group(objectName != null ? objectName : "", "", Collections.emptyList());
     }

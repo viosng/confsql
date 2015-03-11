@@ -67,6 +67,7 @@ public class SQLTablePrimary implements SQLExpression {
     }
 
     @Override
+    @NotNull
     public Expression convert() {
         Expression exp;
         if (source instanceof SQLField) {

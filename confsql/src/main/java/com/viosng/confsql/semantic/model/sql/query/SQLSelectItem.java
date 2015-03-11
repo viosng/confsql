@@ -25,6 +25,7 @@ public class SQLSelectItem implements SQLExpression {
     }
 
     @Override
+    @NotNull
     public Expression convert() {
         Expression exp = item.convert();
         if (as != null) exp.setId(as.getName());

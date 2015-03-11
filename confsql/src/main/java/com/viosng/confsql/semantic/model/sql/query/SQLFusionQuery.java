@@ -31,6 +31,7 @@ public class SQLFusionQuery implements SQLExpression {
     }
 
     @Override
+    @NotNull
     public Expression convert() {
         return new QueryBuilder()
                 .queryType(Query.QueryType.FUSION)

@@ -2,6 +2,7 @@ package com.viosng.confsql.semantic.model.sql.query.without.translation;
 
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
+import com.viosng.confsql.semantic.model.sql.query.SQLOrderByArg;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
