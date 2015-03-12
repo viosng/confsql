@@ -1,4 +1,4 @@
-package com.viosng.confsql.xml;
+package com.viosng.confsql.semantic.model.xml;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
