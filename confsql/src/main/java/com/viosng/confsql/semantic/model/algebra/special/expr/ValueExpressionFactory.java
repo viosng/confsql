@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -182,7 +183,9 @@ public class ValueExpressionFactory {
         @Override
         public Notification verify(@NotNull Context context) {
             if (notification == null) {
-                notification = arguments.stream().map(e -> e.verify(context)).collect(Notification::new, 
+                notification = Stream.concat(
+                        arguments.stream().map(e -> e.verify(context)),
+                        parameters.stream().map(p -> p.verify(context))).collect(Notification::new,
                         Notification::accept, Notification::accept);
             }
             return notification;
@@ -191,7 +194,8 @@ public class ValueExpressionFactory {
         @Override
         public Expression findExpressionByType(ArithmeticType arithmeticType) {
             if (arithmeticType == this.type()) return this;
-            else return arguments.stream().map(a -> a.findExpressionByType(arithmeticType)).filter(a -> a != null).findFirst().orElse(null);
+            else return Stream.concat(arguments.stream(), parameters.stream())
+                    .map(a -> a.findExpressionByType(arithmeticType)).filter(a -> a != null).findFirst().orElse(null);
         }
 
         @Override
@@ -281,7 +285,7 @@ public class ValueExpressionFactory {
         return new ConstantExpression(id, value);
     }
 
-    public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value, 
+    public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value,
                                                                       @NotNull List<Expression> expressions,
                                                                       @NotNull List<Parameter> parameters,
                                                                       @NotNull String id) {

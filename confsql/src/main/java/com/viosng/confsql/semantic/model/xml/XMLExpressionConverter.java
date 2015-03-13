@@ -8,6 +8,7 @@ import com.viosng.confsql.semantic.model.ExpressionConverter;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.special.expr.CaseExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
@@ -63,6 +64,9 @@ public class XMLExpressionConverter implements ExpressionConverter<XMLExpression
 
         @XStreamAsAttribute
         public String objectReference, value, orderType;
+
+        @XStreamImplicit
+        public XMLExpression[] argument;
 
         public List<XMLExpression> arguments;
 
@@ -224,6 +228,14 @@ public class XMLExpressionConverter implements ExpressionConverter<XMLExpression
                 xmlExpression.arguments = Arrays.asList((((OrderByArgExpression) exp).getArgument())).stream().map(
                         this::convert).collect(Collectors.toList());
                 xmlExpression.orderType = ((OrderByArgExpression)exp).getOrderType();
+                break;
+            case CASE:
+                xmlExpression.arguments = exp.getArguments().stream().map(
+                        this::convert).collect(Collectors.toList());
+                if (xmlExpression.arguments.isEmpty()) xmlExpression.arguments = null;
+
+                xmlExpression.parameters = ((CaseExpression)exp).getParameters()
+                        .stream().map(p -> (XMLParameter) convert(p)).collect(Collectors.toList());
                 break;
             default: return null;
         }

@@ -4,6 +4,7 @@ import com.viosng.confsql.semantic.model.ExpressionConverter;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
+import com.viosng.confsql.semantic.model.algebra.special.expr.CaseExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.other.Parameter;
@@ -62,6 +63,14 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
                 thriftExpression.arguments = Arrays.asList((((OrderByArgExpression) expression).getArgument())).stream().map(
                         this::convert).collect(Collectors.toList());
                 thriftExpression.orderType = ((OrderByArgExpression)expression).getOrderType();
+                break;
+            case CASE:
+                thriftExpression.arguments = expression.getArguments().stream().map(
+                        this::convert).collect(Collectors.toList());
+                if (thriftExpression.arguments.isEmpty()) thriftExpression.arguments = null;
+
+                thriftExpression.parameters = ((CaseExpression)expression).getParameters()
+                        .stream().map(this::convertParameter).collect(Collectors.toList());
                 break;
             default: return null;
         }

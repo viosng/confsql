@@ -37,7 +37,7 @@ public enum ArithmeticType {
     CONSTANT("constant"),
     ATTRIBUTE("attribute"),
     GROUP("group"),
-    IF("if"),
+    CASE("case", "CASE"),
     QUERY("query"),
     ORDER("order"),
     PARAMETER("parameter"),

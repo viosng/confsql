@@ -1,10 +1,16 @@
 package com.viosng.confsql.semantic.model.sql.expr.impl;
 
+import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.special.expr.CaseExpression;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -66,25 +72,25 @@ public class SQLCase implements SQLExpression{
     @NotNull
     private final List<SQLWhenThenClause> whenThenClauses;
 
-    public SQLCase(SQLExpression expression, @NotNull List<SQLWhenThenClause> whenThenClauses, SQLExpression elseExpression) {
+    public SQLCase(@Nullable SQLExpression expression, @NotNull List<SQLWhenThenClause> whenThenClauses, @Nullable SQLExpression elseExpression) {
         this.expression = expression;
         this.elseExpression = elseExpression;
         this.whenThenClauses = whenThenClauses;
     }
 
-    @Nullable
-    public SQLExpression getExpression() {
-        return expression;
-    }
-    
     @NotNull
-    public List<SQLWhenThenClause> getWhenThenClauses() {
-        return whenThenClauses;
-    }
-
-    @Nullable
-    public SQLExpression getElseExpression() {
-        return elseExpression;
+    @Override
+    public Expression convert() {
+        AtomicInteger index = new AtomicInteger();
+        List<Parameter> parameters = whenThenClauses.stream().flatMap(
+                w -> Stream.of(
+                        new Parameter("whenExpression" + index, w.getWhen().convert()),
+                        new Parameter("thenExpression" + index.getAndIncrement(), w.getThen().convert())))
+                .collect(Collectors.toList());
+        if (elseExpression != null) {
+            parameters.add(new Parameter("elseExpression", elseExpression.convert()));
+        }
+        return new CaseExpression(expression != null ? expression.convert() : null, parameters);
     }
 
     @Override

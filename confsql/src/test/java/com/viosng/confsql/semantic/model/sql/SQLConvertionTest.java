@@ -1,10 +1,12 @@
 package com.viosng.confsql.semantic.model.sql;
 
+import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
+import com.viosng.confsql.semantic.model.algebra.special.expr.CaseExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
@@ -18,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created with IntelliJ IDEA.
@@ -94,6 +97,31 @@ public class SQLConvertionTest {
 
         assertEquals(ValueExpressionFactory.functionCall("func2", arguments, Collections.<Parameter>emptyList()),
                 visitor.visit(getParser("func2(1,2,3)").expr()).convert());
+    }
+
+    @Test
+    public void testCaseExpression() throws Exception {
+        List<Parameter> parameters = Lists.newArrayList(
+                new Parameter("whenExpression0", ValueExpressionFactory.constant("1")),
+                new Parameter("thenExpression0", ValueExpressionFactory.constant("2")),
+                new Parameter("whenExpression1", ValueExpressionFactory.constant("3")),
+                new Parameter("thenExpression1", ValueExpressionFactory.constant("4")),
+                new Parameter("whenExpression2", ValueExpressionFactory.constant("5")),
+                new Parameter("thenExpression2", ValueExpressionFactory.constant("6")));
+
+        assertEquals(new CaseExpression(null, parameters),
+                visitor.visit(getParser("case when 1 then 2 when 3 then 4 when 5 then 6 end").expr()).convert());
+
+        parameters.add(new Parameter("elseExpression", ValueExpressionFactory.constant("7")));
+
+        assertEquals(new CaseExpression(null, parameters),
+                visitor.visit(getParser("case when 1 then 2 when 3 then 4 when 5 then 6 else 7 end").expr()).convert());
+
+        assertNotEquals(new CaseExpression(ValueExpressionFactory.constant("-1"), parameters),
+                visitor.visit(getParser("case 0 when 1 then 2 when 3 then 4 when 5 then 6 else 7 end").expr()).convert());
+
+        assertEquals(new CaseExpression(ValueExpressionFactory.constant("0"), parameters),
+                visitor.visit(getParser("case 0 when 1 then 2 when 3 then 4 when 5 then 6 else 7 end").expr()).convert());
     }
 
     @Test

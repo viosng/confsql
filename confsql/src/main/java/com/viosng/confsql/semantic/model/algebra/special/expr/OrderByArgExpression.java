@@ -74,6 +74,6 @@ public class OrderByArgExpression implements Expression {
     @NotNull
     @Override
     public Notification verify(@NotNull Context context) {
-        return new Notification();
+        return argument.verify(context);
     }
 }

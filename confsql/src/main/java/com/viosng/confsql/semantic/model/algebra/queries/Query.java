@@ -80,7 +80,7 @@ public interface Query extends Expression {
             return getSubQueries().get(0);
         }
     }
-    
+
     interface BinaryQuery extends Query {
         @NotNull
         default Query getLeftArg() {
