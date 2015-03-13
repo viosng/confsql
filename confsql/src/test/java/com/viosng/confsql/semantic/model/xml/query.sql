@@ -1,5 +1,2 @@
-select Severity, max(StatusDate) as c from xdoctor4centera.dist_rap
- group by Severity
- having c < 10000
- order by D
- LIMIT f(4)
+select a, count(*) as c from table
+ group by f,g

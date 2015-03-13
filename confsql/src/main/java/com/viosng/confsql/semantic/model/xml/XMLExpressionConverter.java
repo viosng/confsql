@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.viosng.confsql.semantic.model.ExpressionConverter;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
@@ -23,12 +24,19 @@ import java.util.stream.Collectors;
  * Date: 08.03.2015
  * Time: 13:19
  */
-public class XMLExpressionConverter {
-
-    private XMLExpressionConverter() {
-    }
+public class XMLExpressionConverter implements ExpressionConverter<XMLExpressionConverter.XMLExpression>{
 
     public interface XMLExpression {
+    }
+    
+    private XMLExpressionConverter() {}
+
+    private static class Holder {
+        private final static XMLExpressionConverter INSTANCE = new XMLExpressionConverter();
+    }
+
+    public static XMLExpressionConverter getInstance() {
+        return Holder.INSTANCE;
     }
 
     @XStreamAlias("parameter")
@@ -105,48 +113,6 @@ public class XMLExpressionConverter {
         }
     }
 
-    private static XMLExpression convertExpressions(@NotNull Expression exp) {
-        if (exp.type() == ArithmeticType.PARAMETER) {
-            Parameter parameter = (Parameter) exp;
-            return new XMLParameter(parameter.id(), convertToXML(parameter.getValue()));
-        }
-        XMLExpressionImpl xmlExpression = new XMLExpressionImpl();
-        xmlExpression.id = exp.id().equals(Expression.UNDEFINED_ID) ? null : exp.id();
-        xmlExpression.type = exp.type();
-        if (exp instanceof ExpressionImpl) {
-            ExpressionImpl expression = (ExpressionImpl) exp;
-            xmlExpression.arguments = expression.getArguments().stream().map(
-                    XMLExpressionConverter::convertToXML).collect(Collectors.toList());
-            return xmlExpression;
-        }
-        switch (exp.type()) {
-            case CONSTANT:
-                xmlExpression.value = ((ValueExpression.ConstantExpression)exp).getValue();
-                break;
-            case ATTRIBUTE:
-                xmlExpression.objectReference = ((ValueExpression.AttributeExpression)exp).getObjectReference();
-                xmlExpression.value = ((ValueExpression.AttributeExpression)exp).getValue();
-                break;
-            case FUNCTION_CALL:
-                xmlExpression.value = ((ValueExpression.FunctionCallExpression)exp).getValue();
-                xmlExpression.arguments = exp.getArguments().stream().map(
-                        XMLExpressionConverter::convertToXML).collect(Collectors.toList());
-                if (xmlExpression.arguments.isEmpty()) xmlExpression.arguments = null;
-
-                xmlExpression.parameters = ((ValueExpression.FunctionCallExpression)exp).getParameters()
-                        .stream().map(p -> (XMLParameter) convertToXML(p)).collect(Collectors.toList());
-                if (xmlExpression.parameters.isEmpty()) xmlExpression.parameters = null;
-                break;
-            case ORDER:
-                xmlExpression.arguments = Arrays.asList((((OrderByArgExpression) exp).getArgument())).stream().map(
-                        XMLExpressionConverter::convertToXML).collect(Collectors.toList());
-                xmlExpression.orderType = ((OrderByArgExpression)exp).getOrderType();
-                break;
-            default: return null;
-        }
-        return xmlExpression;
-    }
-
     @XStreamAlias("query")
     private static class XMLQuery implements XMLExpression {
         @XStreamAsAttribute
@@ -202,34 +168,77 @@ public class XMLExpressionConverter {
         }
     }
 
-    private static XMLQuery convertQuery(@NotNull Query query) {
+    @NotNull
+    private XMLQuery convertQuery(@NotNull Query query) {
         XMLQuery xmlQuery = new XMLQuery();
         xmlQuery.id = query.id().equals(Expression.UNDEFINED_ID) ? null : query.id();
         xmlQuery.type = query.queryType();
         if (!query.getParameters().isEmpty()) {
             xmlQuery.parameters = query.getParameters().stream().map(p ->
-                    (XMLParameter) convertToXML(p)).collect(Collectors.toList());
+                    (XMLParameter) convert(p)).collect(Collectors.toList());
         }
         if (!query.getSubQueries().isEmpty() && query.getSubQueries().get(0).queryType() != Query.QueryType.FICTIVE) {
             xmlQuery.arguments = query.getSubQueries().stream().map(
-                    XMLExpressionConverter::convertQuery).collect(Collectors.toList());
+                    this::convertQuery).collect(Collectors.toList());
         }
         if (!query.getRequiredSchemaAttributes().isEmpty()) {
-            xmlQuery.schema = query.getRequiredSchemaAttributes().stream().map(XMLExpressionConverter::convertToXML)
+            xmlQuery.schema = query.getRequiredSchemaAttributes().stream().map(this::convert)
                     .collect(Collectors.toList());
         }
         return xmlQuery;
     }
 
+    private XMLExpression convertExpressions(@NotNull Expression exp) {
+        if (exp.type() == ArithmeticType.PARAMETER) {
+            Parameter parameter = (Parameter) exp;
+            return new XMLParameter(parameter.id(), convert(parameter.getValue()));
+        }
+        XMLExpressionImpl xmlExpression = new XMLExpressionImpl();
+        xmlExpression.id = exp.id().equals(Expression.UNDEFINED_ID) ? null : exp.id();
+        xmlExpression.type = exp.type();
+        if (exp instanceof ExpressionImpl) {
+            ExpressionImpl expression = (ExpressionImpl) exp;
+            xmlExpression.arguments = expression.getArguments().stream().map(
+                    this::convert).collect(Collectors.toList());
+            return xmlExpression;
+        }
+        switch (exp.type()) {
+            case CONSTANT:
+                xmlExpression.value = ((ValueExpression.ConstantExpression)exp).getValue();
+                break;
+            case ATTRIBUTE:
+                xmlExpression.objectReference = ((ValueExpression.AttributeExpression)exp).getObjectReference();
+                xmlExpression.value = ((ValueExpression.AttributeExpression)exp).getValue();
+                break;
+            case FUNCTION_CALL:
+                xmlExpression.value = ((ValueExpression.FunctionCallExpression)exp).getValue();
+                xmlExpression.arguments = exp.getArguments().stream().map(
+                        this::convert).collect(Collectors.toList());
+                if (xmlExpression.arguments.isEmpty()) xmlExpression.arguments = null;
+
+                xmlExpression.parameters = ((ValueExpression.FunctionCallExpression)exp).getParameters()
+                        .stream().map(p -> (XMLParameter) convert(p)).collect(Collectors.toList());
+                if (xmlExpression.parameters.isEmpty()) xmlExpression.parameters = null;
+                break;
+            case ORDER:
+                xmlExpression.arguments = Arrays.asList((((OrderByArgExpression) exp).getArgument())).stream().map(
+                        this::convert).collect(Collectors.toList());
+                xmlExpression.orderType = ((OrderByArgExpression)exp).getOrderType();
+                break;
+            default: return null;
+        }
+        return xmlExpression;
+    }
+
+    public void configureXStream(@NotNull XStream xStream) {
+        xStream.processAnnotations(new Class[]{XMLQuery.class, XMLParameter.class, XMLExpressionImpl.class});
+    }
+
     @NotNull
-    @SuppressWarnings("unchecked")
-    public static XMLExpression convertToXML(@NotNull Expression expression) {
+    @Override
+    public XMLExpression convert(@NotNull Expression expression) {
         XMLExpression xmlExpression = convertExpressions(expression);
         if (xmlExpression != null) return xmlExpression;
         return convertQuery((Query)expression);
-    }
-
-    public static void configureXStream(@NotNull XStream xStream) {
-        xStream.processAnnotations(new Class[]{XMLQuery.class, XMLParameter.class, XMLExpressionImpl.class});
     }
 }

@@ -26,7 +26,7 @@ public class XMLConvertionTest {
 
     @BeforeClass
     public static void beforeClass(){
-        XMLExpressionConverter.configureXStream(xStream);
+        XMLExpressionConverter.getInstance().configureXStream(xStream);
     }
 
     private ConfSQLVisitor<SQLExpression> visitor = new ConfSQLVisitorImpl();
@@ -37,15 +37,11 @@ public class XMLConvertionTest {
 
     @Test
     public void testFull() throws Exception {
-        /*String query = "fusion (select * from a join a.nested) with select 1 with (select a, f(1,2;u=e,q=3) from b " +
-                "inner join(a=e) c on q.w > \"sdfsd\"" +
-                "left join d " +
-                "fuzzy join(alg=\"alg1\") (select a) as r join r.a group(a=p) by f,g,h order by f desc limit 10) end";*/
-        //String query = "select a, nest(b)";
-        String query = Joiner.on("").join(Files.readAllLines(Paths.get("src/test/java/com/viosng/confsql/semantic/model/xml/query.sql"), StandardCharsets.UTF_8));
+        String query = Joiner.on("").join(Files.readAllLines(Paths.get(
+                "src/test/java/com/viosng/confsql/semantic/model/xml/query.sql"), StandardCharsets.UTF_8));
         System.out.println(query);
         Expression exp = visitor.visit(getParser(query).stat()).convert();
-        XMLExpressionConverter.XMLExpression xmlQuery = XMLExpressionConverter.convertToXML(exp);
+        XMLExpressionConverter.XMLExpression xmlQuery = XMLExpressionConverter.getInstance().convert(exp);
 
         FileWriter out = new FileWriter("xmlOutput.xml");
         String xmlQueryString = xStream.toXML(xmlQuery);
