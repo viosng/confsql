@@ -3,6 +3,7 @@ package com.viosng.confsql.semantic.model.algebra;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
+import com.viosng.confsql.semantic.model.other.Verifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,5 +45,10 @@ public interface Expression{
     @NotNull
     public default List<Expression> getArguments() {
         return Collections.emptyList();
+    }
+
+    @NotNull
+    public default Verifier verify(@NotNull Verifier verifier) {
+        return new Verifier();
     }
 }

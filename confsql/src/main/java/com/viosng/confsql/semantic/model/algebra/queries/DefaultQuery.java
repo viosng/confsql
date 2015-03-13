@@ -1,6 +1,5 @@
 package com.viosng.confsql.semantic.model.algebra.queries;
 
-import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
@@ -10,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -115,14 +115,14 @@ public abstract class DefaultQuery implements Query{
     @Override
     public Notification verify() {
         if (notification == null) {
-            notification = Lists.newArrayList(
+            notification = Stream.of(
                     subQueries.stream().map(Query::verify)
-                            .collect(Notification::new, Notification::accept, Notification::accept), 
+                            .collect(Notification::new, Notification::accept, Notification::accept),
                     requiredSchemaAttributes.stream().map(e -> e.verify(getContext()))
-                            .collect(Notification::new, Notification::accept, Notification::accept), 
+                            .collect(Notification::new, Notification::accept, Notification::accept),
                     argumentExpressions.stream().map(e -> e.verify(getContext()))
                             .collect(Notification::new, Notification::accept, Notification::accept))
-                    .stream().collect(Notification::new, Notification::accept, Notification::accept);
+                    .collect(Notification::new, Notification::accept, Notification::accept);
         }
         return notification;
     }

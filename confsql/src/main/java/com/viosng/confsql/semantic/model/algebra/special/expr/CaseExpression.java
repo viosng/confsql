@@ -2,10 +2,7 @@ package com.viosng.confsql.semantic.model.algebra.special.expr;
 
 import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.Notification;
-import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.other.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,12 +32,6 @@ public class CaseExpression implements Expression {
         this.parameters = parameters;
     }
 
-    public CaseExpression(@NotNull String id, @Nullable Expression argument, @NotNull List<Parameter> parameters) {
-        this.id = id;
-        this.argument = argument;
-        this.parameters = parameters;
-    }
-
     @NotNull
     @Override
     public String id() {
@@ -65,6 +56,7 @@ public class CaseExpression implements Expression {
 
     @Override
     public Expression findExpressionByType(ArithmeticType arithmeticType) {
+        if (arithmeticType == type()) return this;
         return Stream.concat(Stream.of(argument), parameters.stream()).map(
                 e -> e == null ? null : e.findExpressionByType(arithmeticType)).filter(e -> e != null).findFirst().orElse(null);
     }
@@ -72,13 +64,21 @@ public class CaseExpression implements Expression {
     @NotNull
     @Override
     public Notification verify(@NotNull Context context) {
-        return new Notification();
+        return Stream.concat(Stream.of(argument), parameters.stream()).filter(e -> e != null).map(
+                e -> e.verify(context)).collect(Notification::new, Notification::accept, Notification::accept);
     }
 
     @NotNull
     @Override
     public List<Expression> getArguments() {
         return argument != null ? Lists.newArrayList(argument) : Collections.<Expression>emptyList();
+    }
+
+    @NotNull
+    @Override
+    public Verifier verify(@NotNull Verifier verifier) {
+        return Stream.concat(Stream.of(argument), parameters.stream()).filter(e -> e != null).map(
+                e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept).attribute(UNDEFINED_ID, id);
     }
 
     @Override

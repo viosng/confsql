@@ -3,10 +3,7 @@ package com.viosng.confsql.semantic.model.algebra.queries;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.Notification;
-import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.other.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -121,6 +118,16 @@ public class QueryFactory {
                              @NotNull List<Expression> argumentExpressions) {
             super(id, parameters, Collections.emptyList(), Collections.emptyList(), argumentExpressions);
         }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            return getArgumentExpressions().stream().map(
+                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept)
+                    .attribute(UNDEFINED_ID, id())
+                    .mergeWarnings(getParameters().stream().map(
+                            e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept));
+        }
     }
 
     @NotNull
@@ -138,7 +145,21 @@ public class QueryFactory {
                             @NotNull List<Expression> argumentExpressions) {
             super(id, parameters, requiredSchemaAttributes, Arrays.asList(subQuery), argumentExpressions);
         }
-        
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            Verifier argumentVerifier = getArgumentExpressions().stream().map(
+                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept);
+
+            // we don't need to add argument's context to output one, but we need to verify schema with argument's context
+            return getRequiredSchemaAttributes().stream().map(
+                    e -> e.verify(argumentVerifier)).collect(Verifier::new, Verifier::accept, Verifier::accept)
+                    .attribute(UNDEFINED_ID, id())
+                    .mergeWarnings(argumentVerifier)
+                    .mergeWarnings(getParameters().stream().map(
+                            e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept));
+        }
     }
 
     @NotNull
@@ -155,9 +176,15 @@ public class QueryFactory {
         public FusionQuery(@NotNull String id,
                            @NotNull List<Parameter> parameters,
                            @NotNull List<Query> subQueries) {
-            /*super(id, parameters, combineSchemaAttributes(subQueries.stream().map(Query::getQueryObjectAttributes)),
-                    subQueries, Collections.emptyList());*/
             super(id, parameters, Collections.<Expression>emptyList(), subQueries, Collections.emptyList());
+        }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            return getSubQueries().stream().map(
+                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept)
+                    .attribute(UNDEFINED_ID, id());
         }
     }
 
@@ -177,6 +204,12 @@ public class QueryFactory {
                          @NotNull List<Expression> argumentExpressions) {
             super(id, parameters, combineSchemaAttributes(Arrays.asList(leftBase, rightBase).stream().map(Query::getQueryObjectAttributes)),
                     Arrays.asList(leftBase, rightBase), argumentExpressions);
+        }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            return null;
         }
     }
 
