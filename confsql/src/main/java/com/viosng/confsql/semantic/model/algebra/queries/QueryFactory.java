@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.misc.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -128,7 +129,7 @@ public class QueryFactory {
         @Override
         public Verifier verify(@NotNull Verifier verifier) {
             return new Verifier().mergeWarnings(getParameters().stream().map(
-                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept));
+                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept)).setHasAll(true);
         }
     }
 
@@ -157,8 +158,16 @@ public class QueryFactory {
             Verifier subQueryVerifier = getSubQueries().get(0).verify(verifier);
 
             // we don't need to add sub query context to output one, but we need to verify schema with sub query context
+            List<Verifier> verifiers = getRequiredSchemaAttributes().stream().map(e -> e.verify(subQueryVerifier)).collect(Collectors.toList());
             Verifier schemaVerifier = getRequiredSchemaAttributes().stream().map(
                     e -> e.verify(subQueryVerifier)).collect(Verifier::new, Verifier::accept, Verifier::accept);
+            Verifier v = verifiers.stream().reduce(new Verifier(), new BinaryOperator<Verifier>() {
+                @Override
+                public Verifier apply(Verifier verifier, Verifier verifier2) {
+                    verifier.accept(verifier2);
+                    return verifier;
+                }
+            });
             Verifier filterVerifier = new Verifier()
                     .mergeWarnings(subQueryVerifier)
                     .mergeWarnings(getParameters().stream().map(

@@ -10,14 +10,11 @@ stat : query EOF;
 
 query : ('FUSION'|'fusion') paranthesizedParamList? query ( ('WITH'|'with') query)+ ('END'|'end')   #fusion
       | LEFT_PAREN query RIGHT_PAREN                                                                #queryParens
-      | ('select'|'SELECT') paranthesizedParamList? selectList tableExpression?                     #select
+      | ('select'|'SELECT') paranthesizedParamList? (selectList | MULTIPLY) tableExpression?        #select
       ;
 
 selectList : selectItem (COMMA selectItem)* ;
-selectItem
-     : asterisk asClause?                                                                       #all
-     | expr asClause?                                                                           #selectExpr
-     ;
+selectItem : | expr asClause? ;
 
 asterisk : (StringLiteral DOT)? MULTIPLY;
 

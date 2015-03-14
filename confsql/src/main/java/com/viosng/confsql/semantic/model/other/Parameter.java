@@ -49,7 +49,7 @@ public class Parameter implements Expression {
     @NotNull
     @Override
     public Verifier verify(@NotNull Verifier verifier) {
-        throw new UnsupportedOperationException();
+        return getValue().verify(verifier);
     }
 
     @NotNull

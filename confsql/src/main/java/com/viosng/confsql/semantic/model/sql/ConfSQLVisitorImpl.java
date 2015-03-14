@@ -47,8 +47,10 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
                 ? ((SQLParameterList)visit(ctx.paranthesizedParamList())).getParameterList()
                 : Collections.<SQLParameter>emptyList();
         return new SQLQuery(
-                ((SQLExpressionList) visit(ctx.selectList())).getExpressionList().stream()
-                        .map(e -> (SQLSelectItem) e).collect(Collectors.toList()),
+                ctx.MULTIPLY() == null
+                        ? ((SQLExpressionList) visit(ctx.selectList())).getExpressionList().stream()
+                            .map(e -> (SQLSelectItem) e).collect(Collectors.toList())
+                        : Collections.emptyList(),
                 ctx.tableExpression() != null ? (SQLTableExpression) visit(ctx.tableExpression()) : null,
                 parameterList);
     }
@@ -59,12 +61,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     }
 
     @Override
-    public SQLExpression visitAll(ConfSQLParser.AllContext ctx) {
-        return new SQLSelectItem(visit(ctx.asterisk()), ctx.asClause() != null ? (SQLField) visit(ctx.asClause()) : null);
-    }
-
-    @Override
-    public SQLExpression visitSelectExpr(ConfSQLParser.SelectExprContext ctx) {
+    public SQLExpression visitSelectItem(ConfSQLParser.SelectItemContext ctx) {
         return new SQLSelectItem(visit(ctx.expr()), ctx.asClause() != null ? (SQLField) visit(ctx.asClause()) : null);
     }
 

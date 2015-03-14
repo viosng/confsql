@@ -22,9 +22,11 @@ public class Verifier implements Consumer<Verifier> {
     @NotNull
     private final List<String> warnings = new ArrayList<>();
 
+    private boolean hasAll = false;
+
     @NotNull
     public Verifier warning(@Nullable String message) {
-        warnings.add(message);
+        if (message != null) warnings.add(message);
         return this;
     }
 
@@ -46,12 +48,18 @@ public class Verifier implements Consumer<Verifier> {
     }
 
     public boolean hasReference(@NotNull String objectReference){
-        return context.containsKey(objectReference);
+        return hasAll || context.containsKey(objectReference);
     }
 
     public boolean hasAttribute(@NotNull String objectReference, @NotNull String attribute){
         Set<String> attributes;
-        return (attributes = context.get(objectReference)) != null && attributes.contains(attribute);
+        return hasAll || ((attributes = context.get(objectReference)) != null && attributes.contains(attribute));
+    }
+
+    @NotNull
+    public Verifier setHasAll(boolean value) {
+        hasAll = value;
+        return this;
     }
 
     @NotNull
@@ -68,7 +76,8 @@ public class Verifier implements Consumer<Verifier> {
 
     @NotNull
     public Set<String> getAttributes(@NotNull String object) {
-        return hasReference(object) ? context.get(object) : Collections.<String>emptySet();
+        Set<String> attributes = context.get(object);
+        return attributes != null ? attributes : Collections.<String>emptySet();
     }
 
     @NotNull
@@ -82,10 +91,18 @@ public class Verifier implements Consumer<Verifier> {
 
 
     @Override
+    public String toString() {
+        return "Verifier{" +
+                "context=" + context +
+                ", warnings=" + warnings +
+                '}';
+    }
+
+    @Override
     public void accept(Verifier verifier) {
         if (verifier != null) {
             warnings.addAll(verifier.warnings);
-            context.putAll(verifier.context);
+            verifier.getAllAttributes().stream().forEach(pair -> attribute(pair.a, pair.b));
         }
     }
 }

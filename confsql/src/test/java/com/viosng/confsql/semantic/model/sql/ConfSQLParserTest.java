@@ -371,8 +371,6 @@ public class ConfSQLParserTest {
                 orderByClause, limitClause);
         
         List<SQLSelectItem> selectItemList = Arrays.asList(
-                new SQLSelectItem(new SQLAsteriskSelectItem("obj"), new SQLField("obj1")),
-                new SQLSelectItem(new SQLAsteriskSelectItem(null), null),
                 new SQLSelectItem(new SQLConstant("3"), null),
                 new SQLSelectItem(new SQLField("a.a.a"), new SQLField("b"))
         );
@@ -380,7 +378,7 @@ public class ConfSQLParserTest {
         SQLQuery query = new SQLQuery(selectItemList, tableExpression, Collections.<SQLParameter>emptyList());
 
         assertEquals(query, visitor.visit(getParser(
-                        "select obj.* as obj1, *, 3, a.a.a as b " +
+                        "select 3, a.a.a as b " +
                         "from(a=3,b=4) source " +
                         "full join(a=3,b=4) source on a = b " +
                         "left join(a=3,b=4) source " +

@@ -5,7 +5,6 @@ import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,15 +88,14 @@ public class SQLQuery implements SQLExpression {
             current = QueryFactory.fictive();
         }
 
-        List<Expression> schemaAttributes = selectItemList.stream().map(SQLExpression::convert).collect(Collectors.toList());
-
-        current = new QueryBuilder()
-                .queryType(Query.QueryType.FILTER)
-                .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
-                .subQueries(current)
-                .requiredSchemaAttributes(schemaAttributes.size() == 1
-                        && schemaAttributes.get(0).type() == ArithmeticType.GROUP ? Collections.emptyList() : schemaAttributes)
-                .create();
+        if (!selectItemList.isEmpty()) {
+            current = new QueryBuilder()
+                    .queryType(Query.QueryType.FILTER)
+                    .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
+                    .subQueries(current)
+                    .requiredSchemaAttributes(selectItemList.stream().map(SQLExpression::convert).collect(Collectors.toList()))
+                    .create();
+        }
 
         if (tableExpression != null) {
             if (tableExpression.getOrderByClause() != null) {

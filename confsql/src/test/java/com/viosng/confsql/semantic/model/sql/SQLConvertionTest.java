@@ -171,7 +171,8 @@ public class SQLConvertionTest {
                 .parameters(
                         new Parameter("unNestObject", ValueExpressionFactory.attribute("source", "a")),
                         new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
-                .subQueries(primary, primary)
+                .subQueries(primary)
+                .id(primary.id())
                 .create();
         assertEquals(query, visitor.visit(getParser("source join(a=d.e) source.a").tableReference()).convert());
 
@@ -315,8 +316,6 @@ public class SQLConvertionTest {
                 "select a, 3 from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c " +
                         "having 3=4 order(\"c\"=\"d\") by a, b desc limit 10").query()).convert());
 
-        queryBuilder.subQueries(primary);
-        queryBuilder.requiredSchemaAttributes(Collections.<Expression>emptyList());
-        assertEquals(queryBuilder.create(), visitor.visit(getParser("select * from source").query()).convert());
+        assertEquals(primary, visitor.visit(getParser("select * from source").query()).convert());
     }
 }
