@@ -48,7 +48,5 @@ public interface Expression{
     }
 
     @NotNull
-    public default Verifier verify(@NotNull Verifier verifier) {
-        return new Verifier();
-    }
+    public Verifier verify(@NotNull Verifier verifier);
 }

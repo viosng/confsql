@@ -55,6 +55,7 @@ public class SQLTableReference implements SQLExpression {
                                 .queryType(Query.QueryType.UNNEST)
                                 .parameters(parameters)
                                 .subQueries(query)
+                                .id(query.id())
                                 .create();
                     }
                 }

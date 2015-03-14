@@ -39,10 +39,10 @@ public class QueryBuilderTest {
         queryBuilder = new QueryBuilder();
         queryBuilder.parameters(parameters);
         queryBuilder.id(ID);
-        Query primary = QueryFactory.primary("primary", emptyList(), emptyList());
-        subQuery1 = QueryFactory.filter("f1", primary, emptyList(), emptyList(),
+        Query primary = QueryFactory.primary("primary", emptyList());
+        subQuery1 = QueryFactory.filter("f1", primary, emptyList(),
                 schemaAttributes("primary", Arrays.asList("a", "b", "c")));
-        subQuery2 = QueryFactory.filter("f2", primary, emptyList(), emptyList(), 
+        subQuery2 = QueryFactory.filter("f2", primary, emptyList(),
                 schemaAttributes("primary", Arrays.asList("f", "d", "e")));
     }
 
@@ -61,7 +61,7 @@ public class QueryBuilderTest {
     @Test
     public void testPrimaryCreation() throws Exception {
         queryBuilder.queryType(Query.QueryType.PRIMARY);
-        assertEquals(QueryFactory.primary(ID, emptyList(), parameters), queryBuilder.create());
+        assertEquals(QueryFactory.primary(ID, parameters), queryBuilder.create());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class QueryBuilderTest {
         queryBuilder.subQueries(subQuery1);
         List<Expression> schemaAttributes = schemaAttributes("f1", Arrays.asList("a", "b"));
         queryBuilder.requiredSchemaAttributes(schemaAttributes);
-        assertEquals(QueryFactory.filter(ID, subQuery1, emptyList(), parameters, schemaAttributes), queryBuilder.create());
+        assertEquals(QueryFactory.filter(ID, subQuery1, parameters, schemaAttributes), queryBuilder.create());
     }
 
     @Test
@@ -97,19 +97,7 @@ public class QueryBuilderTest {
         queryBuilder.queryType(Query.QueryType.AGGREGATION);
         assertCreationException();
         queryBuilder.subQueries(subQuery1);
-        List<Expression> schemaAttributes = schemaAttributes("f1", Arrays.asList("a", "b"));
-        queryBuilder.requiredSchemaAttributes(schemaAttributes);
-        assertEquals(QueryFactory.aggregation(ID, subQuery1, emptyList(), parameters, schemaAttributes), queryBuilder.create());
-    }
-
-    @Test
-    public void testNestCreation() throws Exception {
-        queryBuilder.queryType(Query.QueryType.NEST);
-        assertCreationException();
-        queryBuilder.subQueries(subQuery1);
-        List<Expression> schemaAttributes = schemaAttributes("f1", Arrays.asList("a", "b"));
-        queryBuilder.requiredSchemaAttributes(schemaAttributes);
-        assertEquals(QueryFactory.nest(ID, subQuery1, parameters, schemaAttributes), queryBuilder.create());
+        assertEquals(QueryFactory.aggregation(ID, subQuery1, parameters), queryBuilder.create());
     }
 
     @Test

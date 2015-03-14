@@ -1,15 +1,15 @@
 package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.*;
+import org.antlr.v4.runtime.misc.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.viosng.confsql.semantic.model.algebra.Expression.UNDEFINED_ID;
 import static com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression.AttributeExpression;
 
 /**
@@ -36,6 +36,12 @@ public class QueryFactory {
         @NotNull
         public static FictiveQuery getInstance() {
             return Holder.INSTANCE;
+        }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            return new Verifier();
         }
 
         private static class Holder {
@@ -114,61 +120,60 @@ public class QueryFactory {
 
     private static class PrimaryQuery extends DefaultQuery implements Query.Primary {
         private PrimaryQuery(@NotNull String id,
-                             @NotNull List<Parameter> parameters,
-                             @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, Collections.emptyList(), Collections.emptyList(), argumentExpressions);
+                             @NotNull List<Parameter> parameters) {
+            super(id, parameters, Collections.emptyList(), Collections.emptyList(), Collections.<Expression>emptyList());
         }
 
         @NotNull
         @Override
         public Verifier verify(@NotNull Verifier verifier) {
-            return getArgumentExpressions().stream().map(
-                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept)
-                    .attribute(UNDEFINED_ID, id())
-                    .mergeWarnings(getParameters().stream().map(
-                            e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept));
+            return new Verifier().mergeWarnings(getParameters().stream().map(
+                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept));
         }
     }
 
     @NotNull
     public static Query.Primary primary(@NotNull String id,
-                                        @NotNull List<Expression> argumentExpressions,
                                         @NotNull List<Parameter> parameters) {
-        return new PrimaryQuery(id, parameters, argumentExpressions);
+        return new PrimaryQuery(id, parameters);
     }
-    
+
+    private static Set<Pair<String, String>> transformAttributes(String newId, Set<Pair<String, String>> attributes) {
+        return attributes.stream().map(
+                pair -> new Pair<>(newId, (pair.a.equals(UNDEFINED_ID) ? "" : pair.a + ".") + pair.b)).collect(Collectors.toSet());
+    }
+
     private static class FilterQuery extends DefaultQuery implements Query.Filter {
         private FilterQuery(@NotNull String id,
                             @NotNull List<Parameter> parameters,
                             @NotNull List<Expression> requiredSchemaAttributes,
-                            @NotNull Query subQuery,
-                            @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, requiredSchemaAttributes, Arrays.asList(subQuery), argumentExpressions);
+                            @NotNull Query subQuery) {
+            super(id, parameters, requiredSchemaAttributes, Arrays.asList(subQuery), Collections.<Expression>emptyList());
         }
 
         @NotNull
         @Override
         public Verifier verify(@NotNull Verifier verifier) {
-            Verifier argumentVerifier = getArgumentExpressions().stream().map(
-                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept);
+            Verifier subQueryVerifier = getSubQueries().get(0).verify(verifier);
 
-            // we don't need to add argument's context to output one, but we need to verify schema with argument's context
-            return getRequiredSchemaAttributes().stream().map(
-                    e -> e.verify(argumentVerifier)).collect(Verifier::new, Verifier::accept, Verifier::accept)
-                    .attribute(UNDEFINED_ID, id())
-                    .mergeWarnings(argumentVerifier)
+            // we don't need to add sub query context to output one, but we need to verify schema with sub query context
+            Verifier schemaVerifier = getRequiredSchemaAttributes().stream().map(
+                    e -> e.verify(subQueryVerifier)).collect(Verifier::new, Verifier::accept, Verifier::accept);
+            Verifier filterVerifier = new Verifier()
+                    .mergeWarnings(subQueryVerifier)
                     .mergeWarnings(getParameters().stream().map(
                             e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept));
+            transformAttributes(id(), schemaVerifier.getAllAttributes()).stream().forEach(pair -> filterVerifier.attribute(pair.a, pair.b));
+            return filterVerifier;
         }
     }
 
     @NotNull
     public static Query.Filter filter(@NotNull String id,
                                       @NotNull Query base,
-                                      @NotNull List<Expression> argumentExpressions,
                                       @NotNull List<Parameter> parameters,
                                       @NotNull List<Expression> requiredSchemaAttributes) {
-        return new FilterQuery(id, parameters, requiredSchemaAttributes, base, argumentExpressions);
+        return new FilterQuery(id, parameters, requiredSchemaAttributes, base);
     }
 
     private static class FusionQuery extends DefaultQuery implements Query.Fusion {
@@ -182,9 +187,11 @@ public class QueryFactory {
         @NotNull
         @Override
         public Verifier verify(@NotNull Verifier verifier) {
-            return getSubQueries().stream().map(
-                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept)
-                    .attribute(UNDEFINED_ID, id());
+            Verifier subQueriesVerifier = getSubQueries().stream().map(
+                    e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept);
+            Verifier fusionVerifier = new Verifier().mergeWarnings(subQueriesVerifier);
+            transformAttributes(id(), subQueriesVerifier.getAllAttributes()).forEach(pair -> fusionVerifier.attribute(pair.a, pair.b));
+            return fusionVerifier;
         }
     }
 
@@ -209,7 +216,7 @@ public class QueryFactory {
         @NotNull
         @Override
         public Verifier verify(@NotNull Verifier verifier) {
-            return null;
+            return getSubQueries().stream().map(q -> q.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept);
         }
     }
 
@@ -225,10 +232,8 @@ public class QueryFactory {
     private static class AggregationQuery extends DefaultQuery implements Query.Aggregation {
         private AggregationQuery(@NotNull String id,
                                  @NotNull List<Parameter> parameters,
-                                 @NotNull List<Expression> requiredSchemaAttributes,
-                                 @NotNull Query base,
-                                 @NotNull List<Expression> argumentExpressions) {
-            super(id, parameters, requiredSchemaAttributes, Arrays.asList(base), argumentExpressions);
+                                 @NotNull Query base) {
+            super(id, parameters, Collections.<Expression>emptyList(), Arrays.asList(base), Collections.<Expression>emptyList());
         }
 
         @NotNull
@@ -241,63 +246,24 @@ public class QueryFactory {
             }
             return  notification;
         }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            Query base = getSubQueries().get(0);
+            Verifier baseVerifier = base.verify(verifier);
+            return baseVerifier.mergeWarnings(getParameters().stream().map(
+                    p -> p.verify(baseVerifier)).collect(Verifier::new, Verifier::accept, Verifier::accept));
+        }
     }
+
+
 
     @NotNull
     public static Query.Aggregation aggregation(@NotNull String id,
                                                 @NotNull Query base,
-                                                @NotNull List<Expression> argumentExpressions,
-                                                @NotNull List<Parameter> parameters,
-                                                @NotNull List<Expression> requiredSchemaAttributes) {
-        return new AggregationQuery(id, parameters, requiredSchemaAttributes, base, argumentExpressions);
-    }
-
-    private static class NestQuery extends DefaultQuery implements Query.Nest {
-        private NestQuery(@NotNull String id,
-                          @NotNull List<Parameter> parameters,
-                          @NotNull List<Expression> requiredSchemaAttributes,
-                          @NotNull Query base) {
-            super(id, parameters, requiredSchemaAttributes, Arrays.asList(base), Collections.emptyList());
-        }
-
-        @NotNull
-        @Override
-        public Notification verify() {
-            Notification notification = super.verify();
-            if (!getRequiredSchemaAttributes().stream().anyMatch(s -> s.type() == ArithmeticType.GROUP)) {
-                notification.error("Nest operation with id = \"" + id() +
-                        "\" has no group operation result reference in schema attributes");
-            }
-            return  notification;
-        }
-    }
-
-    @NotNull
-    public static Query.Nest nest(@NotNull String id,
-                                  @NotNull Query base,
-                                  @NotNull List<Parameter> parameters,
-                                  @NotNull List<Expression> requiredSchemaAttributes) {
-        return new NestQuery(id, parameters, requiredSchemaAttributes, base);
-    }
-
-    @NotNull
-    private static List<AttributeExpression> unNestSchemaGroup(@NotNull String queryId,
-                                                               @NotNull String groupId, 
-                                                               @NotNull List<AttributeExpression> requiredSchemaAttributes) {
-        List<AttributeExpression> newSchemaAttributes = new ArrayList<>(requiredSchemaAttributes.size());
-        for (AttributeExpression schemaAttribute : requiredSchemaAttributes) {
-            if (schemaAttribute.id().equals(groupId) && schemaAttribute.type().equals(ArithmeticType.GROUP) &&
-                    schemaAttribute instanceof ValueExpression.GroupExpression) {
-                ValueExpression.GroupExpression groupExpression = (ValueExpression.GroupExpression)schemaAttribute;
-                newSchemaAttributes.addAll(groupExpression.getGroupedAttributes().stream()
-                        .filter(a -> !a.id().equals(Expression.UNDEFINED_ID))
-                        .map(a -> ValueExpressionFactory.attribute(queryId, a.id()))
-                        .collect(Collectors.toList()));
-            } else {
-                newSchemaAttributes.add(schemaAttribute);
-            }
-        }
-        return newSchemaAttributes;
+                                                @NotNull List<Parameter> parameters) {
+        return new AggregationQuery(id, parameters, base);
     }
 
     private static class UnNestQuery extends DefaultQuery implements Query.UnNest {
@@ -305,7 +271,18 @@ public class QueryFactory {
                             @NotNull List<Parameter> parameters,
                             @NotNull Query base) {
             super(id, parameters, Collections.emptyList(), Arrays.asList(base), Collections.<Expression>emptyList());
-            //this.queryObjectAttributes = unNestSchemaGroup(id, attribute.id(), base.getQueryObjectAttributes());
+        }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            Query base = getSubQueries().get(0);
+            Verifier baseVerifier = base.verify(verifier);
+            Verifier unNestVerifier = new Verifier().mergeWarnings(baseVerifier);
+            String unNestObject = getParameters().stream().filter(
+                    p -> p.id().equals("unNestObject")).findAny().get().getValue().id();
+            baseVerifier.getAttributes(unNestObject).stream().forEach(s -> unNestVerifier.attribute(base.id(), s));
+            return unNestVerifier;
         }
     }
 
@@ -336,6 +313,12 @@ public class QueryFactory {
                         "\" has no group operation result reference in schema attributes");
             }
             return  notification;
+        }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            throw new UnsupportedOperationException();
         }
     }
 

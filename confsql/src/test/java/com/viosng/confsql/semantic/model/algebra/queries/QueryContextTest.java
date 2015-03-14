@@ -35,7 +35,7 @@ public class QueryContextTest {
     );
 
     private Query.Primary createPrimary() {
-        return QueryFactory.primary("primary", Arrays.asList(ValueExpressionFactory.constant("sourcePath")), PARAMETERS);
+        return QueryFactory.primary("primary", PARAMETERS);
     }
 
     @Test
@@ -50,18 +50,14 @@ public class QueryContextTest {
 
     private Query.Filter createFilter(String objectName, List<String> attributes) {
         List<Expression> schemaAttributes = createSchemaAttributes("primary", attributes);
-        return QueryFactory.filter(objectName, createPrimary(), emptyList(), PARAMETERS, schemaAttributes);
+        return QueryFactory.filter(objectName, createPrimary(), PARAMETERS, schemaAttributes);
     }
 
     @Test
     public void testFilter() throws Exception {
         Query.Filter filter = createFilter("filter", Arrays.asList("fieldA", "fieldB", "fieldC"));
         assertTrue(filter.verify().isOk());
-        List<Expression> argumentExpressions = Arrays.asList(
-                new ExpressionImpl(ArithmeticType.LT, ValueExpressionFactory.attribute("filter", "fieldD"),
-                        ValueExpressionFactory.constant("40"))
-        );
-        filter = QueryFactory.filter("filter", filter, argumentExpressions, PARAMETERS, emptyList());
+        filter = QueryFactory.filter("filter", filter, PARAMETERS, emptyList());
         //assertFalse(filter.verify().isOk());
     }
 
@@ -121,8 +117,8 @@ public class QueryContextTest {
         List<Expression> requiredSchemaAttributes = new ArrayList<>(filter2.getRequiredSchemaAttributes());
         requiredSchemaAttributes.add(new ExpressionImpl(ArithmeticType.LT, ValueExpressionFactory.attribute("primary","fieldD"),
                 ValueExpressionFactory.constant("40")));
-        join = QueryFactory.join("join", PARAMETERS, filter1, QueryFactory.filter("filter2", filter2.getArg(), 
-                filter2.getArgumentExpressions(), filter2.getParameters(), requiredSchemaAttributes), argumentExpressions);
+        join = QueryFactory.join("join", PARAMETERS, filter1, QueryFactory.filter("filter2", filter2.getArg()
+                , filter2.getParameters(), requiredSchemaAttributes), argumentExpressions);
         argumentExpressions.add(ValueExpressionFactory.attribute("filter2", "expr"));
         assertFalse(join.verify().toString(), join.verify().isOk());
 
@@ -134,8 +130,8 @@ public class QueryContextTest {
                                 ValueExpressionFactory.constant("40")),
                         "expr"));
 
-        join = QueryFactory.join("join", PARAMETERS, filter1, QueryFactory.filter("filter2", filter2.getArg(),
-                filter2.getArgumentExpressions(), filter2.getParameters(), requiredSchemaAttributes), argumentExpressions);
+        join = QueryFactory.join("join", PARAMETERS, filter1, QueryFactory.filter("filter2", filter2.getArg()
+                , filter2.getParameters(), requiredSchemaAttributes), argumentExpressions);
         assertTrue(join.verify().toString(), join.verify().isOk());
     }
 
@@ -145,42 +141,16 @@ public class QueryContextTest {
         when(subQuery.id()).thenReturn("subQuery");
         when(subQuery.verify()).thenReturn(new Notification());
         List<String> attributes = Arrays.asList("a", "b", "c", "age");
-        List<Expression> requiredSchemaAttributes = new ArrayList<>(createSchemaAttributes("subQuery", attributes));
         when(subQuery.getQueryObjectAttributes()).thenReturn(attributes.stream()
                 .map(a -> ValueExpressionFactory.attribute("subQuery", a)).collect(Collectors.toList()));
-        Query.Aggregation aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList(), emptyList(), 
-                requiredSchemaAttributes);
+        Query.Aggregation aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList());
         assertFalse(aggregation.verify().isOk());
-        
-        requiredSchemaAttributes.add(ValueExpressionFactory.functionCall("sum", Arrays.asList(ValueExpressionFactory.constant("1")),
-                Collections.emptyList()));
-        aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList(), emptyList(), requiredSchemaAttributes);
+
+        aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList());
         assertFalse(aggregation.verify().toString(), aggregation.verify().isOk());
 
-        requiredSchemaAttributes.add(ValueExpressionFactory.functionCall("sum",
-                Arrays.asList(ValueExpressionFactory.group("subQuery", "ages",
-                        Arrays.asList(ValueExpressionFactory.attribute("subQuery", "age")))), Collections.emptyList()));
-        aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList(), emptyList(), requiredSchemaAttributes);
+        aggregation = QueryFactory.aggregation("aggregation", subQuery, emptyList());
         assertTrue(aggregation.verify().toString(), aggregation.verify().isOk());
-    }
-    
-    @Test
-    public void testNest() throws Exception {
-        Query subQuery = mock(Query.class);
-        when(subQuery.id()).thenReturn("subQuery");
-        when(subQuery.verify()).thenReturn(new Notification());
-        List<String> attributes = Arrays.asList("a", "b", "c", "age");
-        List<Expression> requiredSchemaAttributes = new ArrayList<>(createSchemaAttributes("subQuery", attributes));
-        when(subQuery.getQueryObjectAttributes()).thenReturn(attributes.stream()
-                .map(a -> ValueExpressionFactory.attribute("subQuery", a)).collect(Collectors.toList()));
-        
-        Query.Nest nest = QueryFactory.nest("nest", subQuery, emptyList(), requiredSchemaAttributes);
-        assertFalse(nest.verify().toString(), nest.verify().isOk());
-
-        requiredSchemaAttributes.add(ValueExpressionFactory.group("subQuery", "ages",
-                Arrays.asList(ValueExpressionFactory.attribute("subQuery", "age"))));
-        nest = QueryFactory.nest("nest", subQuery, emptyList(), requiredSchemaAttributes);
-        assertTrue(nest.verify().toString(), nest.verify().isOk());
     }
 
     @Test

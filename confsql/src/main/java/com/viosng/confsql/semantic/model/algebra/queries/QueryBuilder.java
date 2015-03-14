@@ -105,10 +105,10 @@ public class QueryBuilder {
                     queryId = ((ValueExpression.ConstantExpression)parameters.stream().filter(p -> p.id().equals("sourceName"))
                             .findAny().get().getValue()).getValue();
                 }
-                return QueryFactory.primary(queryId, argumentExpressions, parameters);
+                return QueryFactory.primary(queryId, parameters);
             case FILTER:
                 checkSubQueriesCount(1);
-                return QueryFactory.filter(id, subQueries.get(0), argumentExpressions, parameters, schemaAttributes);
+                return QueryFactory.filter(id, subQueries.get(0), parameters, schemaAttributes);
             case FUSION:
                 if (subQueries.isEmpty()) {
                     throw new IllegalArgumentException("Empty sub queries list");
@@ -119,10 +119,7 @@ public class QueryBuilder {
                 return QueryFactory.join(id, parameters, subQueries.get(0), subQueries.get(1), argumentExpressions);
             case AGGREGATION:
                 checkSubQueriesCount(1);
-                return QueryFactory.aggregation(id, subQueries.get(0), argumentExpressions, parameters, schemaAttributes);
-            case NEST:
-                checkSubQueriesCount(1);
-                return QueryFactory.nest(id, subQueries.get(0), parameters, schemaAttributes);
+                return QueryFactory.aggregation(id, subQueries.get(0), parameters);
             case UNNEST:
                 checkSubQueriesCount(1);
                 return QueryFactory.unNest(id, subQueries.get(0), parameters);

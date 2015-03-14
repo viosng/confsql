@@ -1,10 +1,8 @@
 package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,7 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,12 +45,11 @@ public class QueryTest {
         ValueExpression.AttributeExpression attributeExpression = mock(ValueExpression.AttributeExpression.class);
         when(attributeExpression.id()).thenReturn("attribute");
         testData = new Object[][] {
-                { QueryFactory.primary("pr", emptyList(), PARAMETERS), "pr", Query.QueryType.PRIMARY },
-                { QueryFactory.filter("ft", Q_MOCK, emptyList(), PARAMETERS, emptyList()), "ft", Query.QueryType.FILTER },
+                { QueryFactory.primary("pr", PARAMETERS), "pr", Query.QueryType.PRIMARY },
+                { QueryFactory.filter("ft", Q_MOCK, PARAMETERS, emptyList()), "ft", Query.QueryType.FILTER },
                 { QueryFactory.fusion("fs", PARAMETERS, emptyList()), "fs", Query.QueryType.FUSION },
                 { QueryFactory.join("jn", PARAMETERS, Q_MOCK, Q_MOCK, emptyList()), "jn", Query.QueryType.JOIN },
-                { QueryFactory.aggregation("ag", Q_MOCK, emptyList(), PARAMETERS, emptyList()), "ag", Query.QueryType.AGGREGATION },
-                { QueryFactory.nest("ne", Q_MOCK, PARAMETERS, emptyList()), "ne", Query.QueryType.NEST },
+                { QueryFactory.aggregation("ag", Q_MOCK, PARAMETERS), "ag", Query.QueryType.AGGREGATION },
                 { QueryFactory.groupJoin("gj", Q_MOCK, Q_MOCK, emptyList(), PARAMETERS, emptyList()), "gj", Query.QueryType.GROUP_JOIN },
         };
     }
@@ -70,7 +68,7 @@ public class QueryTest {
     }
 
     private Query.Primary createPrimary() {
-        return QueryFactory.primary("primary", Arrays.asList(ValueExpressionFactory.constant("sourcePath")), PARAMETERS);
+        return QueryFactory.primary("primary", PARAMETERS);
     }
     
     @Test
@@ -85,18 +83,14 @@ public class QueryTest {
                 ValueExpressionFactory.attribute("primary", "fieldB"),
                 ValueExpressionFactory.attribute("primary", "fieldC")
         );
-        return QueryFactory.filter("filter", createPrimary(), emptyList(), PARAMETERS, schemaAttributes);
+        return QueryFactory.filter("filter", createPrimary(), PARAMETERS, schemaAttributes);
     }
 
     @Test
     public void testFilter() throws Exception {
         Query.Filter filter = createFilter();
         assertTrue(filter.verify().isOk());
-        List<Expression> argumentExpressions = Arrays.asList(
-                new ExpressionImpl(ArithmeticType.LT, ValueExpressionFactory.attribute("filter", "fieldD"),
-                        ValueExpressionFactory.constant("40"))
-        );
-        filter = QueryFactory.filter("filter", filter, argumentExpressions, PARAMETERS, emptyList());
+        filter = QueryFactory.filter("filter", filter, PARAMETERS, emptyList());
         //assertFalse(filter.verify().isOk());
     }
 }

@@ -47,6 +47,12 @@ public class Parameter implements Expression {
     }
 
     @NotNull
+    @Override
+    public Verifier verify(@NotNull Verifier verifier) {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
     public Expression getValue() {
         return value;
     }

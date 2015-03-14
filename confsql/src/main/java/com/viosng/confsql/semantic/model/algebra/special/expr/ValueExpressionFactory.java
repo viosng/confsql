@@ -2,10 +2,7 @@ package com.viosng.confsql.semantic.model.algebra.special.expr;
 
 import com.google.common.base.Joiner;
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.Notification;
-import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.other.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -143,6 +140,12 @@ public class ValueExpressionFactory {
         private ConstantExpression(@NotNull String value) {
             super(value);
         }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            return new Verifier().attribute(UNDEFINED_ID, id());
+        }
     }
 
     private static class FunctionCallExpressionImpl extends AbstractValueExpression implements ValueExpression.FunctionCallExpression {
@@ -172,6 +175,12 @@ public class ValueExpressionFactory {
         @Override
         public List<Expression> getArguments() {
             return arguments;
+        }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            return null;
         }
 
         @NotNull
@@ -228,6 +237,17 @@ public class ValueExpressionFactory {
         private AttributeExpression(@NotNull String id, @NotNull String objectReference, @NotNull String value) {
             super(id, objectReference, value);
         }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            return new Verifier()
+                    .attribute(UNDEFINED_ID, id())
+                    .warning(verifier.hasReference(getObjectReference()) ? null : "There is no object (" +
+                            getObjectReference() + ") in a current context")
+                    .warning(verifier.hasAttribute(getObjectReference(), getValue()) ? null : "Object (" +
+                            getObjectReference() + ") hasn't attribute (" + getValue() + ")");
+        }
     }
 
     private static class GroupExpression extends AbstractAttributeExpression implements ValueExpression.GroupExpression{
@@ -258,6 +278,12 @@ public class ValueExpressionFactory {
                         Notification::accept, Notification::accept);
             }
             return notification;
+        }
+
+        @NotNull
+        @Override
+        public Verifier verify(@NotNull Verifier verifier) {
+            throw new UnsupportedOperationException();
         }
     }
     

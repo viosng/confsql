@@ -1,9 +1,12 @@
 package com.viosng.confsql.semantic.model.other;
 
+import org.antlr.v4.runtime.misc.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +23,7 @@ public class Verifier implements Consumer<Verifier> {
     private final List<String> warnings = new ArrayList<>();
 
     @NotNull
-    public Verifier warning(@NotNull String message) {
+    public Verifier warning(@Nullable String message) {
         warnings.add(message);
         return this;
     }
@@ -62,6 +65,20 @@ public class Verifier implements Consumer<Verifier> {
         context.putAll(verifier.context);
         return this;
     }
+
+    @NotNull
+    public Set<String> getAttributes(@NotNull String object) {
+        return hasReference(object) ? context.get(object) : Collections.<String>emptySet();
+    }
+
+    @NotNull
+    public Set<Pair<String, String>> getAllAttributes() {
+        return context.entrySet().stream().flatMap(
+                entry -> entry.getValue().stream().map(
+                        attribute -> new Pair<>(entry.getKey(), attribute))).collect(Collectors.toSet());
+    }
+
+
 
 
     @Override
