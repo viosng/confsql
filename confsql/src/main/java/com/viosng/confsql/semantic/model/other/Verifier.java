@@ -87,7 +87,9 @@ public class Verifier implements Consumer<Verifier> {
                         attribute -> new Pair<>(entry.getKey(), attribute))).collect(Collectors.toSet());
     }
 
-
+    public boolean isOk() {
+        return warnings.isEmpty();
+    }
 
 
     @Override
