@@ -8,6 +8,7 @@ import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.viosng.confsql.semantic.model.algebra.Expression.UNDEFINED_ID;
@@ -114,8 +115,10 @@ public class QueryFactory {
         return new PrimaryQuery(id, parameters);
     }
 
-    private static Context updateContextFromSchema(Context context, String id, List<Expression> schema, Query subQuery) {
+    private static Context updateContextFromSchema(Context context, List<String> path, List<Expression> schema, Query subQuery) {
         Set<String> ids = new HashSet<>();
+        List<String> newPath = new ArrayList<>(path);
+        newPath.add("");
         for (Expression expression : schema) {
             if (expression.id().equals(UNDEFINED_ID)) {
                 context.warning("There is an expression without id");
@@ -128,37 +131,37 @@ public class QueryFactory {
                 ids.add(expression.id());
             }
 
+            newPath.set(newPath.size() - 1, expression.id());
+
             if (expression instanceof ExpressionImpl) {
-                context.addObject(Arrays.asList(id, expression.id()));
+                context.addObject(newPath);
                 continue;
             }
             switch (expression.type()) {
                 case QUERY:
                 case CASE:
                 case CONSTANT:
-                    context.addObject(Arrays.asList(id, expression.id()));
+                    context.addObject(newPath);
                     break;
                 case ATTRIBUTE: {
                     List<String> object = ((AttributeExpression) expression).getObject();
                     if (!object.get(0).equals(subQuery.id())) {
-                        List<String> newObject = new ArrayList<>();
-                        newObject.add(subQuery.id());
-                        newObject.addAll(object);
-                        object = newObject;
+                        object = Stream.concat(Stream.of(subQuery.id()), object.stream()).collect(Collectors.toList());
                     }
+
                     if (!subQuery.getContext().hasObject(object)) {
                         context.warning("There is no attribute (" + expression.toString() + ")");
                     }
-                    context.mergeContext(subQuery.getContext(), object, expression.id());
+                    context.mergeContext(subQuery.getContext(), object, Stream.concat(path.stream(), Stream.of(expression.id())).collect(Collectors.toList()));
                     break;
                 }
                 case FUNCTION_CALL:
                     ValueExpression.FunctionCallExpression functionCallExpression =
                             (ValueExpression.FunctionCallExpression) expression;
                     if (functionCallExpression.getValue().compareToIgnoreCase("nest") == 0) {
-                        context = updateContextFromSchema(context, id, functionCallExpression.getArguments(), subQuery);
+                        context = updateContextFromSchema(context, newPath, functionCallExpression.getArguments(), subQuery);
                     } else {
-                        return new Context(id);
+                        return new Context("");
                     }
                     break;
             }
@@ -178,7 +181,7 @@ public class QueryFactory {
         @NotNull
         @Override
         protected Context createContext() {
-            return updateContextFromSchema(new Context(id()), id(), getRequiredSchemaAttributes(), getSubQueries().get(0));
+            return updateContextFromSchema(new Context(id()), Arrays.asList(id()), getRequiredSchemaAttributes(), getSubQueries().get(0));
         }
     }
 

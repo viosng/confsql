@@ -69,13 +69,15 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
                 ? ((SQLExpressionList) visit(ctx.selectList())).getExpressionList().stream()
                 .map(e -> (SQLSelectItem) e).collect(Collectors.toList())
                 : Collections.emptyList();
-        return new SQLFunctionCall("nest", expressionList, parameterList);
+        return new SQLSelectItem(new SQLFunctionCall("nest", expressionList, parameterList), ctx.asClause() != null
+                ? (SQLField) visit(ctx.asClause()) : null);
     }
 
     @Override
     public SQLExpression visitSelectExpr(ConfSQLParser.SelectExprContext ctx) {
         return new SQLSelectItem(visit(ctx.expr()), ctx.asClause() != null ? (SQLField) visit(ctx.asClause()) : null);
     }
+
 
     @Override
     public SQLExpression visitTableExpression(ConfSQLParser.TableExpressionContext ctx) {

@@ -45,19 +45,33 @@ public class Context {
     }
 
     public void addObject(List<String> hierarchy) {
-        ObjectStructureNode cur = root;
+        addObject(hierarchy, null);
+    }
+
+    private void addObject(List<String> hierarchy, ObjectStructureNode newNode) {
+        ObjectStructureNode cur = root, prev = root;
+        if (hierarchy.get(0).equals(root.name)) {
+            hierarchy = hierarchy.subList(1, hierarchy.size());
+        }
         for (String s : hierarchy) {
             ObjectStructureNode next = cur.children.get(s);
             if (next == null) {
                 next = new ObjectStructureNode(s);
                 cur.children.put(s, next);
             }
+            prev = cur;
             cur = next;
+        }
+        if (newNode != null) {
+            prev.children.put(hierarchy.get(hierarchy.size() - 1), newNode);
         }
     }
 
     public boolean hasObject(List<String> hierarchy) {
         ObjectStructureNode cur = root;
+        if (hierarchy.get(0).equals(root.name)) {
+            hierarchy = hierarchy.subList(1, hierarchy.size());
+        }
         for (String s : hierarchy) {
             ObjectStructureNode next = cur.children.get(s);
             if (next == null)
@@ -79,26 +93,24 @@ public class Context {
         return this;
     }
 
-    public void mergeContext(@NotNull Context context, @NotNull List<String> path, @NotNull String id) {
+    public void mergeContext(@NotNull Context context, @NotNull List<String> contextPath, @NotNull List<String> newPath) {
         ObjectStructureNode cur = context.root;
-        for (String s : path) {
+        if (contextPath.get(0).equals(context.root.name)) {
+            contextPath = contextPath.subList(1, contextPath.size());
+        }
+        for (String s : contextPath) {
             ObjectStructureNode next = cur.children.get(s);
             if (next == null)
                 if (cur.children.size() == 0) {
-                    if (root.children.containsKey(id)) {
-                        throw new IllegalArgumentException("Duplicate node id");
-                    }
-                    addObject(Arrays.asList(root.name, id));
+                    addObject(newPath);
                     return;
                 } else {
                     throw new IllegalArgumentException();
                 }
             cur = next;
         }
-        if (root.children.containsKey(id)) {
-            throw new IllegalArgumentException("Duplicate node id");
-        }
-        root.children.put(id, cur);
+        cur.name = newPath.get(newPath.size() - 1);
+        addObject(newPath, cur);
     }
 
     public boolean isOk() {
