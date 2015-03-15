@@ -71,15 +71,15 @@ public class SQLConvertionTest {
 
     @Test
     public void testField() throws Exception {
-        assertEquals(ValueExpressionFactory.attribute("a", "b"), visitor.visit(getParser("a.b").expr()).convert());
-        assertEquals(ValueExpressionFactory.attribute("", "b"), visitor.visit(getParser("b").expr()).convert());
-        assertEquals(ValueExpressionFactory.attribute("aa.v.v", "b"), visitor.visit(getParser("aa.v.v.b").expr()).convert());
+        assertEquals(ValueExpressionFactory.attribute(Arrays.asList("a", "b")), visitor.visit(getParser("a.b").expr()).convert());
+        assertEquals(ValueExpressionFactory.attribute(Arrays.asList("b")), visitor.visit(getParser("b").expr()).convert());
+        assertEquals(ValueExpressionFactory.attribute(Arrays.asList("aa", "v", "v", "b")), visitor.visit(getParser("aa.v.v.b").expr()).convert());
     }
 
     @Test
     public void testParameter() throws Exception {
         assertEquals(new Parameter("a", ValueExpressionFactory.constant("1")), visitor.visit(getParser("a=1").param()).convert());
-        assertEquals(new Parameter("a", ValueExpressionFactory.attribute("a", "b")), visitor.visit(getParser("a=a.b").param()).convert());
+        assertEquals(new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("a", "b"))), visitor.visit(getParser("a=a.b").param()).convert());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class SQLConvertionTest {
         assertEquals(expression, visitor.visit(getParser("3 + 4 as alias").selectItem()).convert());
 
         assertEquals(
-                ValueExpressionFactory.attribute("", "source", "alias"),
+                ValueExpressionFactory.attribute(Arrays.asList("source"), "alias"),
                 visitor.visit(getParser("source as alias").selectItem()).convert());
     }
 
@@ -151,7 +151,7 @@ public class SQLConvertionTest {
         Query filter = new QueryBuilder()
                 .queryType(Query.QueryType.FILTER)
                 .subQueries(primary)
-                .requiredSchemaAttributes(ValueExpressionFactory.attribute("", "a"))
+                .requiredSchemaAttributes(ValueExpressionFactory.attribute(Arrays.asList("a")))
                 .id("alias")
                 .create();
         assertEquals(filter, visitor.visit(getParser("(select a from source as alias) as alias").tablePrimary()).convert());
@@ -169,8 +169,8 @@ public class SQLConvertionTest {
         Query query = new QueryBuilder()
                 .queryType(Query.QueryType.UNNEST)
                 .parameters(
-                        new Parameter("unNestObject", ValueExpressionFactory.attribute("source", "a")),
-                        new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
+                        new Parameter("unNestObject", ValueExpressionFactory.attribute(Arrays.asList("source", "a"))),
+                        new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(primary)
                 .id(primary.id())
                 .create();
@@ -181,8 +181,8 @@ public class SQLConvertionTest {
                 .parameters(
                         new Parameter("joinType", ValueExpressionFactory.constant("right")),
                         new Parameter("onCondition", new ExpressionImpl(ArithmeticType.LT,
-                                ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
-                        new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
+                                ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
+                        new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(query, primary)
                 .id("source")
                 .create();
@@ -212,8 +212,8 @@ public class SQLConvertionTest {
                 .parameters(
                         new Parameter("joinType", ValueExpressionFactory.constant("fuzzy")),
                         new Parameter("onCondition", new ExpressionImpl(ArithmeticType.EQUAL,
-                                ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
-                        new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
+                                ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
+                        new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(primary, primary)
                 .id("source")
                 .create();
@@ -223,8 +223,8 @@ public class SQLConvertionTest {
                 .parameters(
                         new Parameter("joinType", ValueExpressionFactory.constant("right")),
                         new Parameter("onCondition", new ExpressionImpl(ArithmeticType.LT,
-                                ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.attribute("", "b"))),
-                        new Parameter("a", ValueExpressionFactory.attribute("d", "e")))
+                                ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
+                        new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(query, primary)
                 .create();
 
@@ -248,7 +248,7 @@ public class SQLConvertionTest {
         QueryBuilder queryBuilder = new QueryBuilder()
                 .queryType(Query.QueryType.FILTER)
                 .subQueries(QueryFactory.fictive())
-                .requiredSchemaAttributes(ValueExpressionFactory.attribute("", "a"), ValueExpressionFactory.constant("3"));
+                .requiredSchemaAttributes(ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.constant("3"));
         assertEquals(queryBuilder.create(), visitor.visit(getParser("select a, 3").query()).convert());
 
         Query primary = new QueryBuilder()
@@ -272,9 +272,9 @@ public class SQLConvertionTest {
                 .queryType(Query.QueryType.AGGREGATION)
                 .subQueries(where)
                 .parameters(
-                        new Parameter("groupByArg0", ValueExpressionFactory.attribute("", "a")),
-                        new Parameter("groupByArg1", ValueExpressionFactory.attribute("", "b")),
-                        new Parameter("groupByArg2", ValueExpressionFactory.attribute("", "c")),
+                        new Parameter("groupByArg0", ValueExpressionFactory.attribute(Arrays.asList("a"))),
+                        new Parameter("groupByArg1", ValueExpressionFactory.attribute(Arrays.asList("b"))),
+                        new Parameter("groupByArg2", ValueExpressionFactory.attribute(Arrays.asList("c"))),
                         new Parameter("algorithm", ValueExpressionFactory.constant("\"NearestNeighbours\"")))
                 .create();
         queryBuilder.subQueries(groupBy);
@@ -297,8 +297,8 @@ public class SQLConvertionTest {
                 .queryType(Query.QueryType.FILTER)
                 .subQueries(select)
                 .parameters(
-                        new Parameter("orderByArg0", new OrderByArgExpression(ValueExpressionFactory.attribute("", "a"), "asc")),
-                        new Parameter("orderByArg1", new OrderByArgExpression(ValueExpressionFactory.attribute("", "b"), "desc")),
+                        new Parameter("orderByArg0", new OrderByArgExpression(ValueExpressionFactory.attribute(Arrays.asList("a")), "asc")),
+                        new Parameter("orderByArg1", new OrderByArgExpression(ValueExpressionFactory.attribute(Arrays.asList("b")), "desc")),
                         new Parameter("c", ValueExpressionFactory.constant("\"d\"")),
                         new Parameter("type", ValueExpressionFactory.constant("order")))
                 .create();

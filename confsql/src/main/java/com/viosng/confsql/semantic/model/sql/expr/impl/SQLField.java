@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.sql.expr.impl;
 
+import com.google.common.base.Splitter;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
@@ -25,11 +26,9 @@ public class SQLField implements SQLExpression {
     }
 
     @Override
+    @NotNull
     public Expression convert() {
-        int index = name.lastIndexOf('.');
-        return index == -1 
-                ? ValueExpressionFactory.attribute("", name) 
-                : ValueExpressionFactory.attribute(name.substring(0, index), name.substring(index + 1));
+        return ValueExpressionFactory.attribute(Splitter.on('.').splitToList(name));
     }
 
     @Override

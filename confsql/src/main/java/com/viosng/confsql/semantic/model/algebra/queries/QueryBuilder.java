@@ -116,17 +116,13 @@ public class QueryBuilder {
                 return QueryFactory.fusion(id, parameters, subQueries);
             case JOIN:
                 checkSubQueriesCount(2);
-                return QueryFactory.join(id, parameters, subQueries.get(0), subQueries.get(1), argumentExpressions);
+                return QueryFactory.join(id, parameters, subQueries.get(0), subQueries.get(1));
             case AGGREGATION:
                 checkSubQueriesCount(1);
                 return QueryFactory.aggregation(id, subQueries.get(0), parameters);
             case UNNEST:
                 checkSubQueriesCount(1);
                 return QueryFactory.unNest(id, subQueries.get(0), parameters);
-            case GROUP_JOIN:
-                checkSubQueriesCount(2);
-                return QueryFactory.groupJoin(id, subQueries.get(0), subQueries.get(1), argumentExpressions, parameters, 
-                        schemaAttributes);
             default: throw new UnsupportedOperationException("Unknown query type");
         }
     }

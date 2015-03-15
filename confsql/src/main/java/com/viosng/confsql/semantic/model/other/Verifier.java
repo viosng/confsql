@@ -1,12 +1,12 @@
 package com.viosng.confsql.semantic.model.other;
 
-import org.antlr.v4.runtime.misc.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,15 +14,54 @@ import java.util.stream.Collectors;
  * Date: 13.03.2015
  * Time: 22:10
  */
-public class Verifier implements Consumer<Verifier> {
+public class Verifier{
 
-    @NotNull
-    private final Map<String, Set<String>> context = new HashMap<>();
+    private static class ObjectStructureNode {
+
+        @NotNull
+        private String name;
+
+        @NotNull
+        private final Map<String, ObjectStructureNode> children = new HashMap<>();
+
+        public ObjectStructureNode(@NotNull String name) {
+            this.name = name;
+        }
+    }
 
     @NotNull
     private final List<String> warnings = new ArrayList<>();
 
-    private boolean hasAll = false;
+    @NotNull
+    private ObjectStructureNode root;
+
+    public Verifier(@NotNull String root) {
+        this.root = new ObjectStructureNode(root);
+    }
+
+    public void addObject(List<String> hierarchy) {
+        ObjectStructureNode cur = root;
+        for (String s : hierarchy) {
+            ObjectStructureNode next = cur.children.get(s);
+            if (next == null) {
+                next = new ObjectStructureNode(s);
+                cur.children.put(s, next);
+            }
+            cur = next;
+        }
+    }
+
+    public boolean hasObject(List<String> hierarchy) {
+        ObjectStructureNode cur = root;
+        for (String s : hierarchy) {
+            ObjectStructureNode next = cur.children.get(s);
+            if (next == null) {
+                return false;
+            }
+            cur = next;
+        }
+        return true;
+    }
 
     @NotNull
     public Verifier warning(@Nullable String message) {
@@ -31,60 +70,9 @@ public class Verifier implements Consumer<Verifier> {
     }
 
     @NotNull
-    public Verifier attribute(@NotNull String object, @NotNull String attribute) {
-        Set<String> attributes = context.get(object);
-        if (attributes == null) {
-            attributes = new HashSet<>();
-            context.put(object, attributes);
-        }
-        attributes.add(attribute);
-        return this;
-    }
-
-    @NotNull
-    public Verifier clearContext() {
-        context.clear();
-        return this;
-    }
-
-    public boolean hasReference(@NotNull String objectReference){
-        return hasAll || context.containsKey(objectReference);
-    }
-
-    public boolean hasAttribute(@NotNull String objectReference, @NotNull String attribute){
-        Set<String> attributes;
-        return hasAll || ((attributes = context.get(objectReference)) != null && attributes.contains(attribute));
-    }
-
-    @NotNull
-    public Verifier setHasAll(boolean value) {
-        hasAll = value;
-        return this;
-    }
-
-    @NotNull
     public Verifier mergeWarnings(@NotNull Verifier verifier) {
         warnings.addAll(verifier.warnings);
         return this;
-    }
-
-    @NotNull
-    public Verifier mergeContext(@NotNull Verifier verifier) {
-        context.putAll(verifier.context);
-        return this;
-    }
-
-    @NotNull
-    public Set<String> getAttributes(@NotNull String object) {
-        Set<String> attributes = context.get(object);
-        return attributes != null ? attributes : Collections.<String>emptySet();
-    }
-
-    @NotNull
-    public Set<Pair<String, String>> getAllAttributes() {
-        return context.entrySet().stream().flatMap(
-                entry -> entry.getValue().stream().map(
-                        attribute -> new Pair<>(entry.getKey(), attribute))).collect(Collectors.toSet());
     }
 
     public boolean isOk() {
@@ -95,16 +83,8 @@ public class Verifier implements Consumer<Verifier> {
     @Override
     public String toString() {
         return "Verifier{" +
-                "context=" + context +
+                "objectStructure=" + root +
                 ", warnings=" + warnings +
                 '}';
-    }
-
-    @Override
-    public void accept(Verifier verifier) {
-        if (verifier != null) {
-            warnings.addAll(verifier.warnings);
-            verifier.getAllAttributes().stream().forEach(pair -> attribute(pair.a, pair.b));
-        }
     }
 }

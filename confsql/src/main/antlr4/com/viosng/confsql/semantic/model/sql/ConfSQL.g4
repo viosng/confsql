@@ -14,7 +14,9 @@ query : ('FUSION'|'fusion') paranthesizedParamList? query ( ('WITH'|'with') quer
       ;
 
 selectList : selectItem (COMMA selectItem)* ;
-selectItem : | expr asClause? ;
+selectItem : ('NEST' | 'nest') LEFT_PAREN selectList (SEMI_COLON paramList)? RIGHT_PAREN            #nest
+           | expr asClause?                                                                         #selectExpr
+           ;
 
 asterisk : (StringLiteral DOT)? MULTIPLY;
 

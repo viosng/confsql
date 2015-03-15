@@ -2,9 +2,6 @@ package com.viosng.confsql.semantic.model.algebra.special.expr;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.Notification;
-import com.viosng.confsql.semantic.model.other.Verifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -71,17 +68,5 @@ public class OrderByArgExpression implements Expression {
     public Expression findExpressionByType(ArithmeticType arithmeticType) {
         if (arithmeticType == type()) return this;
         else return argument.findExpressionByType(arithmeticType);
-    }
-
-    @NotNull
-    @Override
-    public Notification verify(@NotNull Context context) {
-        return argument.verify(context);
-    }
-
-    @NotNull
-    @Override
-    public Verifier verify(@NotNull Verifier verifier) {
-        return new Verifier().mergeWarnings(argument.verify(verifier));
     }
 }

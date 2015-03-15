@@ -41,18 +41,6 @@ public class Parameter implements Expression {
     }
 
     @NotNull
-    @Override
-    public Notification verify(@NotNull Context context) {
-        return new Notification();
-    }
-
-    @NotNull
-    @Override
-    public Verifier verify(@NotNull Verifier verifier) {
-        return getValue().verify(verifier);
-    }
-
-    @NotNull
     public Expression getValue() {
         return value;
     }

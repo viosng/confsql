@@ -10,6 +10,7 @@ import com.viosng.confsql.semantic.model.sql.expr.impl.SQLField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +82,7 @@ public class SQLTablePrimary implements SQLExpression {
                 exp = new QueryBuilder()
                         .queryType(Query.QueryType.FILTER)
                         .requiredSchemaAttributes(columnList.stream().map(c ->
-                                ValueExpressionFactory.attribute(table.getName(), c)).collect(Collectors.toList()))
+                                ValueExpressionFactory.attribute(Arrays.asList(table.getName(), c))).collect(Collectors.toList()))
                         .subQueries((Query)exp)
                         .id(exp.id())
                         .create();

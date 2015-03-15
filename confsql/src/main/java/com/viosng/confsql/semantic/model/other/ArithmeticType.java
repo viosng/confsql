@@ -36,7 +36,6 @@ public enum ArithmeticType {
     FUNCTION_CALL("function"),
     CONSTANT("constant"),
     ATTRIBUTE("attribute"),
-    GROUP("group"),
     CASE("case", "CASE"),
     QUERY("query"),
     ORDER("order"),

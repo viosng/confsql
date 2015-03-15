@@ -1,15 +1,12 @@
 package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.other.*;
+import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,33 +22,20 @@ public abstract class DefaultQuery implements Query{
     private final List<Parameter> parameters;
     
     @NotNull
-    private final List<Expression> requiredSchemaAttributes, argumentExpressions;
-    
-    @NotNull
-    protected List<ValueExpression.AttributeExpression> queryObjectAttributes;
+    private final List<Expression> requiredSchemaAttributes;
     
     @NotNull
     private final List<Query> subQueries;
     
     private Context context;
 
-    private Notification notification;
-
     public DefaultQuery(@NotNull String id,
                         @NotNull List<Parameter> parameters,
                         @NotNull List<Expression> requiredSchemaAttributes,
-                        @NotNull List<Query> subQueries, 
-                        @NotNull List<Expression> argumentExpressions) {
+                        @NotNull List<Query> subQueries) {
         this.id = id;
         this.parameters = parameters;
         this.requiredSchemaAttributes = requiredSchemaAttributes;
-        this.queryObjectAttributes = requiredSchemaAttributes.stream()
-                .filter(a -> !a.id().equals(Expression.UNDEFINED_ID))
-                .map(a -> a.type() == ArithmeticType.GROUP
-                        ? ValueExpressionFactory.group(id, a.id(), ((ValueExpression.GroupExpression) a).getGroupedAttributes())
-                        : ValueExpressionFactory.attribute(id, a.id()))
-                .collect(Collectors.toList());
-        this.argumentExpressions = argumentExpressions;
         this.subQueries = subQueries;
     }
 
@@ -80,22 +64,9 @@ public abstract class DefaultQuery implements Query{
 
     @NotNull
     @Override
-    public List<ValueExpression.AttributeExpression> getQueryObjectAttributes() {
-        return queryObjectAttributes;
-    }
-
-    @NotNull
-    @Override
     public List<Query> getSubQueries() {
         return subQueries;
     }
-
-    @NotNull
-    @Override
-    public List<Expression> getArgumentExpressions() {
-        return argumentExpressions;
-    }
-
 
     @NotNull
     @Override
@@ -107,25 +78,7 @@ public abstract class DefaultQuery implements Query{
     }
 
     @NotNull
-    protected DefaultContext createContext() {
-        return new DefaultContext(subQueries);
-    }
-    
-    @NotNull
-    @Override
-    public Notification verify() {
-        if (notification == null) {
-            notification = Stream.of(
-                    subQueries.stream().map(Query::verify)
-                            .collect(Notification::new, Notification::accept, Notification::accept),
-                    requiredSchemaAttributes.stream().map(e -> e.verify(getContext()))
-                            .collect(Notification::new, Notification::accept, Notification::accept),
-                    argumentExpressions.stream().map(e -> e.verify(getContext()))
-                            .collect(Notification::new, Notification::accept, Notification::accept))
-                    .collect(Notification::new, Notification::accept, Notification::accept);
-        }
-        return notification;
-    }
+    protected abstract Context createContext();
 
     @Override
     public String toString() {
@@ -133,11 +86,8 @@ public abstract class DefaultQuery implements Query{
                 "id='" + id + '\'' +
                 ",\n parameters=" + parameters +
                 ",\n requiredSchemaAttributes=" + requiredSchemaAttributes +
-                ",\n queryObjectAttributes=" + queryObjectAttributes +
-                ",\n argumentExpressions=" + argumentExpressions +
                 ",\n subQueries=" + subQueries +
                 ",\n context=" + context +
-                ",\n notification=" + notification +
                 '}';
     }
 
@@ -149,7 +99,6 @@ public abstract class DefaultQuery implements Query{
         DefaultQuery that = (DefaultQuery) o;
 
         return this.queryType() == that.queryType()
-                && argumentExpressions.equals(that.argumentExpressions) 
                 && id.equals(that.id) 
                 && parameters.equals(that.parameters)
                 && requiredSchemaAttributes.equals(that.requiredSchemaAttributes) 
@@ -161,10 +110,8 @@ public abstract class DefaultQuery implements Query{
         int result = id.hashCode();
         result = 31 * result + parameters.hashCode();
         result = 31 * result + requiredSchemaAttributes.hashCode();
-        result = 31 * result + argumentExpressions.hashCode();
         result = 31 * result + subQueries.hashCode();
         result = 31 * result + (context != null ? context.hashCode() : 0);
-        result = 31 * result + (notification != null ? notification.hashCode() : 0);
         return result;
     }
 }

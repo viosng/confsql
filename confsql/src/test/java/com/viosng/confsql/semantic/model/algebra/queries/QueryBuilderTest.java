@@ -29,7 +29,7 @@ public class QueryBuilderTest {
             new Parameter("c", ValueExpressionFactory.constant("d")));
     
     private static List<Expression> schemaAttributes(String object, List<String> attributes) {
-        return attributes.stream().map(a -> ValueExpressionFactory.attribute(object, a))
+        return attributes.stream().map(a -> ValueExpressionFactory.attribute(Arrays.asList(object, a)))
                 .collect(Collectors.toList());
         
     }
@@ -89,7 +89,7 @@ public class QueryBuilderTest {
         queryBuilder.subQueries(subQuery1);
         assertCreationException();
         queryBuilder.subQueries(subQuery1, subQuery2);
-        assertEquals(QueryFactory.join(ID, parameters, subQuery1, subQuery2, emptyList()), queryBuilder.create());
+        assertEquals(QueryFactory.join(ID, parameters, subQuery1, subQuery2), queryBuilder.create());
     }
 
     @Test
@@ -98,17 +98,5 @@ public class QueryBuilderTest {
         assertCreationException();
         queryBuilder.subQueries(subQuery1);
         assertEquals(QueryFactory.aggregation(ID, subQuery1, parameters), queryBuilder.create());
-    }
-
-    @Test
-    public void testGroupJoinCreation() throws Exception {
-        queryBuilder.queryType(Query.QueryType.GROUP_JOIN);
-        assertCreationException();
-        queryBuilder.subQueries(subQuery1);
-        assertCreationException();
-        queryBuilder.subQueries(subQuery1, subQuery2);
-        List<Expression> schemaAttributes = schemaAttributes("f1", Arrays.asList("a", "b"));
-        queryBuilder.requiredSchemaAttributes(schemaAttributes);
-        assertEquals(QueryFactory.groupJoin(ID, subQuery1, subQuery2, emptyList(), parameters, schemaAttributes), queryBuilder.create());
     }
 }

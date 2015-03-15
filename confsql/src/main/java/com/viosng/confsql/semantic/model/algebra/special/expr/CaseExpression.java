@@ -63,22 +63,8 @@ public class CaseExpression implements Expression {
 
     @NotNull
     @Override
-    public Notification verify(@NotNull Context context) {
-        return Stream.concat(Stream.of(argument), parameters.stream()).filter(e -> e != null).map(
-                e -> e.verify(context)).collect(Notification::new, Notification::accept, Notification::accept);
-    }
-
-    @NotNull
-    @Override
     public List<Expression> getArguments() {
         return argument != null ? Lists.newArrayList(argument) : Collections.<Expression>emptyList();
-    }
-
-    @NotNull
-    @Override
-    public Verifier verify(@NotNull Verifier verifier) {
-        return Stream.concat(Stream.of(argument), parameters.stream()).filter(e -> e != null).map(
-                e -> e.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept).attribute(UNDEFINED_ID, id);
     }
 
     @Override

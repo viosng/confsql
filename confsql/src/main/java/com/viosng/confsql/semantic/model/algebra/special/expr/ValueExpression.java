@@ -43,22 +43,11 @@ public interface ValueExpression extends Expression {
     public interface AttributeExpression extends ValueExpression{
         
         @NotNull
-        public String getObjectReference();
+        public List<String> getObject();
 
         @NotNull
         @Override
         public default ArithmeticType type() { return ArithmeticType.ATTRIBUTE; }
-
-    }
-    
-    public interface GroupExpression extends AttributeExpression {
-        
-        @NotNull
-        @Override
-        public default ArithmeticType type() { return ArithmeticType.GROUP; }
-
-        @NotNull
-        public List<Expression> getGroupedAttributes();
 
     }
 }

@@ -1,10 +1,8 @@
 package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,22 +28,10 @@ public interface Query extends Expression {
     }
 
     @NotNull
-    @Override
-    default Notification verify(@NotNull Context context){
-        return new Notification();
-    }
-
-    @NotNull
     public QueryType queryType();
     
     @NotNull
     public List<Parameter> getParameters();
-
-    /**
-     * @return the list of query result attributes
-     */
-    @NotNull
-    public List<ValueExpression.AttributeExpression> getQueryObjectAttributes();
 
     @NotNull
     public List<Expression> getRequiredSchemaAttributes();
@@ -53,14 +39,9 @@ public interface Query extends Expression {
     @NotNull
     public List<Query> getSubQueries();
 
-    @NotNull
-    public List<Expression> getArgumentExpressions();
 
     @NotNull
     public Context getContext();
-    
-    @NotNull
-    public Notification verify();
     
     static enum QueryType {
         FICTIVE,

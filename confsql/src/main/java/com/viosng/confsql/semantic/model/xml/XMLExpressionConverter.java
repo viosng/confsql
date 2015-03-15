@@ -211,8 +211,8 @@ public class XMLExpressionConverter implements ExpressionConverter<XMLExpression
                 xmlExpression.value = ((ValueExpression.ConstantExpression)exp).getValue();
                 break;
             case ATTRIBUTE:
-                xmlExpression.objectReference = ((ValueExpression.AttributeExpression)exp).getObjectReference();
-                xmlExpression.value = ((ValueExpression.AttributeExpression)exp).getValue();
+                //xmlExpression.objectReference = ((ValueExpression.AttributeExpression)exp).getObjectReference();
+                xmlExpression.value = exp.toString();
                 break;
             case FUNCTION_CALL:
                 xmlExpression.value = ((ValueExpression.FunctionCallExpression)exp).getValue();

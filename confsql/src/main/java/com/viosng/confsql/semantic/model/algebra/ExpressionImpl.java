@@ -1,9 +1,6 @@
 package com.viosng.confsql.semantic.model.algebra;
 
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.Notification;
-import com.viosng.confsql.semantic.model.other.Verifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,21 +57,8 @@ public class ExpressionImpl implements Expression {
 
     @NotNull
     @Override
-    public Notification verify(@NotNull Context context) {
-        return new Notification();
-    }
-
-    @NotNull
-    @Override
     public List<Expression> getArguments() {
         return arguments;
-    }
-
-    @NotNull
-    @Override
-    public Verifier verify(@NotNull Verifier verifier) {
-        return arguments.stream().map(a -> a.verify(verifier)).collect(Verifier::new, Verifier::accept, Verifier::accept)
-                .attribute(UNDEFINED_ID, id);
     }
 
     @NotNull
