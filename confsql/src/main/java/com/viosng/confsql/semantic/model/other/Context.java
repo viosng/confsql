@@ -128,6 +128,23 @@ public class Context {
         addObject(newPath, cur);
     }
 
+    public void mergeContextsByLevel(Iterable<Context> contexts) {
+        for (Context context : contexts) {
+            mergeNodes(root, context.root);
+        }
+    }
+
+    private void mergeNodes(ObjectStructureNode mergeTo, ObjectStructureNode mergeFrom) {
+        for (Map.Entry<String, ObjectStructureNode> entry : mergeFrom.children.entrySet()) {
+            ObjectStructureNode node = mergeTo.children.get(entry.getKey());
+            if (node != null) {
+                mergeNodes(node, entry.getValue());
+            } else {
+                mergeTo.children.put(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
     public boolean isOk() {
         return warnings.isEmpty();
     }

@@ -90,4 +90,19 @@ public class QueryContextCreationTest {
         filter = (Query) visitor.visit(getParser("select a, b, 3+2 from t").query()).convert();
         assertFalse(filter.getContext().toString(), filter.getContext().isOk());
     }
+
+    @Test
+    public void testFusion() throws Exception {
+        Query fusion = (Query) visitor.visit(getParser("fusion (select a, b, c, nest(e, r, t) n from t) with (select c, d, e from t) end").query()).convert();
+        Context context = new Context("");
+        context.addObject(Lists.newArrayList("", "a"));
+        context.addObject(Lists.newArrayList("", "b"));
+        context.addObject(Lists.newArrayList("", "c"));
+        context.addObject(Lists.newArrayList("", "d"));
+        context.addObject(Lists.newArrayList("", "e"));
+        context.addObject(Lists.newArrayList("", "n", "e"));
+        context.addObject(Lists.newArrayList("", "n", "r"));
+        context.addObject(Lists.newArrayList("", "n", "t"));
+        assertEquals(context, fusion.getContext());
+    }
 }
