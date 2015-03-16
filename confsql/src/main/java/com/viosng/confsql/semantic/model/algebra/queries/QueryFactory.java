@@ -7,7 +7,6 @@ import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -223,24 +222,22 @@ public class QueryFactory {
 
         public JoinQuery(@NotNull String id,
                          @NotNull List<Parameter> parameters,
-                         @NotNull Query leftBase,
-                         @NotNull Query rightBase) {
-            super(id, parameters, Collections.<Expression>emptyList(), Arrays.asList(leftBase, rightBase));
+                         @NotNull List<Query> subQueries) {
+            super(id, parameters, Collections.<Expression>emptyList(), subQueries);
         }
 
         @NotNull
         @Override
         protected Context createContext() {
-            return null;
+            return Context.joinContexts(getSubQueries().stream().map(Query::getContext).collect(Collectors.toList()));
         }
     }
 
     @NotNull
     public static Query.Join join(@NotNull String id,
                                   @NotNull List<Parameter> parameters,
-                                  @NotNull Query leftBase,
-                                  @NotNull Query rightBase) {
-        return new JoinQuery(id, parameters, leftBase, rightBase);
+                                  @NotNull List<Query> subQueries) {
+        return new JoinQuery(id, parameters, subQueries);
     }
 
     private static class AggregationQuery extends DefaultQuery implements Query.Aggregation {
@@ -256,8 +253,6 @@ public class QueryFactory {
             return null;
         }
     }
-
-
 
     @NotNull
     public static Query.Aggregation aggregation(@NotNull String id,

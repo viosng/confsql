@@ -32,7 +32,7 @@ public class QueryContextCreationTest {
         Context context = new Context("t");
         assertEquals(context, filter.getContext());
 
-        filter = (Query) visitor.visit(getParser("select a, b, c, nest(d,e,f) n from t").query()).convert();
+        filter = (Query) visitor.visit(getParser("select t.a, b, t.c, nest(d,e,f) n from t").query()).convert();
         context = new Context(Expression.UNDEFINED_ID);
         context.addObject(Lists.newArrayList("", "a"));
         context.addObject(Lists.newArrayList("", "b"));
@@ -78,7 +78,7 @@ public class QueryContextCreationTest {
         context.addObject(Lists.newArrayList("", "query"));
         assertEquals(context, filter.getContext());
 
-        filter = (Query) visitor.visit(getParser("select a, b from (select c, d from t) as t").query()).convert();
+        filter = (Query) visitor.visit(getParser("select t.a, b from (select c, d from t) as t").query()).convert();
         assertFalse(filter.getContext().isOk());
 
         filter = (Query) visitor.visit(getParser("select a, b from (select c, d, f() from t) as t").query()).convert();
@@ -93,7 +93,8 @@ public class QueryContextCreationTest {
 
     @Test
     public void testFusion() throws Exception {
-        Query fusion = (Query) visitor.visit(getParser("fusion (select a, b, c, nest(e, r, t) n from t) with (select c, d, e from t) end").query()).convert();
+        Query fusion = (Query) visitor.visit(getParser(
+                "fusion (select a, b, c, nest(e, r, t) n from t) with (select c, d, e from t) end").query()).convert();
         Context context = new Context("");
         context.addObject(Lists.newArrayList("", "a"));
         context.addObject(Lists.newArrayList("", "b"));
@@ -104,5 +105,38 @@ public class QueryContextCreationTest {
         context.addObject(Lists.newArrayList("", "n", "r"));
         context.addObject(Lists.newArrayList("", "n", "t"));
         assertEquals(context, fusion.getContext());
+    }
+
+    @Test
+    public void testJoin() throws Exception {
+        Query join = (Query) visitor.visit(getParser(
+                "select * from t, d, f").query()).convert();
+        Context context = new Context("");
+        context.addObject(Lists.newArrayList("", "f"));
+        context.addObject(Lists.newArrayList("", "d"));
+        context.addObject(Lists.newArrayList("", "t"));
+        assertEquals(context, join.getContext());
+
+        join = (Query) visitor.visit(getParser(
+                "select * from f, d, f").query()).convert();
+        context = new Context("");
+        context.addObject(Lists.newArrayList("", "f"));
+        context.addObject(Lists.newArrayList("", "d"));
+        assertFalse(join.getContext().isOk());
+
+        join = (Query) visitor.visit(getParser("select * from (fusion (select a, b, c, nest(e, r, t) n from t) with " +
+                "(select c, d, e from t) end) f, d join t").query()).convert();
+        context = new Context("");
+        context.addObject(Lists.newArrayList("", "d"));
+        context.addObject(Lists.newArrayList("", "t"));
+        context.addObject(Lists.newArrayList("", "f", "a"));
+        context.addObject(Lists.newArrayList("", "f", "b"));
+        context.addObject(Lists.newArrayList("", "f", "c"));
+        context.addObject(Lists.newArrayList("", "f", "d"));
+        context.addObject(Lists.newArrayList("", "f", "e"));
+        context.addObject(Lists.newArrayList("", "f", "n", "e"));
+        context.addObject(Lists.newArrayList("", "f", "n", "r"));
+        context.addObject(Lists.newArrayList("", "f", "n", "t"));
+        assertEquals(context, join.getContext());
     }
 }

@@ -1,1 +1,1 @@
-select a from b join b.a
+select * from t, d, f

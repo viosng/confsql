@@ -89,7 +89,7 @@ public class QueryBuilderTest {
         queryBuilder.subQueries(subQuery1);
         assertCreationException();
         queryBuilder.subQueries(subQuery1, subQuery2);
-        assertEquals(QueryFactory.join(ID, parameters, subQuery1, subQuery2), queryBuilder.create());
+        assertEquals(QueryFactory.join(ID, parameters, Arrays.asList(subQuery1, subQuery2)), queryBuilder.create());
     }
 
     @Test

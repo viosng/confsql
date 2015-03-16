@@ -116,7 +116,7 @@ public class QueryBuilder {
                 return QueryFactory.fusion(id, parameters, subQueries);
             case JOIN:
                 checkSubQueriesCount(2);
-                return QueryFactory.join(id, parameters, subQueries.get(0), subQueries.get(1));
+                return QueryFactory.join(id, parameters, subQueries);
             case AGGREGATION:
                 checkSubQueriesCount(1);
                 return QueryFactory.aggregation(id, subQueries.get(0), parameters);

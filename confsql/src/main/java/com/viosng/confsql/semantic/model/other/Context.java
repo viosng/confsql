@@ -1,6 +1,7 @@
 package com.viosng.confsql.semantic.model.other;
 
 import com.google.common.base.Joiner;
+import com.viosng.confsql.semantic.model.algebra.Expression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -132,6 +133,25 @@ public class Context {
         for (Context context : contexts) {
             mergeNodes(root, context.root);
         }
+    }
+
+    @NotNull
+    public static Context joinContexts(Iterable<Context> contexts) {
+        Context newContext = new Context("");
+        int count = 0;
+        for (Context context : contexts) {
+            if (context.root.name.equals(Expression.UNDEFINED_ID)) {
+                count += context.root.children.size();
+                newContext.root.children.putAll(context.root.children);
+            } else {
+                count++;
+                newContext.root.children.put(context.root.name, context.root);
+            }
+        }
+        if (count != newContext.root.children.size()) {
+            newContext.warning("There are duplicate ids in join clause");
+        }
+        return newContext;
     }
 
     private void mergeNodes(ObjectStructureNode mergeTo, ObjectStructureNode mergeFrom) {
