@@ -32,23 +32,26 @@ public class QueryContextCreationTest {
         Context context = new Context("t");
         assertEquals(context, filter.getContext());
 
-        filter = (Query) visitor.visit(getParser("select t.a, b, t.c, nest(d,e,f) n from t").query()).convert();
+        filter = (Query) visitor.visit(getParser("select t.a, b, t.c, nest(d,e,f, score) n, score from t").query()).convert();
         context = new Context(Expression.UNDEFINED_ID);
         context.addObject(Lists.newArrayList("", "a"));
         context.addObject(Lists.newArrayList("", "b"));
         context.addObject(Lists.newArrayList("", "c"));
+        context.addObject(Lists.newArrayList("", "score"));
         context.addObject(Lists.newArrayList("", "n", "d"));
         context.addObject(Lists.newArrayList("", "n", "e"));
         context.addObject(Lists.newArrayList("", "n", "f"));
+        context.addObject(Lists.newArrayList("", "n", "score"));
         assertEquals(context, filter.getContext());
 
         filter = (Query) visitor.visit(getParser(
-                "select a.m, nest(n.d,b as e,c as w) as q from (select a, b, c, nest(d,e,f) n from t) as t1").query()).convert();
+                "select a.m, nest(n.d,b as e,c as w, score) as q from (select a, b, c, nest(d,e,f, score) n from t) as t1").query()).convert();
         context = new Context(Expression.UNDEFINED_ID);
         context.addObject(Lists.newArrayList("", "m"));
         context.addObject(Lists.newArrayList("", "q", "d"));
         context.addObject(Lists.newArrayList("", "q", "e"));
         context.addObject(Lists.newArrayList("", "q", "w"));
+        context.addObject(Lists.newArrayList("", "q", "score"));
         assertEquals(context, filter.getContext());
 
         filter = (Query) visitor.visit(getParser(
@@ -83,6 +86,15 @@ public class QueryContextCreationTest {
 
         filter = (Query) visitor.visit(getParser("select a, b from (select c, d, f() from t) as t").query()).convert();
         assertTrue(filter.getContext().toString(), filter.getContext().isOk());
+
+        filter = (Query) visitor.visit(getParser("select a, b from (select c, d from t) as t").query()).convert();
+        assertFalse(filter.getContext().toString(), filter.getContext().isOk());
+
+        filter = (Query) visitor.visit(getParser("select c, score from (select c, d from t) as t").query()).convert();
+        assertTrue(filter.getContext().toString(), filter.getContext().isOk());
+
+        filter = (Query) visitor.visit(getParser("select c, score1 from (select c, d from t) as t").query()).convert();
+        assertFalse(filter.getContext().toString(), filter.getContext().isOk());
 
         filter = (Query) visitor.visit(getParser("select a, b, 3+2 a from t").query()).convert();
         assertFalse(filter.getContext().toString(), filter.getContext().isOk());

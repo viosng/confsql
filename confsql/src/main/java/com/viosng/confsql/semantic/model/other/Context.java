@@ -1,6 +1,7 @@
 package com.viosng.confsql.semantic.model.other;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSet;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +15,8 @@ import java.util.*;
  * Time: 3:38
  */
 public class Context {
+
+    private final static Set<String> RESERVED_FIELDS = ImmutableSet.of("score", "SCORE");
 
     private static class ObjectStructureNode {
 
@@ -94,7 +97,7 @@ public class Context {
         for (String s : hierarchy) {
             ObjectStructureNode next = cur.children.get(s);
             if (next == null)
-                return cur.children.size() == 0;
+                return RESERVED_FIELDS.contains(s) || cur.children.size() == 0;
             cur = next;
         }
         return true;
@@ -120,7 +123,7 @@ public class Context {
         for (String s : contextPath) {
             ObjectStructureNode next = cur.children.get(s);
             if (next == null) {
-                if (cur.children.size() == 0) addObject(newPath);
+                if (RESERVED_FIELDS.contains(s) || cur.children.size() == 0) addObject(newPath);
                 return;
             }
             cur = next;
