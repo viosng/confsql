@@ -132,19 +132,10 @@ public class ValueExpressionFactory {
 
         @NotNull
         private final List<Parameter> parameters;
-        
-        private Notification notification;
 
         private FunctionCallExpressionImpl(@NotNull String id, @NotNull String value, @NotNull List<Expression> arguments,
                                            @NotNull List<Parameter> parameters) {
             super(id, value);
-            this.arguments = new ArrayList<>(arguments);
-            this.parameters = parameters;
-        }
-
-        private FunctionCallExpressionImpl(@NotNull String value, @NotNull List<Expression> arguments,
-                                           @NotNull List<Parameter> parameters) {
-            super(value);
             this.arguments = new ArrayList<>(arguments);
             this.parameters = parameters;
         }
@@ -183,7 +174,6 @@ public class ValueExpressionFactory {
             int result = super.hashCode();
             result = 31 * result + arguments.hashCode();
             result = 31 * result + parameters.hashCode();
-            result = 31 * result + (notification != null ? notification.hashCode() : 0);
             return result;
         }
 
@@ -206,7 +196,7 @@ public class ValueExpressionFactory {
     public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value,
                                                                       @NotNull List<Expression> expressions,
                                                                       @NotNull List<Parameter> parameters) {
-        return new FunctionCallExpressionImpl(value, expressions, parameters);
+        return new FunctionCallExpressionImpl(value, value, expressions, parameters);
     }
     
     public static ValueExpression.AttributeExpression attribute(@NotNull List<String> object) {
@@ -217,12 +207,6 @@ public class ValueExpressionFactory {
         return new ConstantExpression(id, value);
     }
 
-    public static ValueExpression.FunctionCallExpression functionCall(@NotNull String value,
-                                                                      @NotNull List<Expression> expressions,
-                                                                      @NotNull List<Parameter> parameters,
-                                                                      @NotNull String id) {
-        return new FunctionCallExpressionImpl(id, value, expressions, parameters);
-    }
 
     public static ValueExpression.AttributeExpression attribute(List<String> object,
                                                                 @NotNull String id) {

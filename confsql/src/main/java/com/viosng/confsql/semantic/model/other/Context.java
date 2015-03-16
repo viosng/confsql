@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.other;
 
+import com.google.common.base.Joiner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,10 +27,27 @@ public class Context {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ObjectStructureNode)) return false;
+
+            ObjectStructureNode that = (ObjectStructureNode) o;
+
+            return children.equals(that.children) && name.equals(that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name.hashCode();
+            result = 31 * result + children.hashCode();
+            return result;
+        }
+
+        @Override
         public String toString() {
             return "ObjectStructureNode{" +
-                    "name='" + name + '\'' +
-                    ", children=" + children +
+                    "\nname='" + name + '\'' +
+                    ", \nchildren=" + Joiner.on(',').withKeyValueSeparator("=").join(children) +
                     '}';
         }
     }
@@ -100,13 +118,10 @@ public class Context {
         }
         for (String s : contextPath) {
             ObjectStructureNode next = cur.children.get(s);
-            if (next == null)
-                if (cur.children.size() == 0) {
-                    addObject(newPath);
-                    return;
-                } else {
-                    throw new IllegalArgumentException();
-                }
+            if (next == null) {
+                if (cur.children.size() == 0) addObject(newPath);
+                return;
+            }
             cur = next;
         }
         cur.name = newPath.get(newPath.size() - 1);
@@ -115,6 +130,28 @@ public class Context {
 
     public boolean isOk() {
         return warnings.isEmpty();
+    }
+
+    public void clear() {
+        root.children.clear();
+        warnings.clear();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Context)) return false;
+
+        Context context = (Context) o;
+
+        return root.equals(context.root) && warnings.equals(context.warnings);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = warnings.hashCode();
+        result = 31 * result + root.hashCode();
+        return result;
     }
 
     @Override

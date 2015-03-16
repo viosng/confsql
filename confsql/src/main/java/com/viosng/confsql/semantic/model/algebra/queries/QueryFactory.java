@@ -161,7 +161,8 @@ public class QueryFactory {
                     if (functionCallExpression.getValue().compareToIgnoreCase("nest") == 0) {
                         context = updateContextFromSchema(context, newPath, functionCallExpression.getArguments(), subQuery);
                     } else {
-                        return new Context("");
+                        context.clear();
+                        return context;
                     }
                     break;
             }
