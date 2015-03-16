@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
  * Date: 16.03.2015
  * Time: 1:51
  */
-public class QueryContextCreationTest {
+public class QueryContextVerificationTest {
 
     private ConfSQLVisitor<SQLExpression> visitor = new ConfSQLVisitorImpl();
 
@@ -164,6 +164,29 @@ public class QueryContextCreationTest {
 
         Query filter = (Query) visitor.visit(getParser("select * from t group by a+3").query()).convert();
         assertEquals(new Context("t"), filter.getContext());
+    }
 
+    @Test
+    public void testUnNest() throws Exception {
+
+        Query filter = (Query) visitor.visit(getParser(
+                "select * from (select t.a, b, t.c, nest(d,e,f) n from t) q join q.n").query()).convert();
+        Context context = new Context("q");
+        context.addObject(Lists.newArrayList("q", "a"));
+        context.addObject(Lists.newArrayList("q", "b"));
+        context.addObject(Lists.newArrayList("q", "c"));
+        context.addObject(Lists.newArrayList("q", "d"));
+        context.addObject(Lists.newArrayList("q", "e"));
+        context.addObject(Lists.newArrayList("q", "f"));
+        assertEquals(context, filter.getContext());
+
+        filter = (Query) visitor.visit(getParser(
+                "select * from (select t.a, b, t.c, nest(d,e,f) n from t) q join q.a").query()).convert();
+        context = new Context("q");
+        assertEquals(context, filter.getContext());
+
+        filter = (Query) visitor.visit(getParser(
+                "select * from (select t.a, b, t.c, nest(d,e,f) n from t) q join q.y").query()).convert();
+        assertFalse(filter.getContext().isOk());
     }
 }

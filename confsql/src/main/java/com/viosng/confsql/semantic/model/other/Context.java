@@ -89,7 +89,7 @@ public class Context {
         }
     }
 
-    public boolean hasObject(List<String> hierarchy) {
+    public boolean hasObject(@NotNull List<String> hierarchy) {
         ObjectStructureNode cur = root;
         if (hierarchy.get(0).equals(root.name)) {
             hierarchy = hierarchy.subList(1, hierarchy.size());
@@ -155,6 +155,39 @@ public class Context {
             newContext.warning("There are duplicate ids in join clause");
         }
         return newContext;
+    }
+
+    public void unNestObject(@NotNull List<String> hierarchy) {
+        ObjectStructureNode cur = root, prev = root;
+        if (hierarchy.get(0).equals(root.name)) {
+            hierarchy = hierarchy.subList(1, hierarchy.size());
+        }
+        for (String s : hierarchy) {
+            ObjectStructureNode next = cur.children.get(s);
+            if (next == null) {
+                // if children size == 0 then it means that we don't know anything about nested hierarchy,
+                // than we can't extend it by unnest and should leave empty
+                if (cur.children.size() != 0) {
+                    warning("There is no such attribute (" + Joiner.on('.').join(hierarchy) + ")");
+                }
+                return;
+            }
+            prev = cur;
+            cur = next;
+        }
+        if (prev == cur) {
+            throw new IllegalArgumentException();
+        }
+        if (cur.children.isEmpty()) {
+            prev.children.clear();
+        } else {
+            int count = prev.children.size() - 1 + cur.children.size();
+            prev.children.remove(cur.name);
+            prev.children.putAll(cur.children);
+            if (count != prev.children.size()) {
+                warning("There are duplicate attribute ids in hierarchy");
+            }
+        }
     }
 
     private void mergeNodes(ObjectStructureNode mergeTo, ObjectStructureNode mergeFrom) {

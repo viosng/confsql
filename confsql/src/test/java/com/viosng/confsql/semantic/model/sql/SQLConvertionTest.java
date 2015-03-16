@@ -226,6 +226,7 @@ public class SQLConvertionTest {
                                 ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
                         new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(query, primary)
+                .id("source")
                 .create();
 
         QueryBuilder from = new QueryBuilder()

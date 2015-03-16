@@ -3,6 +3,7 @@ package com.viosng.confsql.semantic.model.algebra.queries;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
@@ -271,7 +272,18 @@ public class QueryFactory {
         @NotNull
         @Override
         protected Context createContext() {
-            return null;
+            Context context = getSubQueries().get(0).getContext();
+            Parameter attributeParameter = getParameters().stream().filter(p -> p.id().equals("unNestObject")).findFirst().get();
+            if (attributeParameter == null) {
+                context.warning("There is no un nest attribute reference of query(" + getSubQueries().get(0).id() + ")");
+            } else {
+                if (attributeParameter.getValue().type().equals(ArithmeticType.ATTRIBUTE)) {
+                    context.unNestObject(((AttributeExpression)attributeParameter.getValue()).getObject());
+                } else {
+                    context.warning("Illegal unnest argument of query(" + getSubQueries().get(0).id() + ")");
+                }
+            }
+            return context;
         }
     }
 
