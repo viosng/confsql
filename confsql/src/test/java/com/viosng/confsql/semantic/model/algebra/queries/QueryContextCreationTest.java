@@ -139,4 +139,19 @@ public class QueryContextCreationTest {
         context.addObject(Lists.newArrayList("", "f", "n", "t"));
         assertEquals(context, join.getContext());
     }
+
+    @Test
+    public void testAggregation() throws Exception {
+        Query aggregation = (Query) visitor.visit(getParser(
+                "select * from t, d, f group by s").query()).convert();
+        Context context = new Context("");
+        context.addObject(Lists.newArrayList("", "f"));
+        context.addObject(Lists.newArrayList("", "d"));
+        context.addObject(Lists.newArrayList("", "t"));
+        assertEquals(context, aggregation.getContext());
+
+        Query filter = (Query) visitor.visit(getParser("select * from t group by a+3").query()).convert();
+        assertEquals(new Context("t"), filter.getContext());
+
+    }
 }

@@ -250,7 +250,7 @@ public class QueryFactory {
         @NotNull
         @Override
         protected Context createContext() {
-            return null;
+            return getSubQueries().get(0).getContext();
         }
     }
 
