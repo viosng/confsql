@@ -17,8 +17,16 @@ public class Notification implements Consumer<Notification> {
     @NotNull
     protected final List<Warning> warnings = new ArrayList<>();
 
-    public void addWarning(@NotNull String message) {
+    @NotNull
+    public Notification addWarning(@NotNull String message) {
         warnings.add(new Warning(message));
+        return this;
+    }
+
+    @NotNull
+    public Notification addWarnings(@NotNull Notification notification) {
+        warnings.addAll(notification.getWarnings());
+        return this;
     }
 
     public boolean isOk() {
@@ -33,5 +41,12 @@ public class Notification implements Consumer<Notification> {
     @Override
     public void accept(Notification notification) {
         warnings.addAll(notification.getWarnings());
+    }
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "warnings=" + warnings +
+                '}';
     }
 }

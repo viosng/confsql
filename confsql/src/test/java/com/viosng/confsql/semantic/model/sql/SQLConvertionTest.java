@@ -8,9 +8,9 @@ import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
 import com.viosng.confsql.semantic.model.algebra.special.expr.CaseExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
+import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Parameter;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.Test;
@@ -290,13 +290,9 @@ public class SQLConvertionTest {
                 .create();
         queryBuilder.subQueries(having);
 
-        Query select = queryBuilder.create();
-        assertEquals(select, visitor.visit(getParser(
-                "select a, 3 from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c having 3=4").query()).convert());
-
         Query orderBy = new QueryBuilder()
                 .queryType(Query.QueryType.FILTER)
-                .subQueries(select)
+                .subQueries(having)
                 .parameters(
                         new Parameter("orderByArg0", new OrderByArgExpression(ValueExpressionFactory.attribute(Arrays.asList("a")), "asc")),
                         new Parameter("orderByArg1", new OrderByArgExpression(ValueExpressionFactory.attribute(Arrays.asList("b")), "desc")),
@@ -304,7 +300,7 @@ public class SQLConvertionTest {
                         new Parameter("type", ValueExpressionFactory.constant("order")))
                 .create();
         assertEquals(orderBy, visitor.visit(getParser(
-                "select a, 3 from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c " +
+                "select * from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c " +
                         "having 3=4 order(\"c\"=\"d\") by a, b desc").query()).convert());
 
         Query limit = new QueryBuilder()
@@ -314,8 +310,14 @@ public class SQLConvertionTest {
                 .subQueries(orderBy)
                 .create();
         assertEquals(limit, visitor.visit(getParser(
-                "select a, 3 from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c " +
+                "select * from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c " +
                         "having 3=4 order(\"c\"=\"d\") by a, b desc limit 10").query()).convert());
+
+        Query select = queryBuilder.create();
+        assertEquals(select, visitor.visit(getParser(
+                "select a, 3 from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c having 3=4").query()).convert());
+
+
 
         assertEquals(primary, visitor.visit(getParser("select * from source").query()).convert());
     }

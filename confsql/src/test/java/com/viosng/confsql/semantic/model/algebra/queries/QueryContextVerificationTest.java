@@ -82,19 +82,19 @@ public class QueryContextVerificationTest {
         assertEquals(context, filter.getContext());
 
         filter = (Query) visitor.visit(getParser("select t.a, b from (select c, d from t) as t").query()).convert();
-        assertFalse(filter.getContext().isOk());
+        assertTrue(filter.getContext().toString(), filter.getContext().isOk());
 
         filter = (Query) visitor.visit(getParser("select a, b from (select c, d, f() from t) as t").query()).convert();
         assertTrue(filter.getContext().toString(), filter.getContext().isOk());
 
         filter = (Query) visitor.visit(getParser("select a, b from (select c, d from t) as t").query()).convert();
-        assertFalse(filter.getContext().toString(), filter.getContext().isOk());
+        assertTrue(filter.getContext().toString(), filter.getContext().isOk());
 
         filter = (Query) visitor.visit(getParser("select c, score from (select c, d from t) as t").query()).convert();
         assertTrue(filter.getContext().toString(), filter.getContext().isOk());
 
         filter = (Query) visitor.visit(getParser("select c, score1 from (select c, d from t) as t").query()).convert();
-        assertFalse(filter.getContext().toString(), filter.getContext().isOk());
+        assertTrue(filter.getContext().toString(), filter.getContext().isOk());
 
         filter = (Query) visitor.visit(getParser("select a, b, 3+2 a from t").query()).convert();
         assertFalse(filter.getContext().toString(), filter.getContext().isOk());

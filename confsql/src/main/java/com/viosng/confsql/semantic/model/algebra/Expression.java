@@ -1,6 +1,8 @@
 package com.viosng.confsql.semantic.model.algebra;
 
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,4 +42,7 @@ public interface Expression{
     public default List<Expression> getArguments() {
         return Collections.emptyList();
     }
+
+    @NotNull
+    public Notification verify(Context context);
 }

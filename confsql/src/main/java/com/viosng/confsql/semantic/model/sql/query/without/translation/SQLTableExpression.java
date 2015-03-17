@@ -1,6 +1,6 @@
 package com.viosng.confsql.semantic.model.sql.query.without.translation;
 
-import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
 import com.viosng.confsql.semantic.model.sql.query.SQLFromClause;

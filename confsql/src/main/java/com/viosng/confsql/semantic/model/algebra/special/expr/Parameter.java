@@ -1,6 +1,9 @@
-package com.viosng.confsql.semantic.model.other;
+package com.viosng.confsql.semantic.model.algebra.special.expr;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,6 +19,8 @@ public class Parameter implements Expression {
     
     @NotNull
     private final Expression value;
+
+    private volatile boolean verificationFlag = true;
 
     public Parameter(@NotNull String id, @NotNull Expression value) {
         if (id.length() == 0) throw new IllegalArgumentException("Empty parameter sourceName");
@@ -38,6 +43,16 @@ public class Parameter implements Expression {
     @Override
     public Expression findExpressionByType(ArithmeticType arithmeticType) {
         throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    public Notification verify(Context context) {
+        return verificationFlag ? value.verify(context) : new Notification();
+    }
+
+    public void disableVerification(){
+        verificationFlag = false;
     }
 
     @NotNull

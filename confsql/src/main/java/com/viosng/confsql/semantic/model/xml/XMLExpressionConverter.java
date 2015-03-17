@@ -12,7 +12,7 @@ import com.viosng.confsql.semantic.model.algebra.special.expr.CaseExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;

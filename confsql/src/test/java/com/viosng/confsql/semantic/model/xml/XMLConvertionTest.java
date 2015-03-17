@@ -3,6 +3,7 @@ package com.viosng.confsql.semantic.model.xml;
 import com.google.common.base.Joiner;
 import com.thoughtworks.xstream.XStream;
 import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.sql.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -39,7 +40,6 @@ public class XMLConvertionTest {
     public void testFull() throws Exception {
         String query = Joiner.on("").join(Files.readAllLines(Paths.get(
                 "src/test/java/com/viosng/confsql/semantic/model/xml/query.sql"), StandardCharsets.UTF_8));
-        System.out.println(query);
         Expression exp = visitor.visit(getParser(query).stat()).convert();
         XMLExpressionConverter.XMLExpression xmlQuery = XMLExpressionConverter.getInstance().convert(exp);
 
@@ -47,7 +47,8 @@ public class XMLConvertionTest {
         String xmlQueryString = xStream.toXML(xmlQuery);
         out.write(xmlQueryString);
         out.close();
-        System.out.println(query);
         System.out.println(xmlQueryString);
+        System.out.println(query);
+        System.out.println(exp.verify(Context.EMPTY_CONTEXT));
     }
 }

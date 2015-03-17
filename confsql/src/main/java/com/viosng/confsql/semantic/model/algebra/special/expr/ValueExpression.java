@@ -2,7 +2,6 @@ package com.viosng.confsql.semantic.model.algebra.special.expr;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

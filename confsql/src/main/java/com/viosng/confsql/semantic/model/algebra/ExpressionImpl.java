@@ -1,6 +1,8 @@
 package com.viosng.confsql.semantic.model.algebra;
 
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Notification;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +61,14 @@ public class ExpressionImpl implements Expression {
     @Override
     public List<Expression> getArguments() {
         return arguments;
+    }
+
+    @NotNull
+    @Override
+    public Notification verify(Context context) {
+        return arguments.stream()
+                .filter(a -> a != null)
+                .map(p -> p.verify(context)).collect(Notification::new, Notification::accept, Notification::accept);
     }
 
     @NotNull

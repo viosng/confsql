@@ -4,8 +4,8 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
+import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
-import com.viosng.confsql.semantic.model.other.Parameter;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLParameter;
 import com.viosng.confsql.semantic.model.sql.query.without.translation.SQLTableExpression;
@@ -84,20 +84,6 @@ public class SQLQuery implements SQLExpression {
                         .parameters(new Parameter("filterExpression", tableExpression.getHavingClause().convert()))
                         .create();
             }
-        } else {
-            current = QueryFactory.fictive();
-        }
-
-        if (!selectItemList.isEmpty()) {
-            current = new QueryBuilder()
-                    .queryType(Query.QueryType.FILTER)
-                    .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
-                    .subQueries(current)
-                    .requiredSchemaAttributes(selectItemList.stream().map(SQLExpression::convert).collect(Collectors.toList()))
-                    .create();
-        }
-
-        if (tableExpression != null) {
             if (tableExpression.getOrderByClause() != null) {
                 List<Parameter> parameters = mergeExpressionsAndParameters(tableExpression.getOrderByClause().getOrderByArgs(),
                         tableExpression.getOrderByClause().getParamList(), "orderByArg");
@@ -116,6 +102,17 @@ public class SQLQuery implements SQLExpression {
                                 new Parameter("limitValue", tableExpression.getLimitClause().convert()))
                         .create();
             }
+        } else {
+            current = QueryFactory.fictive();
+        }
+
+        if (!selectItemList.isEmpty()) {
+            current = new QueryBuilder()
+                    .queryType(Query.QueryType.FILTER)
+                    .parameters(parameterList.stream().map(p -> (Parameter) p.convert()).collect(Collectors.toList()))
+                    .subQueries(current)
+                    .requiredSchemaAttributes(selectItemList.stream().map(SQLExpression::convert).collect(Collectors.toList()))
+                    .create();
         }
         return current;
     }

@@ -12,4 +12,11 @@ import java.util.List;
  */
 public interface Context {
     public boolean hasObject(@NotNull List<String> hierarchy);
+
+    public static final Context EMPTY_CONTEXT = new Context() {
+        @Override
+        public boolean hasObject(@NotNull List<String> hierarchy) {
+            return false;
+        }
+    };
 }

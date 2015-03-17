@@ -4,8 +4,10 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.QueryContext;
-import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -33,6 +35,12 @@ public class QueryFactory {
         @NotNull
         public static FictiveQuery getInstance() {
             return Holder.INSTANCE;
+        }
+
+        @NotNull
+        @Override
+        public Notification verify(Context context) {
+            return new Notification();
         }
 
         private static class Holder {
@@ -144,10 +152,8 @@ public class QueryFactory {
                         object = Stream.concat(Stream.of(subQuery.id()), object.stream()).collect(Collectors.toList());
                     }
 
-                    if (!subQuery.getContext().hasObject(object)) {
-                        context.addWarning("There is no attribute (" + expression.toString() + ")");
-                    }
-                    context.mergeContext(subQuery.getContext(), object, Stream.concat(path.stream(), Stream.of(expression.id())).collect(Collectors.toList()));
+                    context.mergeContext(subQuery.getContext(), object, Stream.concat(path.stream(),
+                            Stream.of(expression.id())).collect(Collectors.toList()));
                     break;
                 }
                 case FUNCTION_CALL:
@@ -276,6 +282,7 @@ public class QueryFactory {
             } else {
                 if (attributeParameter.getValue().type().equals(ArithmeticType.ATTRIBUTE)) {
                     context.unNestObject(((AttributeExpression)attributeParameter.getValue()).getObject());
+                    attributeParameter.disableVerification();
                 } else {
                     context.addWarning("Illegal unnest argument of query(" + getSubQueries().get(0).id() + ")");
                 }

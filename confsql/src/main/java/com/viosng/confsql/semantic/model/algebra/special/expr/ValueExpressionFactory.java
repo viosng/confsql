@@ -75,12 +75,12 @@ public class ValueExpressionFactory {
         }
     }
 
-    private static abstract class AbstractAttributeExpression extends AbstractValueExpression implements ValueExpression.AttributeExpression{
+    private static class AttributeExpression extends AbstractValueExpression implements ValueExpression.AttributeExpression{
 
         @NotNull
         private final List<String> object;
 
-        protected AbstractAttributeExpression(@NotNull String id, @NotNull List<String> object) {
+        protected AttributeExpression(@NotNull String id, @NotNull List<String> object) {
             super(id, "");
             this.object = object;
         }
@@ -94,12 +94,12 @@ public class ValueExpressionFactory {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof AbstractAttributeExpression)) return false;
+            if (!(o instanceof AttributeExpression)) return false;
             if (!super.equals(o)) return false;
 
-            AbstractAttributeExpression that = (AbstractAttributeExpression) o;
+            AttributeExpression that = (AttributeExpression) o;
 
-            return object.equals(that.object);
+            return object.equals(that.getObject());
         }
 
         @Override
@@ -113,6 +113,14 @@ public class ValueExpressionFactory {
         public String toString() {
             return Joiner.on('.').join(object);
         }
+
+        @NotNull
+        @Override
+        public Notification verify(Context context) {
+            return context.hasObject(object)
+                    ? new Notification()
+                    : new Notification().addWarning("There is no attribute (" + this.toString() + ") in a context");
+        }
     }
     
     private static class ConstantExpression extends AbstractValueExpression implements ValueExpression.ConstantExpression {
@@ -124,6 +132,11 @@ public class ValueExpressionFactory {
             super(value);
         }
 
+        @NotNull
+        @Override
+        public Notification verify(Context context) {
+            return new Notification();
+        }
     }
 
     private static class FunctionCallExpressionImpl extends AbstractValueExpression implements ValueExpression.FunctionCallExpression {
@@ -144,6 +157,15 @@ public class ValueExpressionFactory {
         @Override
         public List<Expression> getArguments() {
             return arguments;
+        }
+
+        @NotNull
+        @Override
+        public Notification verify(Context context) {
+            return Stream.concat(arguments.stream(), parameters.stream())
+                    .filter(a -> a != null)
+                    .map(a -> a.verify(context))
+                    .collect(Notification::new, Notification::accept, Notification::accept);
         }
 
         @NotNull
@@ -180,12 +202,6 @@ public class ValueExpressionFactory {
         @Override
         public String toString() {
             return value + "(" + Joiner.on(", ").join(arguments) + "; " + Joiner.on(", ").join(parameters) +  ")";
-        }
-    }
-
-    private static class AttributeExpression extends AbstractAttributeExpression implements ValueExpression.AttributeExpression{
-        private AttributeExpression(@NotNull String id, @NotNull List<String> object) {
-            super(id, object);
         }
     }
     

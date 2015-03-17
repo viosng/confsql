@@ -1,12 +1,18 @@
 package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
+import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.QueryContext;
-import com.viosng.confsql.semantic.model.other.Parameter;
+import com.viosng.confsql.semantic.model.other.SuperContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -79,6 +85,22 @@ public abstract class DefaultQuery implements Query{
 
     @NotNull
     protected abstract QueryContext createContext();
+
+    @NotNull
+    @Override
+    public Notification verify(Context context) {
+        List<Context> subQueryContexts = subQueries.stream().map(Query::getContext).collect(Collectors.toList());
+        Context subQueryContext = new SuperContext(subQueryContexts);
+        Context superContext = new SuperContext(Arrays.asList(context, subQueryContext));
+        return Stream.concat(
+                Stream.concat(
+                        Stream.concat(
+                                requiredSchemaAttributes.stream().map(q -> q.verify(subQueryContext)),
+                                parameters.stream().map(q -> q.verify(superContext))),
+                        subQueries.stream().map(q -> q.verify(context))),
+                subQueryContexts.stream().map(q -> (Notification) q))
+                .collect(Notification::new, Notification::accept, Notification::accept);
+    }
 
     @Override
     public String toString() {

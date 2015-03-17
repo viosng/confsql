@@ -67,6 +67,14 @@ public class CaseExpression implements Expression {
         return argument != null ? Lists.newArrayList(argument) : Collections.<Expression>emptyList();
     }
 
+    @NotNull
+    @Override
+    public Notification verify(Context context) {
+        return Stream.concat(Stream.of(argument), parameters.stream())
+                .filter(a -> a != null)
+                .map(p -> p.verify(context)).collect(Notification::new, Notification::accept, Notification::accept);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
