@@ -59,7 +59,7 @@ public class QueryContext extends Notification implements Context {
     }
 
     @NotNull
-    private ObjectStructureNode root;
+    private final ObjectStructureNode root;
 
     public QueryContext(@NotNull String root) {
         super();

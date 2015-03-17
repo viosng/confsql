@@ -41,6 +41,7 @@ public class SQLBinaryExpression implements SQLExpression {
         return right;
     }
 
+    @NotNull
     @Override
     public Expression convert() {
         return new ExpressionImpl(operator, left.convert(), right.convert());

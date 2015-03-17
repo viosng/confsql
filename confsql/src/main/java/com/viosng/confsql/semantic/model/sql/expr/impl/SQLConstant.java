@@ -24,6 +24,7 @@ public class SQLConstant implements SQLExpression {
         return value;
     }
 
+    @NotNull
     @Override
     public Expression convert() {
         return ValueExpressionFactory.constant(value);

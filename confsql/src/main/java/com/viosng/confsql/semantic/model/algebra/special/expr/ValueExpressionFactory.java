@@ -223,7 +223,6 @@ public class ValueExpressionFactory {
         return new ConstantExpression(id, value);
     }
 
-
     public static ValueExpression.AttributeExpression attribute(List<String> object,
                                                                 @NotNull String id) {
         return new AttributeExpression(id, object);

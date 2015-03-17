@@ -53,33 +53,27 @@ public class Main {
 
     public static void startServer() {
         try {
-            processor = new Translator.Processor<>(new Translator.Iface(){
-
-                @Override
-                public ThriftExpression translate(String query) throws TException {
-                    try {
-                        Expression exp = visitor.visit(getParser(query).stat()).convert();
-                        System.out.println(exp.verify(Context.EMPTY_CONTEXT));
-                        return ThriftExpressionConverter.getInstance().convert(exp);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }
+            processor = new Translator.Processor<>(query -> {
+                try {
+                    Expression exp = visitor.visit(getParser(query).stat()).convert();
+                    System.out.println(exp.verify(Context.EMPTY_CONTEXT));
+                    return ThriftExpressionConverter.getInstance().convert(exp);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
                 }
             });
 
-            new Thread(new Runnable() {
-                public void run() {
-                    TServerTransport serverTransport = null;
-                    try {
-                        serverTransport = new TServerSocket(9090);
-                    } catch (TTransportException e) {
-                        e.printStackTrace();
-                    }
-                    TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
-                    System.out.println("Starting the simple server...");
-                    server.serve();
+            new Thread(() -> {
+                TServerTransport serverTransport = null;
+                try {
+                    serverTransport = new TServerSocket(9090);
+                } catch (TTransportException e) {
+                    e.printStackTrace();
                 }
+                TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+                System.out.println("Starting the simple server...");
+                server.serve();
             }).start();
         } catch (Exception x) {
             x.printStackTrace();
