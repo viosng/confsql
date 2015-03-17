@@ -26,12 +26,6 @@ public class QueryFactory {
     private QueryFactory() {
     }
 
-    private static List<Expression> combineSchemaAttributes(Stream<List<AttributeExpression>> attributeStream) {
-        return new ArrayList<>(attributeStream.map(HashSet<AttributeExpression>::new)
-                .<HashSet<AttributeExpression>>collect(HashSet<AttributeExpression>::new,
-                        HashSet<AttributeExpression>::addAll, HashSet<AttributeExpression>::addAll));
-    }
-
     private static class FictiveQuery implements Query {
 
         private FictiveQuery(){}
@@ -122,12 +116,12 @@ public class QueryFactory {
         newPath.add("");
         for (Expression expression : schema) {
             if (expression.id().equals(UNDEFINED_ID)) {
-                context.warning("There is an expression without id");
+                context.addWarning("There is an expression without id");
                 continue;
             }
 
             if (ids.contains(expression.id())) {
-                context.warning("There is duplicate id (" + expression.id() + ")");
+                context.addWarning("There is duplicate id (" + expression.id() + ")");
             } else {
                 ids.add(expression.id());
             }
@@ -151,7 +145,7 @@ public class QueryFactory {
                     }
 
                     if (!subQuery.getContext().hasObject(object)) {
-                        context.warning("There is no attribute (" + expression.toString() + ")");
+                        context.addWarning("There is no attribute (" + expression.toString() + ")");
                     }
                     context.mergeContext(subQuery.getContext(), object, Stream.concat(path.stream(), Stream.of(expression.id())).collect(Collectors.toList()));
                     break;
@@ -278,12 +272,12 @@ public class QueryFactory {
             QueryContext context = getSubQueries().get(0).getContext();
             Parameter attributeParameter = getParameters().stream().filter(p -> p.id().equals("unNestObject")).findFirst().get();
             if (attributeParameter == null) {
-                context.warning("There is no un nest attribute reference of query(" + getSubQueries().get(0).id() + ")");
+                context.addWarning("There is no un nest attribute reference of query(" + getSubQueries().get(0).id() + ")");
             } else {
                 if (attributeParameter.getValue().type().equals(ArithmeticType.ATTRIBUTE)) {
                     context.unNestObject(((AttributeExpression)attributeParameter.getValue()).getObject());
                 } else {
-                    context.warning("Illegal unnest argument of query(" + getSubQueries().get(0).id() + ")");
+                    context.addWarning("Illegal unnest argument of query(" + getSubQueries().get(0).id() + ")");
                 }
             }
             return context;

@@ -4,9 +4,11 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,7 +16,7 @@ import java.util.*;
  * Date: 29.12.2014
  * Time: 3:38
  */
-public class QueryContext implements Context {
+public class QueryContext extends Notification implements Context {
 
     private final static Set<String> RESERVED_FIELDS = ImmutableSet.of("score", "SCORE");
 
@@ -57,12 +59,10 @@ public class QueryContext implements Context {
     }
 
     @NotNull
-    private final List<String> warnings = new ArrayList<>();
-
-    @NotNull
     private ObjectStructureNode root;
 
     public QueryContext(@NotNull String root) {
+        super();
         this.root = new ObjectStructureNode(root);
     }
 
@@ -104,18 +104,6 @@ public class QueryContext implements Context {
         return true;
     }
 
-    @NotNull
-    public QueryContext warning(@Nullable String message) {
-        if (message != null) warnings.add(message);
-        return this;
-    }
-
-    @NotNull
-    public QueryContext mergeWarnings(@NotNull QueryContext context) {
-        warnings.addAll(context.warnings);
-        return this;
-    }
-
     public void mergeContext(@NotNull QueryContext context, @NotNull List<String> contextPath, @NotNull List<String> newPath) {
         ObjectStructureNode cur = context.root;
         if (contextPath.get(0).equals(context.root.name)) {
@@ -153,7 +141,7 @@ public class QueryContext implements Context {
             }
         }
         if (count != newContext.root.children.size()) {
-            newContext.warning("There are duplicate ids in join clause");
+            newContext.addWarning("There are duplicate ids in join clause");
         }
         return newContext;
     }
@@ -169,7 +157,7 @@ public class QueryContext implements Context {
                 // if children size == 0 then it means that we don't know anything about nested hierarchy,
                 // than we can't extend it by unnest and should leave empty
                 if (cur.children.size() != 0) {
-                    warning("There is no such attribute (" + Joiner.on('.').join(hierarchy) + ")");
+                    addWarning("There is no such attribute (" + Joiner.on('.').join(hierarchy) + ")");
                 }
                 return;
             }
@@ -186,7 +174,7 @@ public class QueryContext implements Context {
             prev.children.remove(cur.name);
             prev.children.putAll(cur.children);
             if (count != prev.children.size()) {
-                warning("There are duplicate attribute ids in hierarchy");
+                addWarning("There are duplicate attribute ids in hierarchy");
             }
         }
     }
@@ -200,10 +188,6 @@ public class QueryContext implements Context {
                 mergeTo.children.put(entry.getKey(), entry.getValue());
             }
         }
-    }
-
-    public boolean isOk() {
-        return warnings.isEmpty();
     }
 
     public void clear() {
