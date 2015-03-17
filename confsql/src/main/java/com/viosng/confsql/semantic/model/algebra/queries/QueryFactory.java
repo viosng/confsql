@@ -75,7 +75,7 @@ public class QueryFactory {
         @NotNull
         @Override
         public QueryContext getContext() {
-            throw new UnsupportedOperationException();
+            return new QueryContext(UNDEFINED_ID);
         }
 
         @Override
