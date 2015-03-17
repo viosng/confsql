@@ -2,7 +2,7 @@ package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.QueryContext;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +41,7 @@ public interface Query extends Expression {
 
 
     @NotNull
-    public Context getContext();
+    public QueryContext getContext();
     
     static enum QueryType {
         FICTIVE,

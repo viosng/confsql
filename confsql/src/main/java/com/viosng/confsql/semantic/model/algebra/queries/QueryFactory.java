@@ -4,7 +4,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
-import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.QueryContext;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +72,7 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        public Context getContext() {
+        public QueryContext getContext() {
             throw new UnsupportedOperationException();
         }
 
@@ -105,8 +105,8 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        protected Context createContext() {
-            return new Context(id());
+        protected QueryContext createContext() {
+            return new QueryContext(id());
         }
     }
 
@@ -116,7 +116,7 @@ public class QueryFactory {
         return new PrimaryQuery(id, parameters);
     }
 
-    private static Context updateContextFromSchema(Context context, List<String> path, List<Expression> schema, Query subQuery) {
+    private static QueryContext updateContextFromSchema(QueryContext context, List<String> path, List<Expression> schema, Query subQuery) {
         Set<String> ids = new HashSet<>();
         List<String> newPath = new ArrayList<>(path);
         newPath.add("");
@@ -182,8 +182,11 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        protected Context createContext() {
-            return updateContextFromSchema(new Context(id()), Arrays.asList(id()), getRequiredSchemaAttributes(), getSubQueries().get(0));
+        protected QueryContext createContext() {
+            return getRequiredSchemaAttributes().isEmpty()
+                    ? getSubQueries().get(0).getContext()
+                    : updateContextFromSchema(
+                    new QueryContext(id()), Arrays.asList(id()), getRequiredSchemaAttributes(), getSubQueries().get(0));
         }
     }
 
@@ -205,8 +208,8 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        protected Context createContext() {
-            Context context = new Context(id());
+        protected QueryContext createContext() {
+            QueryContext context = new QueryContext(id());
             context.mergeContextsByLevel(getSubQueries().stream().map(Query::getContext).collect(Collectors.toList()));
             return context;
         }
@@ -229,8 +232,8 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        protected Context createContext() {
-            return Context.joinContexts(getSubQueries().stream().map(Query::getContext).collect(Collectors.toList()));
+        protected QueryContext createContext() {
+            return QueryContext.joinContexts(getSubQueries().stream().map(Query::getContext).collect(Collectors.toList()));
         }
     }
 
@@ -250,7 +253,7 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        protected Context createContext() {
+        protected QueryContext createContext() {
             return getSubQueries().get(0).getContext();
         }
     }
@@ -271,8 +274,8 @@ public class QueryFactory {
 
         @NotNull
         @Override
-        protected Context createContext() {
-            Context context = getSubQueries().get(0).getContext();
+        protected QueryContext createContext() {
+            QueryContext context = getSubQueries().get(0).getContext();
             Parameter attributeParameter = getParameters().stream().filter(p -> p.id().equals("unNestObject")).findFirst().get();
             if (attributeParameter == null) {
                 context.warning("There is no un nest attribute reference of query(" + getSubQueries().get(0).id() + ")");

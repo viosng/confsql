@@ -1,7 +1,7 @@
 package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.QueryContext;
 import com.viosng.confsql.semantic.model.other.Parameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ public abstract class DefaultQuery implements Query{
     @NotNull
     private final List<Query> subQueries;
     
-    private Context context;
+    private QueryContext context;
 
     public DefaultQuery(@NotNull String id,
                         @NotNull List<Parameter> parameters,
@@ -70,7 +70,7 @@ public abstract class DefaultQuery implements Query{
 
     @NotNull
     @Override
-    public Context getContext() {
+    public QueryContext getContext() {
         if (context == null) {
             context = createContext();
         }
@@ -78,7 +78,7 @@ public abstract class DefaultQuery implements Query{
     }
 
     @NotNull
-    protected abstract Context createContext();
+    protected abstract QueryContext createContext();
 
     @Override
     public String toString() {

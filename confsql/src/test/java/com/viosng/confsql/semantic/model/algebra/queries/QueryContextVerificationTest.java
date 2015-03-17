@@ -2,7 +2,7 @@ package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.google.common.collect.Lists;
 import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.other.Context;
+import com.viosng.confsql.semantic.model.other.QueryContext;
 import com.viosng.confsql.semantic.model.sql.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -29,11 +29,11 @@ public class QueryContextVerificationTest {
     @Test
     public void testFilter() throws Exception {
         Query filter = (Query) visitor.visit(getParser("select * from t").query()).convert();
-        Context context = new Context("t");
+        QueryContext context = new QueryContext("t");
         assertEquals(context, filter.getContext());
 
         filter = (Query) visitor.visit(getParser("select t.a, b, t.c, nest(d,e,f, score) n, score from t").query()).convert();
-        context = new Context(Expression.UNDEFINED_ID);
+        context = new QueryContext(Expression.UNDEFINED_ID);
         context.addObject(Lists.newArrayList("", "a"));
         context.addObject(Lists.newArrayList("", "b"));
         context.addObject(Lists.newArrayList("", "c"));
@@ -46,7 +46,7 @@ public class QueryContextVerificationTest {
 
         filter = (Query) visitor.visit(getParser(
                 "select a.m, nest(n.d,b as e,c as w, score) as q from (select a, b, c, nest(d,e,f, score) n from t) as t1").query()).convert();
-        context = new Context(Expression.UNDEFINED_ID);
+        context = new QueryContext(Expression.UNDEFINED_ID);
         context.addObject(Lists.newArrayList("", "m"));
         context.addObject(Lists.newArrayList("", "q", "d"));
         context.addObject(Lists.newArrayList("", "q", "e"));
@@ -56,7 +56,7 @@ public class QueryContextVerificationTest {
 
         filter = (Query) visitor.visit(getParser(
                 "select a.m, nest(n as r,b as e,c as w) as q from (select a, b, c, nest(d,e,f) n from t) as t1").query()).convert();
-        context = new Context(Expression.UNDEFINED_ID);
+        context = new QueryContext(Expression.UNDEFINED_ID);
         context.addObject(Lists.newArrayList("", "m"));
         context.addObject(Lists.newArrayList("", "q", "r", "d"));
         context.addObject(Lists.newArrayList("", "q", "r", "e"));
@@ -67,12 +67,12 @@ public class QueryContextVerificationTest {
 
         filter = (Query) visitor.visit(getParser(
                 "select * from (select a, b, c, f(3) d from t) as t1").query()).convert();
-        context = new Context("t1");
+        context = new QueryContext("t1");
         assertEquals(context, filter.getContext());
 
         filter = (Query) visitor.visit(getParser(
                 "select d,e,f, a+b as q, (select 1) as query, \"sdfs\" r from (select a, b, c, f(3) d from t) as t1").query()).convert();
-        context = new Context("");
+        context = new QueryContext("");
         context.addObject(Lists.newArrayList("", "d"));
         context.addObject(Lists.newArrayList("", "e"));
         context.addObject(Lists.newArrayList("", "f"));
@@ -107,7 +107,7 @@ public class QueryContextVerificationTest {
     public void testFusion() throws Exception {
         Query fusion = (Query) visitor.visit(getParser(
                 "fusion (select a, b, c, nest(e, r, t) n from t) with (select c, d, e from t) end").query()).convert();
-        Context context = new Context("");
+        QueryContext context = new QueryContext("");
         context.addObject(Lists.newArrayList("", "a"));
         context.addObject(Lists.newArrayList("", "b"));
         context.addObject(Lists.newArrayList("", "c"));
@@ -123,7 +123,7 @@ public class QueryContextVerificationTest {
     public void testJoin() throws Exception {
         Query join = (Query) visitor.visit(getParser(
                 "select * from t, d, f").query()).convert();
-        Context context = new Context("");
+        QueryContext context = new QueryContext("");
         context.addObject(Lists.newArrayList("", "f"));
         context.addObject(Lists.newArrayList("", "d"));
         context.addObject(Lists.newArrayList("", "t"));
@@ -131,14 +131,14 @@ public class QueryContextVerificationTest {
 
         join = (Query) visitor.visit(getParser(
                 "select * from f, d, f").query()).convert();
-        context = new Context("");
+        context = new QueryContext("");
         context.addObject(Lists.newArrayList("", "f"));
         context.addObject(Lists.newArrayList("", "d"));
         assertFalse(join.getContext().isOk());
 
         join = (Query) visitor.visit(getParser("select * from (fusion (select a, b, c, nest(e, r, t) n from t) with " +
                 "(select c, d, e from t) end) f, d join t").query()).convert();
-        context = new Context("");
+        context = new QueryContext("");
         context.addObject(Lists.newArrayList("", "d"));
         context.addObject(Lists.newArrayList("", "t"));
         context.addObject(Lists.newArrayList("", "f", "a"));
@@ -156,14 +156,14 @@ public class QueryContextVerificationTest {
     public void testAggregation() throws Exception {
         Query aggregation = (Query) visitor.visit(getParser(
                 "select * from t, d, f group by s").query()).convert();
-        Context context = new Context("");
+        QueryContext context = new QueryContext("");
         context.addObject(Lists.newArrayList("", "f"));
         context.addObject(Lists.newArrayList("", "d"));
         context.addObject(Lists.newArrayList("", "t"));
         assertEquals(context, aggregation.getContext());
 
         Query filter = (Query) visitor.visit(getParser("select * from t group by a+3").query()).convert();
-        assertEquals(new Context("t"), filter.getContext());
+        assertEquals(new QueryContext("t"), filter.getContext());
     }
 
     @Test
@@ -171,7 +171,7 @@ public class QueryContextVerificationTest {
 
         Query filter = (Query) visitor.visit(getParser(
                 "select * from (select t.a, b, t.c, nest(d,e,f) n from t) q join q.n").query()).convert();
-        Context context = new Context("q");
+        QueryContext context = new QueryContext("q");
         context.addObject(Lists.newArrayList("q", "a"));
         context.addObject(Lists.newArrayList("q", "b"));
         context.addObject(Lists.newArrayList("q", "c"));
@@ -182,7 +182,7 @@ public class QueryContextVerificationTest {
 
         filter = (Query) visitor.visit(getParser(
                 "select * from (select t.a, b, t.c, nest(d,e,f) n from t) q join q.a").query()).convert();
-        context = new Context("q");
+        context = new QueryContext("q");
         assertEquals(context, filter.getContext());
 
         filter = (Query) visitor.visit(getParser(
