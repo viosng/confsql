@@ -1,1 +1,1 @@
-select a as tt from (select a, b from yy) as t join t.n where b > 3 order(q=(select a from (select a,q from t) as t where q < b.e)) by a
+select count(*;a=b) from c

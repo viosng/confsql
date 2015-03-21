@@ -47,8 +47,9 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
                 thriftExpression.value = ((ValueExpression.ConstantExpression)expression).getValue();
                 break;
             case ATTRIBUTE:
-                //thriftExpression.objectReference = ((ValueExpression.AttributeExpression)expression).getObjectReference();
                 thriftExpression.value = expression.toString();
+                break;
+            case OBJECT:
                 break;
             case FUNCTION_CALL:
                 thriftExpression.value = ((ValueExpression.FunctionCallExpression)expression).getValue();

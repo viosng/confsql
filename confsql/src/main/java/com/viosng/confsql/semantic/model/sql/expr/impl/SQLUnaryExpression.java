@@ -30,6 +30,7 @@ public class SQLUnaryExpression implements SQLExpression {
         return operator;
     }
 
+    @NotNull
     @Override
     public Expression convert() {
         return new ExpressionImpl(operator, expression.convert());

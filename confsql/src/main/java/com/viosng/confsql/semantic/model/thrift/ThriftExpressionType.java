@@ -36,7 +36,8 @@ public enum ThriftExpressionType implements TEnum {
   QUERY(26),
   ORDER(27),
   PARAMETER(28),
-  CASE(29);
+  CASE(29),
+  OBJECT(30);
 
   private final int value;
 
@@ -115,6 +116,8 @@ public enum ThriftExpressionType implements TEnum {
         return PARAMETER;
       case 29:
         return CASE;
+      case 30:
+        return OBJECT;
       default:
         return null;
     }

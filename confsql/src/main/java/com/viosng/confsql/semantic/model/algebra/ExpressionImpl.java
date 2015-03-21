@@ -52,11 +52,6 @@ public class ExpressionImpl implements Expression {
         return type;
     }
 
-    @Override
-    public Expression findExpressionByType(ArithmeticType arithmeticType) {
-        throw new UnsupportedOperationException();
-    }
-
     @NotNull
     @Override
     public List<Expression> getArguments() {

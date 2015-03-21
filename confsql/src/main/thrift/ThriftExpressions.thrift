@@ -27,7 +27,8 @@ enum ThriftExpressionType{
     QUERY = 26,
     ORDER = 27,
     PARAMETER = 28,
-    CASE = 29
+    CASE = 29,
+    OBJECT = 30
 }
 
 enum ThriftQueryType {

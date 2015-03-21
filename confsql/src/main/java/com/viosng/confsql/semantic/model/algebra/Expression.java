@@ -32,12 +32,6 @@ public interface Expression{
     @NotNull
     public ArithmeticType type();
 
-    /**
-     * @param arithmeticType the expression type to find.
-     * @return the instance with specific {@code type} expression sub tree or {@code null} if it won't be found.
-     */
-    public Expression findExpressionByType(ArithmeticType arithmeticType);
-
     @NotNull
     public default List<Expression> getArguments() {
         return Collections.emptyList();

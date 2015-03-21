@@ -66,12 +66,6 @@ public class OrderByArgExpression implements Expression {
         return ArithmeticType.ORDER;
     }
 
-    @Override
-    public Expression findExpressionByType(ArithmeticType arithmeticType) {
-        if (arithmeticType == type()) return this;
-        else return argument.findExpressionByType(arithmeticType);
-    }
-
     @NotNull
     @Override
     public Notification verify(Context context) {

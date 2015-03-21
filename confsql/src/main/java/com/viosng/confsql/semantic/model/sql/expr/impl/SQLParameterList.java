@@ -26,6 +26,7 @@ public class SQLParameterList implements SQLExpression {
         return parameterList;
     }
 
+    @NotNull
     @Override
     public Expression convert() {
         throw new UnsupportedOperationException();

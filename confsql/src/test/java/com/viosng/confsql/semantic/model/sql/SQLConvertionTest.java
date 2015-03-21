@@ -6,10 +6,7 @@ import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.algebra.queries.Query;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryBuilder;
 import com.viosng.confsql.semantic.model.algebra.queries.QueryFactory;
-import com.viosng.confsql.semantic.model.algebra.special.expr.CaseExpression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
-import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
-import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
+import com.viosng.confsql.semantic.model.algebra.special.expr.*;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -91,6 +88,9 @@ public class SQLConvertionTest {
 
         assertEquals(ValueExpressionFactory.functionCall("func", arguments, parameters),
                 visitor.visit(getParser("func(1,2,3;a=1,b=2)").expr()).convert());
+
+        assertEquals(ValueExpressionFactory.functionCall("func", Arrays.asList(ObjectExpression.getInstance()), parameters),
+                visitor.visit(getParser("func(*;a=1,b=2)").expr()).convert());
 
         assertEquals(ValueExpressionFactory.functionCall("func1", Collections.<Expression>emptyList(), parameters),
                 visitor.visit(getParser("func1(a=1,b=2)").expr()).convert());

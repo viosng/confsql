@@ -33,6 +33,7 @@ public class SQLParameter implements SQLExpression {
         return value;
     }
 
+    @NotNull
     @Override
     public Expression convert() {
         return new Parameter(name, value.convert());

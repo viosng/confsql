@@ -174,13 +174,6 @@ public class ValueExpressionFactory {
         }
 
         @Override
-        public Expression findExpressionByType(ArithmeticType arithmeticType) {
-            if (arithmeticType == this.type()) return this;
-            else return Stream.concat(arguments.stream(), parameters.stream())
-                    .map(a -> a.findExpressionByType(arithmeticType)).filter(a -> a != null).findFirst().orElse(null);
-        }
-
-        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof FunctionCallExpressionImpl)) return false;

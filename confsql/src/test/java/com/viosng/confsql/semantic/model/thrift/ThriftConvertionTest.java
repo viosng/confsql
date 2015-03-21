@@ -2,6 +2,7 @@ package com.viosng.confsql.semantic.model.thrift;
 
 import com.google.common.base.Joiner;
 import com.viosng.confsql.semantic.model.algebra.Expression;
+import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.sql.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -48,5 +49,6 @@ public class ThriftConvertionTest {
         out.close();
         System.out.println(query);
         System.out.println(json);
+        System.out.println(exp.verify(Context.EMPTY_CONTEXT));
     }
 }

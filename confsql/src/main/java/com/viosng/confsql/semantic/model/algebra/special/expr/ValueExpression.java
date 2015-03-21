@@ -16,11 +16,6 @@ public interface ValueExpression extends Expression {
     
     @NotNull
     public String getValue();
-
-    @Override
-    default Expression findExpressionByType(ArithmeticType arithmeticType) {
-        return arithmeticType == type() ? this : null;
-    }
     
     public interface ConstantExpression extends ValueExpression{
         @NotNull

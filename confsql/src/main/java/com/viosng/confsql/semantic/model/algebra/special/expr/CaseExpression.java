@@ -54,13 +54,6 @@ public class CaseExpression implements Expression {
         return ArithmeticType.CASE;
     }
 
-    @Override
-    public Expression findExpressionByType(ArithmeticType arithmeticType) {
-        if (arithmeticType == type()) return this;
-        return Stream.concat(Stream.of(argument), parameters.stream()).map(
-                e -> e == null ? null : e.findExpressionByType(arithmeticType)).filter(e -> e != null).findFirst().orElse(null);
-    }
-
     @NotNull
     @Override
     public List<Expression> getArguments() {

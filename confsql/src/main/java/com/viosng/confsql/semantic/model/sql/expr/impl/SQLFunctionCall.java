@@ -47,6 +47,7 @@ public class SQLFunctionCall implements SQLExpression {
         return parameters;
     }
 
+    @NotNull
     @Override
     public Expression convert() {
         return ValueExpressionFactory.functionCall(

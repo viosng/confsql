@@ -40,11 +40,6 @@ public class Parameter implements Expression {
         return ArithmeticType.PARAMETER;
     }
 
-    @Override
-    public Expression findExpressionByType(ArithmeticType arithmeticType) {
-        throw new UnsupportedOperationException();
-    }
-
     @NotNull
     @Override
     public Notification verify(Context context) {

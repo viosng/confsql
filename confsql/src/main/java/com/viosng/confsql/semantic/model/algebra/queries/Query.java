@@ -22,11 +22,6 @@ public interface Query extends Expression {
         return ArithmeticType.QUERY;
     }
 
-    @Override
-    default Expression findExpressionByType(ArithmeticType arithmeticType){
-        throw new UnsupportedOperationException();
-    }
-
     @NotNull
     public QueryType queryType();
     

@@ -18,8 +18,6 @@ selectItem : ('NEST' | 'nest') LEFT_PAREN selectList (SEMI_COLON paramList)? RIG
            | expr asClause?                                                                         #selectExpr
            ;
 
-asterisk : (StringLiteral DOT)? MULTIPLY;
-
 tableExpression : fromClause whereClause? groupByClause? havingClause? orderByClause? limitClause? ;
 
 /*
@@ -125,14 +123,15 @@ expr : BIT_NEG expr                                                             
 asClause : ('as'|'AS')? StringLiteral;
 
 exprsAndParams
-     : (exprList SEMI_COLON)? paramList
-     | exprList?
+     : (exprListOrAll SEMI_COLON)? paramList
+     | exprListOrAll?
      ;
 
 paranthesizedParamList : LEFT_PAREN paramList RIGHT_PAREN;
 paramList : param (COMMA param)*;
 param : name=(String | StringLiteral) EQUAL expr;
 
+exprListOrAll : exprList | MULTIPLY ;
 exprList : expr (COMMA expr)*;
 caseWhenClause : ('WHEN' | 'when') w=expr ('THEN' | 'then') t=expr;
 caseElseClause : ('ELSE' | 'else') expr;

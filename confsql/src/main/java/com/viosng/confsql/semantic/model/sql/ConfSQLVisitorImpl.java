@@ -203,8 +203,8 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     @Override
     public SQLExpression visitExprsAndParams(ConfSQLParser.ExprsAndParamsContext ctx) {
         return new SQLExpressionsAndParamsList(
-                ctx.exprList() != null 
-                        ? (SQLExpressionList) visit(ctx.exprList())
+                ctx.exprListOrAll() != null
+                        ? (SQLExpressionList) visit(ctx.exprListOrAll())
                         : new SQLExpressionList(Collections.<SQLExpression>emptyList()),
                 ctx.paramList() != null
                         ? (SQLParameterList) visit(ctx.paramList())
@@ -227,7 +227,14 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
         name = name.charAt(0) == '"' ? name.substring(1, name.length() - 1) : name;
         return new SQLParameter(name, visit(ctx.expr()));
     }
-    
+
+    @Override
+    public SQLExpression visitExprListOrAll(ConfSQLParser.ExprListOrAllContext ctx) {
+        return ctx.MULTIPLY() != null
+                ? new SQLExpressionList(Arrays.asList(new SQLObject()))
+                : visit(ctx.exprList());
+    }
+
     @Override
     public SQLExpression visitExprList(ConfSQLParser.ExprListContext ctx) {
         return new SQLExpressionList(ctx.expr().stream().map(this::visit).collect(Collectors.toList()));
