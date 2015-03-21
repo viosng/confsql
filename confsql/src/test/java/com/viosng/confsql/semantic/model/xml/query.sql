@@ -1,1 +1,1 @@
-select count(*;a=b) from c
+select count(*;a=b) from (select id, score, a from d) as e

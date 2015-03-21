@@ -18,7 +18,7 @@ import java.util.Set;
  */
 public class QueryContext extends Notification implements Context {
 
-    private final static Set<String> RESERVED_FIELDS = ImmutableSet.of("score", "SCORE");
+    private final static Set<String> RESERVED_FIELDS = ImmutableSet.of("score", "SCORE", "ID", "id");
 
     private static class ObjectStructureNode {
 
