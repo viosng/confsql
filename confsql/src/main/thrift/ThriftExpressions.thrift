@@ -43,11 +43,6 @@ enum ThriftQueryType {
     GROUP_JOIN = 10
 }
 
-struct ThriftParameter {
-    1: required string name,
-    2: required ThriftExpression value
-}
-
 struct ThriftExpression {
     1: required string id,
     2: required ThriftExpressionType type,
@@ -56,6 +51,6 @@ struct ThriftExpression {
     5: optional string value,
     6: optional string orderType,
     7: optional list<ThriftExpression> schema,
-    8: optional list<ThriftParameter> parameters,
+    8: optional list<ThriftExpression> parameters,
     9: optional list<ThriftExpression> arguments,
 }

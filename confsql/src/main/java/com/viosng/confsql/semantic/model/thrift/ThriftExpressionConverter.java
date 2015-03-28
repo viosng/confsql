@@ -10,7 +10,6 @@ import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpression> {
@@ -43,6 +42,9 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
             return thriftExpression;
         }
         switch (expression.type()) {
+            case PARAMETER:
+                thriftExpression.addToArguments(convert(((Parameter)expression).getValue()));
+                break;
             case CONSTANT:
                 thriftExpression.value = ((ValueExpression.ConstantExpression)expression).getValue();
                 break;
@@ -57,12 +59,11 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
                 if (thriftExpression.arguments.isEmpty()) thriftExpression.arguments = null;
 
                 thriftExpression.parameters = ((ValueExpression.FunctionCallExpression)expression).getParameters()
-                        .stream().map(this::convertParameter).collect(Collectors.toList());
+                        .stream().map(this::convert).collect(Collectors.toList());
                 if (thriftExpression.parameters.isEmpty()) thriftExpression.parameters = null;
                 break;
             case ORDER:
-                thriftExpression.arguments = Arrays.asList((((OrderByArgExpression) expression).getArgument())).stream().map(
-                        this::convert).collect(Collectors.toList());
+                thriftExpression.addToArguments(convert(((OrderByArgExpression)expression).getArgument()));
                 thriftExpression.orderType = ((OrderByArgExpression)expression).getOrderType();
                 break;
             case CASE:
@@ -71,7 +72,7 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
                 if (thriftExpression.arguments.isEmpty()) thriftExpression.arguments = null;
 
                 thriftExpression.parameters = ((CaseExpression)expression).getParameters()
-                        .stream().map(this::convertParameter).collect(Collectors.toList());
+                        .stream().map(this::convert).collect(Collectors.toList());
                 break;
             default: return null;
         }
@@ -84,7 +85,7 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
         thriftExpression.id = query.id();
         thriftExpression.type = ThriftExpressionType.valueOf(query.type().name());
         if (!query.getParameters().isEmpty()) {
-            thriftExpression.parameters = query.getParameters().stream().map(this::convertParameter).collect(Collectors.toList());
+            thriftExpression.parameters = query.getParameters().stream().map(this::convert).collect(Collectors.toList());
         }
         if (!query.getSubQueries().isEmpty() && query.getSubQueries().get(0).queryType() != Query.QueryType.FICTIVE) {
             thriftExpression.arguments = query.getSubQueries().stream().map(this::convert).collect(Collectors.toList());
@@ -93,13 +94,5 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
             thriftExpression.schema = query.getRequiredSchemaAttributes().stream().map(this::convert).collect(Collectors.toList());
         }
         return thriftExpression;
-    }
-
-    @NotNull
-    private ThriftParameter convertParameter(@NotNull Parameter parameter) {
-        ThriftParameter thriftParameter = new ThriftParameter();
-        thriftParameter.name = parameter.id();
-        thriftParameter.value = convert(parameter.getValue());
-        return thriftParameter;
     }
 }
