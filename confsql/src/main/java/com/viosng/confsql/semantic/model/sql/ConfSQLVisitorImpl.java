@@ -231,7 +231,7 @@ public class ConfSQLVisitorImpl extends ConfSQLBaseVisitor<SQLExpression> {
     @Override
     public SQLExpression visitExprListOrAll(ConfSQLParser.ExprListOrAllContext ctx) {
         return ctx.MULTIPLY() != null
-                ? new SQLExpressionList(Arrays.asList(new SQLObject()))
+                ? new SQLExpressionList(Collections.singletonList(new SQLObject()))
                 : visit(ctx.exprList());
     }
 

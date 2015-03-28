@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
 
-public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpression> { // todo remove fictive
+public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpression> {
 
     private ThriftExpressionConverter() {}
 
@@ -85,6 +85,7 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
         ThriftExpression thriftExpression = new ThriftExpression();
         thriftExpression.id = query.id();
         thriftExpression.type = ThriftExpressionType.valueOf(query.type().name());
+        thriftExpression.queryType = ThriftQueryType.valueOf(query.queryType().name());
         if (!query.getParameters().isEmpty()) {
             thriftExpression.parameters = query.getParameters().stream().map(this::convert).collect(Collectors.toList());
         }
