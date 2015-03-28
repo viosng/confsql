@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
 
-public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpression> {
+public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpression> { // todo remove fictive
 
     private ThriftExpressionConverter() {}
 
@@ -51,8 +51,6 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
             case ATTRIBUTE:
                 thriftExpression.value = expression.toString();
                 break;
-            case OBJECT:
-                break;
             case FUNCTION_CALL:
                 thriftExpression.value = ((ValueExpression.FunctionCallExpression)expression).getValue();
                 thriftExpression.arguments = expression.getArguments().stream().map(this::convert).collect(Collectors.toList());
@@ -81,13 +79,16 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
 
     @NotNull
     private ThriftExpression convertQuery(@NotNull Query query) {
+        if (query.queryType() == Query.QueryType.FICTIVE) {
+            throw new UnsupportedOperationException("Fictive query");
+        }
         ThriftExpression thriftExpression = new ThriftExpression();
         thriftExpression.id = query.id();
         thriftExpression.type = ThriftExpressionType.valueOf(query.type().name());
         if (!query.getParameters().isEmpty()) {
             thriftExpression.parameters = query.getParameters().stream().map(this::convert).collect(Collectors.toList());
         }
-        if (!query.getSubQueries().isEmpty() && query.getSubQueries().get(0).queryType() != Query.QueryType.FICTIVE) {
+        if (!query.getSubQueries().isEmpty()) {
             thriftExpression.arguments = query.getSubQueries().stream().map(this::convert).collect(Collectors.toList());
         }
         if (!query.getRequiredSchemaAttributes().isEmpty()) {

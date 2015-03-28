@@ -5,8 +5,6 @@ package com.viosng.confsql.semantic.model.thrift; /**
  *  @generated
  */
 
-import java.util.Map;
-import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 public enum ThriftExpressionType implements TEnum {

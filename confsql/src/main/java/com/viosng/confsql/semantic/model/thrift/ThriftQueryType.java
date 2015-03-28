@@ -5,20 +5,17 @@ package com.viosng.confsql.semantic.model.thrift; /**
  *  @generated
  */
 
-import java.util.Map;
-import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 public enum ThriftQueryType implements TEnum {
-  FICTIVE(1),
-  PRIMARY(2),
-  FILTER(3),
-  FUSION(5),
-  JOIN(6),
-  AGGREGATION(7),
-  NEST(8),
-  UNNEST(9),
-  GROUP_JOIN(10);
+  PRIMARY(1),
+  FILTER(2),
+  FUSION(3),
+  JOIN(4),
+  AGGREGATION(5),
+  NEST(6),
+  UNNEST(7),
+  GROUP_JOIN(8);
 
   private final int value;
 
@@ -40,22 +37,20 @@ public enum ThriftQueryType implements TEnum {
   public static ThriftQueryType findByValue(int value) { 
     switch (value) {
       case 1:
-        return FICTIVE;
-      case 2:
         return PRIMARY;
-      case 3:
+      case 2:
         return FILTER;
-      case 5:
+      case 3:
         return FUSION;
-      case 6:
+      case 4:
         return JOIN;
-      case 7:
+      case 5:
         return AGGREGATION;
-      case 8:
+      case 6:
         return NEST;
-      case 9:
+      case 7:
         return UNNEST;
-      case 10:
+      case 8:
         return GROUP_JOIN;
       default:
         return null;

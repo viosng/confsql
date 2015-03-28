@@ -32,15 +32,14 @@ enum ThriftExpressionType{
 }
 
 enum ThriftQueryType {
-    FICTIVE = 1,
-    PRIMARY = 2,
-    FILTER = 3,
-    FUSION = 5,
-    JOIN = 6,
-    AGGREGATION = 7,
-    NEST = 8,
-    UNNEST = 9,
-    GROUP_JOIN = 10
+    PRIMARY = 1,
+    FILTER = 2,
+    FUSION = 3,
+    JOIN = 4,
+    AGGREGATION = 5,
+    NEST = 6,
+    UNNEST = 7,
+    GROUP_JOIN = 8
 }
 
 struct ThriftExpression {
