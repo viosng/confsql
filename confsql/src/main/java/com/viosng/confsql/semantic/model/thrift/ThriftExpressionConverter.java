@@ -8,6 +8,9 @@ import com.viosng.confsql.semantic.model.algebra.special.expr.CaseExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
+import com.viosng.confsql.semantic.model.sql.*;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
@@ -96,5 +99,18 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
             thriftExpression.schema = query.getRequiredSchemaAttributes().stream().map(this::convert).collect(Collectors.toList());
         }
         return thriftExpression;
+    }
+
+    private final static ConfSQLVisitor<SQLExpression> visitor = new ConfSQLVisitorImpl();
+
+    @NotNull
+    @Override
+    public ThriftExpression convert(@NotNull String query) {
+        return convert(
+                visitor.visit(
+                        new ConfSQLParser(
+                                new CommonTokenStream(
+                                        new ConfSQLLexer(
+                                                new ANTLRInputStream(query)))).stat()).convert());
     }
 }

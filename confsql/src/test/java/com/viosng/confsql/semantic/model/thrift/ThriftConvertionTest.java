@@ -1,8 +1,6 @@
 package com.viosng.confsql.semantic.model.thrift;
 
 import com.google.common.base.Joiner;
-import com.viosng.confsql.semantic.model.algebra.Expression;
-import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.sql.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -31,8 +29,7 @@ public class ThriftConvertionTest {
     public void testFull() throws Exception {
         String query = Joiner.on("").join(Files.readAllLines(Paths.get(
                 "src/test/java/com/viosng/confsql/semantic/model/thrift/query.sql"), StandardCharsets.UTF_8));
-        Expression exp = visitor.visit(getParser(query).stat()).convert();
-        ThriftExpression thriftQuery = ThriftExpressionConverter.getInstance().convert(exp);
+        ThriftExpression thriftQuery = ThriftExpressionConverter.getInstance().convert(query);
 
         TSerializer serializer = new TSerializer(new TJSONProtocol.Factory());
         String json = serializer.toString(thriftQuery);
@@ -49,6 +46,6 @@ public class ThriftConvertionTest {
         out.close();
         System.out.println(query);
         System.out.println(json);
-        System.out.println(exp.verify(Context.EMPTY_CONTEXT));
+        //System.out.println(exp.verify(Context.EMPTY_CONTEXT));
     }
 }

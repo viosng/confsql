@@ -7,4 +7,7 @@ public interface ExpressionConverter<T> {
 
     @NotNull
     T convert(@NotNull Expression expression);
+
+    @NotNull
+    T convert(@NotNull String query);
 }

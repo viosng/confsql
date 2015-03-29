@@ -13,6 +13,9 @@ import com.viosng.confsql.semantic.model.algebra.special.expr.OrderByArgExpressi
 import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
+import com.viosng.confsql.semantic.model.sql.*;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -253,5 +256,18 @@ public class XMLExpressionConverter implements ExpressionConverter<XMLExpression
         XMLExpression xmlExpression = convertExpressions(expression);
         if (xmlExpression != null) return xmlExpression;
         return convertQuery((Query)expression);
+    }
+
+    private final static ConfSQLVisitor<SQLExpression> visitor = new ConfSQLVisitorImpl();
+
+    @NotNull
+    @Override
+    public XMLExpression convert(@NotNull String query) {
+        return convert(
+                visitor.visit(
+                        new ConfSQLParser(
+                                new CommonTokenStream(
+                                        new ConfSQLLexer(
+                                                new ANTLRInputStream(query)))).stat()).convert());
     }
 }
