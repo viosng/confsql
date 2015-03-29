@@ -11,6 +11,9 @@ import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.sql.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.thrift.TException;
+import org.apache.thrift.TSerializer;
+import org.apache.thrift.protocol.TJSONProtocol;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
@@ -112,5 +115,13 @@ public class ThriftExpressionConverter implements ExpressionConverter<ThriftExpr
                                 new CommonTokenStream(
                                         new ConfSQLLexer(
                                                 new ANTLRInputStream(query)))).stat()).convert());
+    }
+
+    public String toJSONProtocolString(@NotNull String query){
+        try {
+            return new TSerializer(new TJSONProtocol.Factory()).toString(convert(query));
+        } catch (TException e) {
+            throw new IllegalArgumentException("TException", e);
+        }
     }
 }
