@@ -1,5 +1,5 @@
-include "ThriftExpressions.thrift"
+include "expression.thrift"
 
 service Translator {
-   ThriftExpressions.ThriftExpression translate(1:string query)
+   expression.ThriftExpression translate(1:string query)
 }

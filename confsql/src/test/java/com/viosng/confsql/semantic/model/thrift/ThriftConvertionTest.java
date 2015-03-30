@@ -33,6 +33,9 @@ public class ThriftConvertionTest {
 
         TSerializer serializer = new TSerializer(new TJSONProtocol.Factory());
         String json = serializer.toString(thriftQuery);
+        FileWriter out = new FileWriter("jsonOutput.json");
+        out.write(json);
+        out.close();
         TDeserializer deserializer = new TDeserializer(new TJSONProtocol.Factory());
         ThriftExpression deserializedThriftQuery = new ThriftExpression();
         deserializer.deserialize(deserializedThriftQuery, json, "UTF-8");
@@ -41,9 +44,6 @@ public class ThriftConvertionTest {
         TSerializer jsonSerializer = new TSerializer(new TSimpleJSONProtocol.Factory());
         json = jsonSerializer.toString(thriftQuery);
 
-        FileWriter out = new FileWriter("jsonOutput.json");
-        out.write(json);
-        out.close();
         System.out.println(query);
         System.out.println(json);
         //System.out.println(exp.verify(Context.EMPTY_CONTEXT));
