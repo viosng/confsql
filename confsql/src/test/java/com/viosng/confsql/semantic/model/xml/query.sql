@@ -1,1 +1,7 @@
-select asterixQuery.name, file.name from file join (select * from asterix where asterix.age > 3) as asterixQuery on asterixQuery.department_id = file.id
+SELECT
+  asterixQuery.name,
+  file.name
+ FROM file
+  JOIN (SELECT *
+        FROM asterix
+        WHERE asterix.age > 3) AS asterixQuery ON asterixQuery.department_id = file.id
