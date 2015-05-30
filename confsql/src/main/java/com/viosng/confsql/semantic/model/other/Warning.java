@@ -1,6 +1,8 @@
 package com.viosng.confsql.semantic.model.other;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -11,6 +13,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * Time: 23:32
  */
 @Data
+@EqualsAndHashCode(exclude={"id"})
+@ToString(exclude = "id")
 public class Warning {
     private static final AtomicLong COUNTER = new AtomicLong();
 
