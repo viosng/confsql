@@ -18,25 +18,25 @@ import java.util.List;
 public interface Expression{
 
     @NotNull
-    public final static String UNDEFINED_ID = "";
+    String UNDEFINED_ID = "";
 
     @NotNull
-    public default String id() {
+    default String id() {
         return UNDEFINED_ID;
     }
 
-    public default void setId(@Nullable String id) {
+    default void setId(@Nullable String id) {
         throw new UnsupportedOperationException();
     }
 
     @NotNull
-    public ArithmeticType type();
+    ArithmeticType type();
 
     @NotNull
-    public default List<Expression> getArguments() {
+    default List<Expression> getArguments() {
         return Collections.emptyList();
     }
 
     @NotNull
-    public Notification verify(Context context);
+    Notification verify(Context context);
 }

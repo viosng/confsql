@@ -37,16 +37,6 @@ public class ObjectExpression implements Expression {
     }
 
     @Override
-    public int hashCode() {
-        return ObjectExpression.class.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return this == o;
-    }
-
-    @Override
     public String toString() {
         return "ObjectExpression{}";
     }

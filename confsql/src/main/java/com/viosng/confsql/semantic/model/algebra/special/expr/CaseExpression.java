@@ -5,6 +5,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
+import com.viosng.confsql.semantic.model.other.NotificationCollector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,8 +67,9 @@ public class CaseExpression implements Expression {
     @Override
     public Notification verify(Context context) {
         return Stream.concat(Stream.of(argument), parameters.stream())
+                .parallel()
                 .filter(a -> a != null)
-                .map(p -> p.verify(context)).collect(Notification::new, Notification::accept, Notification::accept);
+                .map(p -> p.verify(context)).collect(new NotificationCollector());
     }
 
     @Override

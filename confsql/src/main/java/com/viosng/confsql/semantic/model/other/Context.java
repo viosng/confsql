@@ -11,7 +11,7 @@ import java.util.List;
  * Time: 23:26
  */
 public interface Context {
-    public boolean hasObject(@NotNull List<String> hierarchy);
+    boolean hasObject(@NotNull List<String> hierarchy);
 
-    public static final Context EMPTY_CONTEXT = hierarchy -> false;
+    Context EMPTY_CONTEXT = hierarchy -> false;
 }

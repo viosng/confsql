@@ -21,6 +21,10 @@ public class SuperContext implements Context {
 
     @Override
     public boolean hasObject(@NotNull List<String> hierarchy) {
-        return contexts.stream().map(c -> c.hasObject(hierarchy)).filter(r -> r).findFirst().orElse(false);
+        return contexts.parallelStream().filter(c -> c.hasObject(hierarchy)).findAny().isPresent();
+    }
+
+    public void pause (Context c) {
+        System.out.println(111);
     }
 }

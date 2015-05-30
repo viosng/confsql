@@ -23,22 +23,22 @@ public interface Query extends Expression {
     }
 
     @NotNull
-    public QueryType queryType();
+    QueryType queryType();
     
     @NotNull
-    public List<Parameter> getParameters();
+    List<Parameter> getParameters();
 
     @NotNull
-    public List<Expression> getRequiredSchemaAttributes();
+    List<Expression> getRequiredSchemaAttributes();
 
     @NotNull
-    public List<Query> getSubQueries();
+    List<Query> getSubQueries();
 
 
     @NotNull
-    public QueryContext getContext();
+    QueryContext getContext();
     
-    static enum QueryType {
+    enum QueryType {
         FICTIVE,
         PRIMARY,
         FILTER,

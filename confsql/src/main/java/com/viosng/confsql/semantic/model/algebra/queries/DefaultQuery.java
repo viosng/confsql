@@ -2,10 +2,8 @@ package com.viosng.confsql.semantic.model.algebra.queries;
 
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
-import com.viosng.confsql.semantic.model.other.Context;
-import com.viosng.confsql.semantic.model.other.Notification;
-import com.viosng.confsql.semantic.model.other.QueryContext;
-import com.viosng.confsql.semantic.model.other.SuperContext;
+import com.viosng.confsql.semantic.model.other.*;
+import com.viosng.confsql.semantic.model.other.CacheableValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +20,7 @@ import java.util.stream.Stream;
  */
 public abstract class DefaultQuery implements Query{
     @NotNull
-    private String id;
+    private volatile String id;
     
     @NotNull
     private final List<Parameter> parameters;
@@ -32,8 +30,9 @@ public abstract class DefaultQuery implements Query{
     
     @NotNull
     private final List<Query> subQueries;
-    
-    private QueryContext context;
+
+    @NotNull
+    private final CacheableValue<QueryContext> context = new CacheableValue<>();
 
     public DefaultQuery(@NotNull String id,
                         @NotNull List<Parameter> parameters,
@@ -77,10 +76,7 @@ public abstract class DefaultQuery implements Query{
     @NotNull
     @Override
     public QueryContext getContext() {
-        if (context == null) {
-            context = createContext();
-        }
-        return context;
+        return context.orElseGet(this::createContext);
     }
 
     @NotNull
@@ -91,7 +87,7 @@ public abstract class DefaultQuery implements Query{
     public Notification verify(Context context) {
         List<Context> subQueryContexts = subQueries.stream().map(Query::getContext).collect(Collectors.toList());
         Context subQueryContext = new SuperContext(subQueryContexts);
-        Context superContext = new SuperContext(Arrays.asList(context, subQueryContext));
+        Context superContext = new SuperContext(Arrays.asList(context, subQueryContext)); //todo add new constructor
         return Stream.concat(
                 Stream.concat(
                         Stream.concat(
@@ -99,7 +95,7 @@ public abstract class DefaultQuery implements Query{
                                 parameters.stream().map(q -> q.verify(superContext))),
                         subQueries.stream().map(q -> q.verify(context))),
                 subQueryContexts.stream().map(q -> (Notification) q))
-                .collect(Notification::new, Notification::accept, Notification::accept);
+                .collect(new NotificationCollector());
     }
 
     @Override
@@ -133,7 +129,7 @@ public abstract class DefaultQuery implements Query{
         result = 31 * result + parameters.hashCode();
         result = 31 * result + requiredSchemaAttributes.hashCode();
         result = 31 * result + subQueries.hashCode();
-        result = 31 * result + (context != null ? context.hashCode() : 0);
+        result = 31 * result + context.hashCode();
         return result;
     }
 }

@@ -176,7 +176,7 @@ public class QueryFactory {
                             @NotNull List<Parameter> parameters,
                             @NotNull List<Expression> requiredSchemaAttributes,
                             @NotNull Query subQuery) {
-            super(id, parameters, requiredSchemaAttributes, Arrays.asList(subQuery));
+            super(id, parameters, requiredSchemaAttributes, Collections.singletonList(subQuery));
         }
 
 
@@ -186,7 +186,7 @@ public class QueryFactory {
             return getRequiredSchemaAttributes().isEmpty()
                     ? getSubQueries().get(0).getContext()
                     : updateContextFromSchema(
-                    new QueryContext(id()), Arrays.asList(id()), getRequiredSchemaAttributes(), getSubQueries().get(0));
+                    new QueryContext(id()), Collections.singletonList(id()), getRequiredSchemaAttributes(), getSubQueries().get(0));
         }
     }
 
@@ -248,7 +248,7 @@ public class QueryFactory {
         private AggregationQuery(@NotNull String id,
                                  @NotNull List<Parameter> parameters,
                                  @NotNull Query base) {
-            super(id, parameters, Collections.<Expression>emptyList(), Arrays.asList(base));
+            super(id, parameters, Collections.<Expression>emptyList(), Collections.singletonList(base));
         }
 
         @NotNull
@@ -269,7 +269,7 @@ public class QueryFactory {
         private UnNestQuery(@NotNull String id,
                             @NotNull List<Parameter> parameters,
                             @NotNull Query base) {
-            super(id, parameters, Collections.emptyList(), Arrays.asList(base));
+            super(id, parameters, Collections.emptyList(), Collections.singletonList(base));
         }
 
         @NotNull

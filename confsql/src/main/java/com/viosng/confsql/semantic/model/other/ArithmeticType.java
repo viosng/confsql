@@ -59,6 +59,6 @@ public enum ArithmeticType {
     @NotNull
     public static ArithmeticType resolveArithmeticType(String alias) {
         String lowerCase = alias.toLowerCase();
-        return Arrays.stream(ArithmeticType.values()).filter(t -> t.getAliases().contains(lowerCase)).findFirst().orElse(UNDEFINED);
+        return Arrays.stream(ArithmeticType.values()).filter(t -> t.getAliases().contains(lowerCase)).findAny().orElse(UNDEFINED);
     }
 }

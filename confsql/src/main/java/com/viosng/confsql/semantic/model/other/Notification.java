@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * Date: 17.03.2015
  * Time: 23:39
  */
-public class Notification implements Consumer<Notification> {
+public class Notification{
 
     @NotNull
     protected final List<Warning> warnings = new ArrayList<>();
@@ -36,11 +36,6 @@ public class Notification implements Consumer<Notification> {
     @NotNull
     public List<Warning> getWarnings() {
         return warnings;
-    }
-
-    @Override
-    public void accept(Notification notification) {
-        warnings.addAll(notification.getWarnings());
     }
 
     @Override

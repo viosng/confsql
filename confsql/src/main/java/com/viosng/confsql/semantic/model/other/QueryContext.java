@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,10 +24,10 @@ public class QueryContext extends Notification implements Context {
     private static class ObjectStructureNode {
 
         @NotNull
-        private String name;
+        private volatile String name;
 
         @NotNull
-        private final Map<String, ObjectStructureNode> children = new HashMap<>();
+        private final Map<String, ObjectStructureNode> children = new ConcurrentHashMap<>();
 
         public ObjectStructureNode(@NotNull String name) {
             this.name = name;
