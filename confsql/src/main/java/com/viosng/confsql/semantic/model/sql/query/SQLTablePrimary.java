@@ -7,6 +7,7 @@ import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpressionFactory;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
 import com.viosng.confsql.semantic.model.sql.expr.impl.SQLField;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * Date: 01.03.2015
  * Time: 13:01
  */
+@Data
 public class SQLTablePrimary implements SQLExpression {
     
     @NotNull
@@ -45,26 +47,6 @@ public class SQLTablePrimary implements SQLExpression {
         } else {
             throw new IllegalArgumentException("Null table primary id");
         }
-    }
-
-    @NotNull
-    public SQLExpression getSource() {
-        return source;
-    }
-
-    @Nullable
-    public String getAlias() {
-        return alias;
-    }
-
-    @NotNull
-    public List<String> getColumnList() {
-        return columnList;
-    }
-
-    @NotNull
-    public String getQueryId() {
-        return queryId;
     }
 
     @Override
@@ -94,31 +76,4 @@ public class SQLTablePrimary implements SQLExpression {
         return exp;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SQLTablePrimary)) return false;
-
-        SQLTablePrimary that = (SQLTablePrimary) o;
-
-        return !(alias != null ? !alias.equals(that.alias) : that.alias != null) && columnList.equals(that.columnList)
-                && source.equals(that.source);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = source.hashCode();
-        result = 31 * result + (alias != null ? alias.hashCode() : 0);
-        result = 31 * result + columnList.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "SQLTablePrimary{" +
-                "source=" + source +
-                ", alias='" + alias + '\'' +
-                ", columnList=" + columnList +
-                '}';
-    }
 }

@@ -15,33 +15,32 @@ import java.util.List;
 public interface ValueExpression extends Expression {
     
     @NotNull
-    public String getValue();
+    String getValue();
     
-    public interface ConstantExpression extends ValueExpression{
+    interface ConstantExpression extends ValueExpression{
         @NotNull
         @Override
-        public default ArithmeticType type() { return ArithmeticType.CONSTANT; }
+        default ArithmeticType type() { return ArithmeticType.CONSTANT; }
     }
     
-    public interface FunctionCallExpression extends ValueExpression{
+    interface FunctionCallExpression extends ValueExpression{
 
         @NotNull
         @Override
-        public default ArithmeticType type() { return ArithmeticType.FUNCTION_CALL; }
+        default ArithmeticType type() { return ArithmeticType.FUNCTION_CALL; }
 
         @NotNull
-        public List<Parameter> getParameters();
+        List<Parameter> getParameters();
         
     }
     
-    public interface AttributeExpression extends ValueExpression{
+    interface AttributeExpression extends ValueExpression{
         
         @NotNull
-        public List<String> getObject();
+        List<String> getObject();
 
         @NotNull
         @Override
-        public default ArithmeticType type() { return ArithmeticType.ATTRIBUTE; }
-
+        default ArithmeticType type() { return ArithmeticType.ATTRIBUTE; }
     }
 }

@@ -3,7 +3,11 @@ package com.viosng.confsql.semantic.model.other;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 import com.viosng.confsql.semantic.model.algebra.Expression;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -16,46 +20,22 @@ import java.util.concurrent.ConcurrentHashMap;
  * Date: 29.12.2014
  * Time: 3:38
  */
+
+@Data
+@EqualsAndHashCode(callSuper = false)
 public class QueryContext extends Notification implements Context {
 
     private final static Set<String> RESERVED_FIELDS = ImmutableSet.of("score", "SCORE", "ID", "id");
 
+    @Data
     private static class ObjectStructureNode {
 
         @NotNull
+        @NonNull
         private volatile String name;
 
         @NotNull
         private final Map<String, ObjectStructureNode> children = new ConcurrentHashMap<>();
-
-        public ObjectStructureNode(@NotNull String name) {
-            this.name = name;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof ObjectStructureNode)) return false;
-
-            ObjectStructureNode that = (ObjectStructureNode) o;
-
-            return children.equals(that.children) && name.equals(that.name);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = name.hashCode();
-            result = 31 * result + children.hashCode();
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "ObjectStructureNode{" +
-                    "\nname='" + name + '\'' +
-                    ", \nchildren=" + Joiner.on(',').withKeyValueSeparator("=").join(children) +
-                    '}';
-        }
     }
 
     @NotNull
@@ -66,11 +46,11 @@ public class QueryContext extends Notification implements Context {
         this.root = new ObjectStructureNode(root);
     }
 
-    public void addObject(List<String> hierarchy) {
+    public void addObject(@NotNull List<String> hierarchy) {
         addObject(hierarchy, null);
     }
 
-    private void addObject(List<String> hierarchy, ObjectStructureNode newNode) {
+    private void addObject(@NotNull List<String> hierarchy, @Nullable ObjectStructureNode newNode) {
         ObjectStructureNode cur = root, prev = root;
         if (hierarchy.get(0).equals(root.name)) {
             hierarchy = hierarchy.subList(1, hierarchy.size());
@@ -104,7 +84,9 @@ public class QueryContext extends Notification implements Context {
         return true;
     }
 
-    public void mergeContext(@NotNull QueryContext context, @NotNull List<String> contextPath, @NotNull List<String> newPath) {
+    public void mergeContext(@NotNull QueryContext context,
+                             @NotNull List<String> contextPath,
+                             @NotNull List<String> newPath) {
         ObjectStructureNode cur = context.root;
         if (contextPath.get(0).equals(context.root.name)) {
             contextPath = contextPath.subList(1, contextPath.size());
@@ -121,14 +103,14 @@ public class QueryContext extends Notification implements Context {
         addObject(newPath, cur);
     }
 
-    public void mergeContextsByLevel(Iterable<QueryContext> contexts) {
+    public void mergeContextsByLevel(@NotNull Iterable<QueryContext> contexts) {
         for (QueryContext context : contexts) {
             mergeNodes(root, context.root);
         }
     }
 
     @NotNull
-    public static QueryContext joinContexts(Iterable<QueryContext> contexts) {
+    public static QueryContext joinContexts(@NotNull Iterable<QueryContext> contexts) {
         QueryContext newContext = new QueryContext("");
         int count = 0;
         for (QueryContext context : contexts) {
@@ -193,30 +175,5 @@ public class QueryContext extends Notification implements Context {
     public void clear() {
         root.children.clear();
         warnings.clear();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof QueryContext)) return false;
-
-        QueryContext context = (QueryContext) o;
-
-        return root.equals(context.root) && warnings.equals(context.warnings);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = warnings.hashCode();
-        result = 31 * result + root.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Context{" +
-                "warnings=" + warnings +
-                ", root=" + root +
-                '}';
     }
 }

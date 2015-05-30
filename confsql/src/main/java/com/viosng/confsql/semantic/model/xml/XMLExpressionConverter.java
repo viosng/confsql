@@ -14,6 +14,7 @@ import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.algebra.special.expr.ValueExpression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.sql.*;
+import lombok.Data;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +59,7 @@ public class XMLExpressionConverter implements ExpressionConverter<XMLExpression
     }
 
     @XStreamAlias("expression")
+    @Data
     private static class XMLExpressionImpl implements XMLExpression {
         @XStreamAsAttribute
         public String id;
@@ -74,53 +76,10 @@ public class XMLExpressionConverter implements ExpressionConverter<XMLExpression
         public List<XMLExpression> arguments;
 
         public List<XMLParameter> parameters;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof XMLExpressionImpl)) return false;
-
-            XMLExpressionImpl that = (XMLExpressionImpl) o;
-
-            if (arguments != null ? !arguments.equals(that.arguments) : that.arguments != null) return false;
-            if (id != null ? !id.equals(that.id) : that.id != null) return false;
-            if (objectReference != null ? !objectReference.equals(that.objectReference) : that.objectReference != null)
-                return false;
-            if (orderType != null ? !orderType.equals(that.orderType) : that.orderType != null) return false;
-            if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
-            if (type != that.type) return false;
-            if (value != null ? !value.equals(that.value) : that.value != null) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = id != null ? id.hashCode() : 0;
-            result = 31 * result + (objectReference != null ? objectReference.hashCode() : 0);
-            result = 31 * result + (value != null ? value.hashCode() : 0);
-            result = 31 * result + (orderType != null ? orderType.hashCode() : 0);
-            result = 31 * result + (type != null ? type.hashCode() : 0);
-            result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
-            result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "XMLExpressionImpl{" +
-                    "id='" + id + '\'' +
-                    ", objectReference='" + objectReference + '\'' +
-                    ", value='" + value + '\'' +
-                    ", orderType='" + orderType + '\'' +
-                    ", type=" + type +
-                    ", arguments=" + arguments +
-                    ", parameters=" + parameters +
-                    '}';
-        }
     }
 
     @XStreamAlias("query")
+    @Data
     private static class XMLQuery implements XMLExpression {
         @XStreamAsAttribute
         public String id = "";
@@ -133,46 +92,6 @@ public class XMLExpressionConverter implements ExpressionConverter<XMLExpression
         public List<XMLExpression> schema;
 
         public List<XMLQuery> arguments;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof XMLQuery)) return false;
-
-            XMLQuery xmlQuery = (XMLQuery) o;
-
-            if (arguments != null ? !arguments.equals(xmlQuery.arguments) : xmlQuery.arguments != null) return false;
-            if (id != null ? !id.equals(xmlQuery.id) : xmlQuery.id != null) return false;
-            if (parameters != null ? !parameters.equals(xmlQuery.parameters) : xmlQuery.parameters != null)
-                return false;
-            if (type != xmlQuery.type) return false;
-            if (schema != null ? !schema.equals(xmlQuery.schema) : xmlQuery.schema != null) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = id != null ? id.hashCode() : 0;
-            result = 31 * result + (type != null ? type.hashCode() : 0);
-            result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
-            result = 31 * result + (schema != null ? schema.hashCode() : 0);
-            result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String
-
-        toString() {
-            return "XMLQuery{" +
-                    "id='" + id + '\'' +
-                    ", type=" + type +
-                    ", parameters=" + parameters +
-                    ", schema=" + schema +
-                    ", arguments=" + arguments +
-                    '}';
-        }
     }
 
     @NotNull

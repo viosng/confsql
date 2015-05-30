@@ -4,6 +4,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
  * Date: 08.03.2015
  * Time: 0:06
  */
+
+@Data
 public class OrderByArgExpression implements Expression {
 
     @NotNull
@@ -19,38 +22,6 @@ public class OrderByArgExpression implements Expression {
 
     @NotNull
     private final String orderType;
-
-    public OrderByArgExpression(@NotNull Expression argument, @NotNull String orderType) {
-        this.argument = argument;
-        this.orderType = orderType;
-    }
-
-    @NotNull
-    public Expression getArgument() {
-        return argument;
-    }
-
-    @NotNull
-    public String getOrderType() {
-        return orderType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OrderByArgExpression)) return false;
-
-        OrderByArgExpression that = (OrderByArgExpression) o;
-
-        return argument.equals(that.argument) && orderType.equals(that.orderType);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = argument.hashCode();
-        result = 31 * result + orderType.hashCode();
-        return result;
-    }
 
     @Override
     public String toString() {

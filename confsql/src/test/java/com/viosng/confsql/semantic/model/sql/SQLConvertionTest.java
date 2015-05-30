@@ -45,13 +45,17 @@ public class SQLConvertionTest {
     @Test
     public void testBinaryExpression() throws Exception {
         String c1 = "123", c2 = ".3e-4";
-        assertEquals(new ExpressionImpl(ArithmeticType.PLUS, ValueExpressionFactory.constant(c1), ValueExpressionFactory.constant(c2)),
+        assertEquals(new ExpressionImpl(ArithmeticType.PLUS, ValueExpressionFactory.constant(c1),
+                        ValueExpressionFactory.constant(c2)),
                 visitor.visit(getParser(c1 + " + " + c2).expr()).convert());
-        assertEquals(new ExpressionImpl(ArithmeticType.POWER, ValueExpressionFactory.constant(c1), ValueExpressionFactory.constant(c2)),
+        assertEquals(new ExpressionImpl(ArithmeticType.POWER, ValueExpressionFactory.constant(c1),
+                        ValueExpressionFactory.constant(c2)),
                 visitor.visit(getParser(c1 + " ** " + c2).expr()).convert());
-        assertEquals(new ExpressionImpl(ArithmeticType.LT, ValueExpressionFactory.constant(c1), ValueExpressionFactory.constant(c2)),
+        assertEquals(new ExpressionImpl(ArithmeticType.LT, ValueExpressionFactory.constant(c1),
+                        ValueExpressionFactory.constant(c2)),
                 visitor.visit(getParser(c1 + " < " + c2).expr()).convert());
-        assertEquals(new ExpressionImpl(ArithmeticType.NOT_EQUAL, ValueExpressionFactory.constant(c1), ValueExpressionFactory.constant(c2)),
+        assertEquals(new ExpressionImpl(ArithmeticType.NOT_EQUAL, ValueExpressionFactory.constant(c1),
+                        ValueExpressionFactory.constant(c2)),
                 visitor.visit(getParser(c1 + " != " + c2).expr()).convert());
     }
 
@@ -68,15 +72,20 @@ public class SQLConvertionTest {
 
     @Test
     public void testField() throws Exception {
-        assertEquals(ValueExpressionFactory.attribute(Arrays.asList("a", "b")), visitor.visit(getParser("a.b").expr()).convert());
-        assertEquals(ValueExpressionFactory.attribute(Arrays.asList("b")), visitor.visit(getParser("b").expr()).convert());
-        assertEquals(ValueExpressionFactory.attribute(Arrays.asList("aa", "v", "v", "b")), visitor.visit(getParser("aa.v.v.b").expr()).convert());
+        assertEquals(ValueExpressionFactory.attribute(Arrays.asList("a", "b")),
+                visitor.visit(getParser("a.b").expr()).convert());
+        assertEquals(ValueExpressionFactory.attribute(Collections.singletonList("b")),
+                visitor.visit(getParser("b").expr()).convert());
+        assertEquals(ValueExpressionFactory.attribute(Arrays.asList("aa", "v", "v", "b")),
+                visitor.visit(getParser("aa.v.v.b").expr()).convert());
     }
 
     @Test
     public void testParameter() throws Exception {
-        assertEquals(new Parameter("a", ValueExpressionFactory.constant("1")), visitor.visit(getParser("a=1").param()).convert());
-        assertEquals(new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("a", "b"))), visitor.visit(getParser("a=a.b").param()).convert());
+        assertEquals(new Parameter("a", ValueExpressionFactory.constant("1")),
+                visitor.visit(getParser("a=1").param()).convert());
+        assertEquals(new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("a", "b"))),
+                visitor.visit(getParser("a=a.b").param()).convert());
     }
 
     @Test
@@ -89,7 +98,8 @@ public class SQLConvertionTest {
         assertEquals(ValueExpressionFactory.functionCall("func", arguments, parameters),
                 visitor.visit(getParser("func(1,2,3;a=1,b=2)").expr()).convert());
 
-        assertEquals(ValueExpressionFactory.functionCall("func", Arrays.asList(ObjectExpression.getInstance()), parameters),
+        assertEquals(ValueExpressionFactory.functionCall("func",
+                        Collections.singletonList(ObjectExpression.getInstance()), parameters),
                 visitor.visit(getParser("func(*;a=1,b=2)").expr()).convert());
 
         assertEquals(ValueExpressionFactory.functionCall("func1", Collections.<Expression>emptyList(), parameters),
@@ -135,7 +145,7 @@ public class SQLConvertionTest {
         assertEquals(expression, visitor.visit(getParser("3 + 4 as alias").selectItem()).convert());
 
         assertEquals(
-                ValueExpressionFactory.attribute(Arrays.asList("source"), "alias"),
+                ValueExpressionFactory.attribute(Collections.singletonList("source"), "alias"),
                 visitor.visit(getParser("source as alias").selectItem()).convert());
     }
 
@@ -151,7 +161,7 @@ public class SQLConvertionTest {
         Query filter = new QueryBuilder()
                 .queryType(Query.QueryType.FILTER)
                 .subQueries(primary)
-                .requiredSchemaAttributes(ValueExpressionFactory.attribute(Arrays.asList("a")))
+                .requiredSchemaAttributes(ValueExpressionFactory.attribute(Collections.singletonList("a")))
                 .id("alias")
                 .create();
         assertEquals(filter, visitor.visit(getParser("(select a from source as alias) as alias").tablePrimary()).convert());
@@ -181,7 +191,8 @@ public class SQLConvertionTest {
                 .parameters(
                         new Parameter("joinType", ValueExpressionFactory.constant("right")),
                         new Parameter("onCondition", new ExpressionImpl(ArithmeticType.LT,
-                                ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
+                                ValueExpressionFactory.attribute(Collections.singletonList("a")),
+                                ValueExpressionFactory.attribute(Collections.singletonList("b")))),
                         new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(query, primary)
                 .id("source")
@@ -212,7 +223,8 @@ public class SQLConvertionTest {
                 .parameters(
                         new Parameter("joinType", ValueExpressionFactory.constant("fuzzy")),
                         new Parameter("onCondition", new ExpressionImpl(ArithmeticType.EQUAL,
-                                ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
+                                ValueExpressionFactory.attribute(Collections.singletonList("a")),
+                                ValueExpressionFactory.attribute(Collections.singletonList("b")))),
                         new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(primary, primary)
                 .id("source")
@@ -223,7 +235,8 @@ public class SQLConvertionTest {
                 .parameters(
                         new Parameter("joinType", ValueExpressionFactory.constant("right")),
                         new Parameter("onCondition", new ExpressionImpl(ArithmeticType.LT,
-                                ValueExpressionFactory.attribute(Collections.singletonList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
+                                ValueExpressionFactory.attribute(Collections.singletonList("a")),
+                                ValueExpressionFactory.attribute(Collections.singletonList("b")))),
                         new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(query, primary)
                 .id("source")
@@ -237,7 +250,8 @@ public class SQLConvertionTest {
                 "from source, source fuzzy join(a=d.e) source on a=b, " +
                         "source fuzzy join(a=d.e) source on a=b right join(a=d.e) source on a<b").fromClause()).convert());
 
-        from.parameters(new Parameter("a", ValueExpressionFactory.constant("1")), new Parameter("b", ValueExpressionFactory.constant("2")));
+        from.parameters(new Parameter("a", ValueExpressionFactory.constant("1")), new Parameter("b",
+                ValueExpressionFactory.constant("2")));
 
         assertEquals(from.create(), visitor.visit(getParser(
                 "from(a=1,b=2) source, source fuzzy join(a=d.e) source on a=b, " +
@@ -249,7 +263,8 @@ public class SQLConvertionTest {
         QueryBuilder queryBuilder = new QueryBuilder()
                 .queryType(Query.QueryType.FILTER)
                 .subQueries(QueryFactory.fictive())
-                .requiredSchemaAttributes(ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.constant("3"));
+                .requiredSchemaAttributes(ValueExpressionFactory.attribute(Collections.singletonList("a")),
+                        ValueExpressionFactory.constant("3"));
         assertEquals(queryBuilder.create(), visitor.visit(getParser("select a, 3").query()).convert());
 
         Query primary = new QueryBuilder()
@@ -273,9 +288,9 @@ public class SQLConvertionTest {
                 .queryType(Query.QueryType.AGGREGATION)
                 .subQueries(where)
                 .parameters(
-                        new Parameter("groupByArg0", ValueExpressionFactory.attribute(Arrays.asList("a"))),
-                        new Parameter("groupByArg1", ValueExpressionFactory.attribute(Arrays.asList("b"))),
-                        new Parameter("groupByArg2", ValueExpressionFactory.attribute(Arrays.asList("c"))),
+                        new Parameter("groupByArg0", ValueExpressionFactory.attribute(Collections.singletonList("a"))),
+                        new Parameter("groupByArg1", ValueExpressionFactory.attribute(Collections.singletonList("b"))),
+                        new Parameter("groupByArg2", ValueExpressionFactory.attribute(Collections.singletonList("c"))),
                         new Parameter("algorithm", ValueExpressionFactory.constant("\"NearestNeighbours\"")))
                 .create();
         queryBuilder.subQueries(groupBy);
@@ -294,8 +309,10 @@ public class SQLConvertionTest {
                 .queryType(Query.QueryType.FILTER)
                 .subQueries(having)
                 .parameters(
-                        new Parameter("orderByArg0", new OrderByArgExpression(ValueExpressionFactory.attribute(Arrays.asList("a")), "asc")),
-                        new Parameter("orderByArg1", new OrderByArgExpression(ValueExpressionFactory.attribute(Arrays.asList("b")), "desc")),
+                        new Parameter("orderByArg0", new OrderByArgExpression(
+                                ValueExpressionFactory.attribute(Collections.singletonList("a")), "asc")),
+                        new Parameter("orderByArg1", new OrderByArgExpression(
+                                ValueExpressionFactory.attribute(Collections.singletonList("b")), "desc")),
                         new Parameter("c", ValueExpressionFactory.constant("\"d\"")),
                         new Parameter("type", ValueExpressionFactory.constant("order")))
                 .create();
@@ -315,7 +332,8 @@ public class SQLConvertionTest {
 
         Query select = queryBuilder.create();
         assertEquals(select, visitor.visit(getParser(
-                "select a, 3 from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c having 3=4").query()).convert());
+                "select a, 3 from source where 3=4 group(\"algorithm\"=\"NearestNeighbours\") by a, b, c having 3=4")
+                .query()).convert());
 
 
 

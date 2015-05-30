@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.other;
 
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ import java.util.List;
  * Date: 17.03.2015
  * Time: 23:39
  */
+
+@Data
 public class Notification{
 
     @NotNull
@@ -30,17 +33,5 @@ public class Notification{
 
     public boolean isOk() {
         return warnings.isEmpty();
-    }
-
-    @NotNull
-    public List<Warning> getWarnings() {
-        return warnings;
-    }
-
-    @Override
-    public String toString() {
-        return "Notification{" +
-                "warnings=" + warnings +
-                '}';
     }
 }

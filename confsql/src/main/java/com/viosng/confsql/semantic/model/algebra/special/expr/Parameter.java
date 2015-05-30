@@ -4,6 +4,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,6 +13,10 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.12.2014
  * Time: 2:08
  */
+
+@Data
+@ToString(exclude="verificationFlag")
+@EqualsAndHashCode(exclude={"verificationFlag"})
 public class Parameter implements Expression {
     
     @NotNull
@@ -20,6 +25,7 @@ public class Parameter implements Expression {
     @NotNull
     private final Expression value;
 
+    @Setter(AccessLevel.PRIVATE)
     private volatile boolean verificationFlag = true;
 
     public Parameter(@NotNull String id, @NotNull Expression value) {
@@ -48,34 +54,5 @@ public class Parameter implements Expression {
 
     public void disableVerification(){
         verificationFlag = false;
-    }
-
-    @NotNull
-    public Expression getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Parameter parameter = (Parameter) o;
-        return id.equals(parameter.id) && value.equals(parameter.value);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + value.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Parameter{" +
-                "name='" + id + '\'' +
-                ", value='" + value + '\'' +
-                '}';
     }
 }

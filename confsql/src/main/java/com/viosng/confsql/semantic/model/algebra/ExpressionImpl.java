@@ -4,6 +4,7 @@ import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.other.Context;
 import com.viosng.confsql.semantic.model.other.Notification;
 import com.viosng.confsql.semantic.model.other.NotificationCollector;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * Date: 06.03.2015
  * Time: 18:16
  */
+@Data
 public class ExpressionImpl implements Expression {
 
     @NotNull
@@ -26,17 +28,6 @@ public class ExpressionImpl implements Expression {
 
     @NotNull
     private final List<Expression> arguments;
-
-    public ExpressionImpl(@NotNull ArithmeticType type, @NotNull List<Expression> arguments) {
-        this.type = type;
-        this.arguments = arguments;
-    }
-
-    public ExpressionImpl(@NotNull ArithmeticType type, @NotNull List<Expression> arguments, @NotNull String id) {
-        this.id = id;
-        this.type = type;
-        this.arguments = arguments;
-    }
 
     public ExpressionImpl(@NotNull ArithmeticType type, Expression... arguments) {
         this.type = type;
@@ -55,12 +46,6 @@ public class ExpressionImpl implements Expression {
 
     @NotNull
     @Override
-    public List<Expression> getArguments() {
-        return arguments;
-    }
-
-    @NotNull
-    @Override
     public Notification verify(Context context) {
         return arguments.stream()
                 .filter(a -> a != null)
@@ -74,30 +59,4 @@ public class ExpressionImpl implements Expression {
         return id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ExpressionImpl)) return false;
-
-        ExpressionImpl that = (ExpressionImpl) o;
-
-        return arguments.equals(that.arguments) && id.equals(that.id) && type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + type.hashCode();
-        result = 31 * result + arguments.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "ExpressionImpl{" +
-                "id='" + id + '\'' +
-                ", type=" + type +
-                ", arguments=" + arguments +
-                '}';
-    }
 }

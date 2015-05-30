@@ -32,7 +32,6 @@ public interface Expression{
     @NotNull
     ArithmeticType type();
 
-    @NotNull
     default List<Expression> getArguments() {
         return Collections.emptyList();
     }

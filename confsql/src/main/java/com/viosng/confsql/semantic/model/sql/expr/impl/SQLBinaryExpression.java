@@ -4,6 +4,7 @@ import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.ExpressionImpl;
 import com.viosng.confsql.semantic.model.other.ArithmeticType;
 import com.viosng.confsql.semantic.model.sql.SQLExpression;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 28.02.2015
  * Time: 18:11
  */
+@Data
 public class SQLBinaryExpression implements SQLExpression {
     
     @NotNull
@@ -20,57 +22,10 @@ public class SQLBinaryExpression implements SQLExpression {
     @NotNull
     private final SQLExpression left, right;
 
-    public SQLBinaryExpression(@NotNull ArithmeticType operator, @NotNull SQLExpression left, @NotNull SQLExpression right) {
-        this.operator = operator;
-        this.left = left;
-        this.right = right;
-    }
-
-    @NotNull
-    public ArithmeticType getOperator() {
-        return operator;
-    }
-
-    @NotNull
-    public SQLExpression getLeft() {
-        return left;
-    }
-
-    @NotNull
-    public SQLExpression getRight() {
-        return right;
-    }
-
     @NotNull
     @Override
     public Expression convert() {
         return new ExpressionImpl(operator, left.convert(), right.convert());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SQLBinaryExpression)) return false;
-
-        SQLBinaryExpression that = (SQLBinaryExpression) o;
-
-        return left.equals(that.left) && operator.equals(that.operator) && right.equals(that.right);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = operator.hashCode();
-        result = 31 * result + left.hashCode();
-        result = 31 * result + right.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "SQLBinaryExpression{" +
-                "operator='" + operator + '\'' +
-                ", left=" + left +
-                ", right=" + right +
-                '}';
-    }
 }

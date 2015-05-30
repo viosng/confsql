@@ -3,12 +3,12 @@ package com.viosng.confsql.semantic.model.algebra.queries;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.other.*;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +18,8 @@ import java.util.stream.Stream;
  * Date: 27.12.2014
  * Time: 14:31
  */
+
+@Data
 public abstract class DefaultQuery implements Query{
     @NotNull
     private volatile String id;
@@ -57,24 +59,6 @@ public abstract class DefaultQuery implements Query{
 
     @NotNull
     @Override
-    public List<Parameter> getParameters() {
-        return parameters;
-    }
-
-    @NotNull
-    @Override
-    public List<Expression> getRequiredSchemaAttributes() {
-        return requiredSchemaAttributes;
-    }
-
-    @NotNull
-    @Override
-    public List<Query> getSubQueries() {
-        return subQueries;
-    }
-
-    @NotNull
-    @Override
     public QueryContext getContext() {
         return context.orElseGet(this::createContext);
     }
@@ -98,31 +82,4 @@ public abstract class DefaultQuery implements Query{
                 .collect(new NotificationCollector());
     }
 
-    @Override
-    public String toString() {
-        return "DefaultQuery{\n" +
-                "id='" + id + '\'' +
-                ",\n parameters=" + parameters +
-                ",\n requiredSchemaAttributes=" + requiredSchemaAttributes +
-                ",\n subQueries=" + subQueries +
-                ",\n context=" + context +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DefaultQuery that = (DefaultQuery) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(parameters, that.parameters) &&
-                Objects.equals(requiredSchemaAttributes, that.requiredSchemaAttributes) &&
-                Objects.equals(subQueries, that.subQueries) &&
-                Objects.equals(context.get(), that.context.get());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, parameters, requiredSchemaAttributes, subQueries, context);
-    }
 }

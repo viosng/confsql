@@ -1,9 +1,6 @@
 package com.viosng.confsql.semantic.model.thrift;
 
 import com.google.common.base.Joiner;
-import com.viosng.confsql.semantic.model.sql.*;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TJSONProtocol;
@@ -18,12 +15,6 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
 
 public class ThriftConvertionTest {
-
-    private ConfSQLVisitor<SQLExpression> visitor = new ConfSQLVisitorImpl();
-
-    private ConfSQLParser getParser(String input) {
-        return new ConfSQLParser(new CommonTokenStream(new ConfSQLLexer(new ANTLRInputStream(input))));
-    }
 
     @Test
     public void testFull() throws Exception {
@@ -46,6 +37,5 @@ public class ThriftConvertionTest {
 
         System.out.println(query);
         System.out.println(json);
-        //System.out.println(exp.verify(Context.EMPTY_CONTEXT));
     }
 }

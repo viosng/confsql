@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.other;
 
+import lombok.Data;
 import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -9,14 +10,12 @@ import java.util.function.Supplier;
  * Created by vio-note on 24.05.2015.
  * Date: 24.05.2015
  */
+
+@Data
 public class CacheableValue<T> {
 
     @NotNull
-    private final AtomicReference<T> value;
-
-    public CacheableValue(){
-        this.value = new AtomicReference<>(null);
-    }
+    private final AtomicReference<T> value = new AtomicReference<>(null);;
 
     public T get() {
         return value.get();
@@ -38,18 +37,7 @@ public class CacheableValue<T> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CacheableValue<?> that = (CacheableValue<?>) o;
-
-        return value.equals(that.value);
-
-    }
-
-    @Override
     public int hashCode() {
-        return value.hashCode();
+        return value.get().hashCode();
     }
 }
