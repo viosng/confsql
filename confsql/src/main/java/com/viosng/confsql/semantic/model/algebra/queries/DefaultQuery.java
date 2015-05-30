@@ -3,12 +3,12 @@ package com.viosng.confsql.semantic.model.algebra.queries;
 import com.viosng.confsql.semantic.model.algebra.Expression;
 import com.viosng.confsql.semantic.model.algebra.special.expr.Parameter;
 import com.viosng.confsql.semantic.model.other.*;
-import com.viosng.confsql.semantic.model.other.CacheableValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,10 +91,10 @@ public abstract class DefaultQuery implements Query{
         return Stream.concat(
                 Stream.concat(
                         Stream.concat(
-                                requiredSchemaAttributes.stream().map(q -> q.verify(subQueryContext)),
-                                parameters.stream().map(q -> q.verify(superContext))),
-                        subQueries.stream().map(q -> q.verify(context))),
-                subQueryContexts.stream().map(q -> (Notification) q))
+                                requiredSchemaAttributes.parallelStream().map(q -> q.verify(subQueryContext)),
+                                parameters.parallelStream().map(q -> q.verify(superContext))),
+                        subQueries.parallelStream().map(q -> q.verify(context))),
+                subQueryContexts.parallelStream().map(q -> (Notification) q))
                 .collect(new NotificationCollector());
     }
 
@@ -112,24 +112,17 @@ public abstract class DefaultQuery implements Query{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DefaultQuery)) return false;
-
+        if (o == null || getClass() != o.getClass()) return false;
         DefaultQuery that = (DefaultQuery) o;
-
-        return this.queryType() == that.queryType()
-                && id.equals(that.id) 
-                && parameters.equals(that.parameters)
-                && requiredSchemaAttributes.equals(that.requiredSchemaAttributes) 
-                && subQueries.equals(that.subQueries);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(parameters, that.parameters) &&
+                Objects.equals(requiredSchemaAttributes, that.requiredSchemaAttributes) &&
+                Objects.equals(subQueries, that.subQueries) &&
+                Objects.equals(context.get(), that.context.get());
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + parameters.hashCode();
-        result = 31 * result + requiredSchemaAttributes.hashCode();
-        result = 31 * result + subQueries.hashCode();
-        result = 31 * result + context.hashCode();
-        return result;
+        return Objects.hash(id, parameters, requiredSchemaAttributes, subQueries, context);
     }
 }

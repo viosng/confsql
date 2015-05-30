@@ -74,7 +74,7 @@ public class Parameter implements Expression {
     @Override
     public String toString() {
         return "Parameter{" +
-                "sourceName='" + id + '\'' + // todo rename
+                "name='" + id + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }

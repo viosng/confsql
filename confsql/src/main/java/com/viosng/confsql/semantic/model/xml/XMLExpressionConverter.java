@@ -18,7 +18,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -229,7 +229,7 @@ public class XMLExpressionConverter implements ExpressionConverter<XMLExpression
                 if (xmlExpression.parameters.isEmpty()) xmlExpression.parameters = null;
                 break;
             case ORDER:
-                xmlExpression.arguments = Arrays.asList((((OrderByArgExpression) exp).getArgument())).stream().map(
+                xmlExpression.arguments = Collections.singletonList((((OrderByArgExpression) exp).getArgument())).stream().map(
                         this::convert).collect(Collectors.toList());
                 xmlExpression.orderType = ((OrderByArgExpression)exp).getOrderType();
                 break;

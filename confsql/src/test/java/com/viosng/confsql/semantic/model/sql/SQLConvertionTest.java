@@ -223,7 +223,7 @@ public class SQLConvertionTest {
                 .parameters(
                         new Parameter("joinType", ValueExpressionFactory.constant("right")),
                         new Parameter("onCondition", new ExpressionImpl(ArithmeticType.LT,
-                                ValueExpressionFactory.attribute(Arrays.asList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
+                                ValueExpressionFactory.attribute(Collections.singletonList("a")), ValueExpressionFactory.attribute(Arrays.asList("b")))),
                         new Parameter("a", ValueExpressionFactory.attribute(Arrays.asList("d", "e"))))
                 .subQueries(query, primary)
                 .id("source")

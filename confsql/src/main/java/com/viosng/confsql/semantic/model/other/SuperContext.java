@@ -1,5 +1,6 @@
 package com.viosng.confsql.semantic.model.other;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class SuperContext implements Context {
     private final List<Context> contexts;
 
     public SuperContext(@NotNull List<Context> contexts) {
-        this.contexts = contexts;
+        this.contexts = ImmutableList.copyOf(contexts);
     }
 
     @Override
@@ -24,7 +25,4 @@ public class SuperContext implements Context {
         return contexts.parallelStream().filter(c -> c.hasObject(hierarchy)).findAny().isPresent();
     }
 
-    public void pause (Context c) {
-        System.out.println(111);
-    }
 }

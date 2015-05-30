@@ -27,7 +27,7 @@ public class QueryBuilder {
     private List<Parameter> parameters = Collections.emptyList();
 
     @NotNull
-    private List<Expression> schemaAttributes = Collections.emptyList(), argumentExpressions = Collections.emptyList();
+    private List<Expression> schemaAttributes = Collections.emptyList();
 
     @NotNull
     private List<Query> subQueries = Collections.emptyList();
@@ -65,18 +65,6 @@ public class QueryBuilder {
     @NotNull
     public QueryBuilder requiredSchemaAttributes(Expression... schemaAttributes) {
         if (schemaAttributes != null) this.schemaAttributes = Arrays.asList(schemaAttributes);
-        return this;
-    }
-
-    @NotNull
-    public QueryBuilder argumentExpressions(@NotNull List<Expression> argumentExpressions) {
-        this.argumentExpressions = argumentExpressions;
-        return this;
-    }
-
-    @NotNull
-    public QueryBuilder argumentExpressions(Expression... argumentExpressions) {
-        if (argumentExpressions != null) this.argumentExpressions = Arrays.asList(argumentExpressions);
         return this;
     }
 
@@ -126,12 +114,12 @@ public class QueryBuilder {
             default: throw new UnsupportedOperationException("Unknown query type");
         }
     }
-    
+
     private void checkSubQueriesCount(int size) {
         if (subQueries.size() < size) {
             throw new IllegalArgumentException("Wrong number of sub queries, should be " + size);
         }
-        if (subQueries.stream().filter(s -> s == null).toArray().length > 0) {
+        if (subQueries.stream().filter(s -> s == null).findAny().isPresent()) {
             throw new IllegalArgumentException("Sub queries list contains null elements");
         }
     }

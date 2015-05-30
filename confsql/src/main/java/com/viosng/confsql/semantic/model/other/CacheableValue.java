@@ -1,5 +1,7 @@
 package com.viosng.confsql.semantic.model.other;
 
+import org.antlr.v4.runtime.misc.NotNull;
+
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -8,6 +10,8 @@ import java.util.function.Supplier;
  * Date: 24.05.2015
  */
 public class CacheableValue<T> {
+
+    @NotNull
     private final AtomicReference<T> value;
 
     public CacheableValue(){
@@ -22,7 +26,7 @@ public class CacheableValue<T> {
         return value.getAndSet(supplier.get());
     }
 
-    public T orElseGet(Supplier<T> supplier) {
+    public T orElseGet(@NotNull Supplier<T> supplier) {
         T curVal;
         do {
             curVal = value.get();
